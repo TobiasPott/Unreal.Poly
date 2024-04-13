@@ -14,7 +14,8 @@ class POLY_API UBaseFunctions : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 	
-
+public:
 	UFUNCTION(BlueprintCallable, Category = "Poly|Base", meta = (WorldContext = "WorldContext", DeterminesOutputType = "InClass", DynamicOutputParam = "OutActor"))
 	static void GetOrCreateActor(const UObject* WorldContext, TSubclassOf<AActor> InClass, AActor*& OutActor);
+
 };

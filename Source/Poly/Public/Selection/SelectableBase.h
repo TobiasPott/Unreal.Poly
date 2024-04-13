@@ -35,5 +35,16 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Default")
 	void ChangeState(const bool bIsSelected);
 	virtual void ChangeState_Implementation(const bool bIsSelected);
-		
+
+	// DeterminesOutputType = "InClass", 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Default", meta = (DynamicOutputParam = "OutActor"))
+	void GetSelector(ASelectorBase*& OutActor);
+	virtual void GetSelector_Implementation(ASelectorBase*& OutActor);
+
+
+	/** Please add a function description */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Default")
+	void SetMaterialForState(bool IsSelected, UMaterialInterface* SelectedMaterial);
+	void SetMaterialForState_Implementation(bool IsSelected, UMaterialInterface* SelectedMaterial);
+
 };
