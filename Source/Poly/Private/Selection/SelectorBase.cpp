@@ -2,6 +2,7 @@
 
 
 #include "Selection/SelectorBase.h"
+#include "Selection/SelectorVisualiserBase.h"
 
 // Sets default values
 ASelectorBase::ASelectorBase()
@@ -16,8 +17,16 @@ void ASelectorBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ToDo: @tpott: Add spawn of visualiser by TSubclassOf<ASelectorBase> on  begin play based of member 
-	//			do not spawn visualiser if member is null/NONE
+	if (IsValid(this->VisualiserClass))
+	{
+		FTransform Transform = FTransform();
+		UClass* Class = this->VisualiserClass.Get();
+		UWorld* World = this->GetWorld();
+		// spawn and init visualiser
+		ASelectorVisualiserBase* Visualiser = Cast<ASelectorVisualiserBase>(World->SpawnActor(Class));
+		Visualiser->Selector = this;
+		Visualiser->Init();
+	}
 
 }
 

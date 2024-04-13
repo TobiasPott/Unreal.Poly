@@ -2,6 +2,7 @@
 
 
 #include "Selection/SelectorVisualiserBase.h"
+#include "Selection/SelectorBase.h"
 #include "PolyMeshFunctions/PolyMesh_SelectionFunctions.h"
 
 // Sets default values
@@ -17,13 +18,18 @@ void ASelectorVisualiserBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (IsValid(Selector))
+	this->Init();
+}
+
+void ASelectorVisualiserBase::Init()
+{
+	if (!bIsInitialised && IsValid(Selector))
 	{
 		Selector->ActorSelected.AddDynamic(this, &ASelectorVisualiserBase::OnActorSelected);
 		Selector->ActorDeselected.AddDynamic(this, &ASelectorVisualiserBase::OnActorDeselected);
 		Selector->OnDestroyed.AddDynamic(this, &ASelectorVisualiserBase::OnSelectorDestroyed);
+		bIsInitialised = true;
 	}
-
 }
 
 void ASelectorVisualiserBase::OnActorSelected_Implementation(ASelectorBase* InSelector, AActor* InActor)

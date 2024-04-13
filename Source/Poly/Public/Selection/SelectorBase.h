@@ -5,9 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "SelectableBase.h"
+#include "SelectorVisualiserBase.h"
 #include "SelectorBase.generated.h"
-
-//class USelectableBase;
 
 UCLASS()
 class POLY_API ASelectorBase : public AActor
@@ -26,6 +25,10 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Default")
 	bool IsSingleSelection = true;
 
+
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Default")
+	TObjectPtr<UClass> VisualiserClass = ASelectorVisualiserBase::StaticClass();
 
 protected:
 	// Called when the game starts or when spawned
