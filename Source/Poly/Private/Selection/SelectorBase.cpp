@@ -16,6 +16,9 @@ void ASelectorBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// ToDo: @tpott: Add spawn of visualiser by TSubclassOf<ASelectorBase> on  begin play based of member 
+	//			do not spawn visualiser if member is null/NONE
+
 }
 
 bool ASelectorBase::IsSelected_Implementation(AActor* InActor)

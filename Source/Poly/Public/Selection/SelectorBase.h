@@ -13,16 +13,6 @@ UCLASS()
 class POLY_API ASelectorBase : public AActor
 {
 	GENERATED_BODY()
-	
-public:
-
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FActorSelected, ASelectorBase*, Selector, AActor*, Actor);
-	UPROPERTY(BlueprintAssignable, EditDefaultsOnly, Category = "Default")
-	FActorSelected ActorSelected;
-
-	//DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FActorSelected, ASelectorBase*, Selector, AActor*, Actor);
-	UPROPERTY(BlueprintAssignable, EditDefaultsOnly, Category = "Default")
-	FActorSelected ActorDeselected;
 
 public:	
 	// Sets default values for this actor's properties
@@ -67,6 +57,16 @@ protected:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Intern")
 	void ClearSelection();
 	void ClearSelection_Implementation();
+
+
+public:
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FActorSelected, ASelectorBase*, Selector, AActor*, Actor);
+	UPROPERTY(BlueprintAssignable, EditDefaultsOnly, Category = "Default")
+	FActorSelected ActorSelected;
+
+	//DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FActorSelected, ASelectorBase*, Selector, AActor*, Actor);
+	UPROPERTY(BlueprintAssignable, EditDefaultsOnly, Category = "Default")
+	FActorSelected ActorDeselected;
 
 
 };
