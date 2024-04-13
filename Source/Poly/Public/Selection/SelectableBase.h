@@ -43,7 +43,8 @@ public:
 
 
 	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, Category = "Default")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Default")
 	void SetMaterialForState(bool IsSelected, UMaterialInterface* SelectedMaterial);
+	void SetMaterialForState_Implementation(bool IsSelected, UMaterialInterface* SelectedMaterial);
 
 };

@@ -22,8 +22,7 @@ void USelectableBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	
+	GetOwner()->OnClicked.AddDynamic(this, &USelectableBase::OnActorClicked);
 }
 
 
@@ -45,6 +44,8 @@ void USelectableBase::OnActorClicked_Implementation(AActor* TouchedActor, FKey B
 		Selector->Select(Actor, bIsSelected);
 		this->ChangeState(bIsSelected);
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Actor.Clicked: %s"), *TouchedActor->GetName())
 }
 
 void USelectableBase::ChangeState_Implementation(const bool bIsSelected)
@@ -60,7 +61,7 @@ void USelectableBase::GetSelector_Implementation(ASelectorBase*& OutActor)
 	OutActor = Cast<ASelectorBase>(Actor);
 }
 
-void USelectableBase::SetMaterialForState(bool IsSelected, UMaterialInterface* SelectedMaterial)
+void USelectableBase::SetMaterialForState_Implementation(bool IsSelected, UMaterialInterface* SelectedMaterial)
 {
 	// dertemine material to use
 	UMaterialInterface* Material = IsSelected ? SelectedMaterial : nullptr;
