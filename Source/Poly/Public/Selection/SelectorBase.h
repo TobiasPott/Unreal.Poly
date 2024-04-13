@@ -14,6 +14,12 @@ class POLY_API ASelectorBase : public AActor
 {
 	GENERATED_BODY()
 	
+public:
+	/** Please add a variable description */
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSelectionChanged, ASelectorBase*, Selector);
+	UPROPERTY(BlueprintAssignable, EditDefaultsOnly, Category = "Default")
+	FSelectionChanged SelectionChanged;
+
 public:	
 	// Sets default values for this actor's properties
 	ASelectorBase();
@@ -57,5 +63,6 @@ protected:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Intern")
 	void ClearSelection();
 	void ClearSelection_Implementation();
+
 
 };
