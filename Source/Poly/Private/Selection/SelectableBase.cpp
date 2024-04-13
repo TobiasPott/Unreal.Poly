@@ -50,7 +50,7 @@ void USelectableBase::OnActorClicked_Implementation(AActor* TouchedActor, FKey B
 
 void USelectableBase::ChangeState_Implementation(const bool bIsSelected)
 {
-	this->SetMaterialForState(bIsSelected, nullptr);
+
 }
 
 

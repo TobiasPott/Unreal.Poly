@@ -15,10 +15,14 @@ class POLY_API ASelectorBase : public AActor
 	GENERATED_BODY()
 	
 public:
-	/** Please add a variable description */
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSelectionChanged, ASelectorBase*, Selector);
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FActorSelected, ASelectorBase*, Selector, AActor*, Actor);
 	UPROPERTY(BlueprintAssignable, EditDefaultsOnly, Category = "Default")
-	FSelectionChanged SelectionChanged;
+	FActorSelected ActorSelected;
+
+	//DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FActorSelected, ASelectorBase*, Selector, AActor*, Actor);
+	UPROPERTY(BlueprintAssignable, EditDefaultsOnly, Category = "Default")
+	FActorSelected ActorDeselected;
 
 public:	
 	// Sets default values for this actor's properties

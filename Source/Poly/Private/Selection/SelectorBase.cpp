@@ -36,6 +36,8 @@ void ASelectorBase::Select_Implementation(AActor* InActor, bool& IsSelected)
 	Selection.AddUnique(InActor);
 	IsSelected = Selection.Contains(InActor);
 
+	if (IsSelected)
+		this->ActorSelected.Broadcast(this, InActor);
 }
 
 void ASelectorBase::Deselect_Implementation(AActor* InActor, bool& IsSelected)
@@ -56,6 +58,9 @@ void ASelectorBase::Deselect_Implementation(AActor* InActor, bool& IsSelected)
 		if (IsValid(Selectable))
 			Selectable->ChangeState(IsSelected);
 	}
+
+	if (!IsSelected)
+		this->ActorDeselected.Broadcast(this, InActor);
 
 }
 
