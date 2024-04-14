@@ -11,6 +11,10 @@ ASelectorVisualiserBase::ASelectorVisualiserBase()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
+	// create new scene component and make it root component others attach to
+	SceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
+	SceneComponent->SetMobility(EComponentMobility::Static);
+	SetRootComponent(SceneComponent);
 }
 
 // Called when the game starts or when spawned

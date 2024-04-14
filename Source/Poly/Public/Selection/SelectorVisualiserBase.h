@@ -14,7 +14,11 @@ class POLY_API ASelectorVisualiserBase : public AActor
 	friend class ASelectorBase;
 
 	GENERATED_BODY()
-	
+
+protected:
+	UPROPERTY(EditDefaultsOnly)
+	class USceneComponent* SceneComponent;
+
 public:	
 	// Sets default values for this actor's properties
 	ASelectorVisualiserBase();

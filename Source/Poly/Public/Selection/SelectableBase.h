@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "InputCoreTypes.h"
 #include "Components/ActorComponent.h"
+#include "Selection/SelectorTypes.h"
 #include "SelectableBase.generated.h"
 
 
@@ -17,6 +18,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bEnabled = true;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ESelectorChannel Channel = ESelectorChannel::Default;
 
 
 	// Sets default values for this component's properties
@@ -37,9 +40,9 @@ public:
 	virtual void ChangeState_Implementation(const bool bIsSelected);
 
 	// DeterminesOutputType = "InClass", 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Default", meta = (DynamicOutputParam = "OutActor"))
-	void GetSelector(ASelectorBase*& OutActor);
-	virtual void GetSelector_Implementation(ASelectorBase*& OutActor);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Default")
+	bool GetSelector(ASelectorBase*& OutActor);
+	virtual bool GetSelector_Implementation(ASelectorBase*& OutActor);
 
 
 	/** Please add a function description */

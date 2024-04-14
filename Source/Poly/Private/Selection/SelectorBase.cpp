@@ -3,6 +3,7 @@
 
 #include "Selection/SelectorBase.h"
 #include "Selection/SelectorVisualiserBase.h"
+#include "Engine/World.h"
 
 // Sets default values
 ASelectorBase::ASelectorBase()
@@ -10,6 +11,10 @@ ASelectorBase::ASelectorBase()
 	// disable tick
 	PrimaryActorTick.bCanEverTick = false;
 
+	// create new scene component and make it root component others attach to
+	SceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
+	SceneComponent->SetMobility(EComponentMobility::Static);
+	SetRootComponent(SceneComponent);
 }
 
 // Called when the game starts or when spawned
@@ -22,8 +27,14 @@ void ASelectorBase::BeginPlay()
 		FTransform Transform = FTransform();
 		UClass* Class = this->VisualiserClass.Get();
 		UWorld* World = this->GetWorld();
+
+		FActorSpawnParameters Params = FActorSpawnParameters();
+		Params.Owner = this;
+		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		
 		// spawn and init visualiser
-		ASelectorVisualiserBase* Visualiser = Cast<ASelectorVisualiserBase>(World->SpawnActor(Class));
+		ASelectorVisualiserBase* Visualiser = World->SpawnActor<ASelectorVisualiserBase>(Class, Params);
+		Visualiser->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, true));
 		Visualiser->Selector = this;
 		Visualiser->Init();
 	}

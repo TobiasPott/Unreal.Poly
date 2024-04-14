@@ -1,10 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+
 #include "Selection/SelectableBase.h"
 #include "Selection/SelectorBase.h"
+#include "Selection/SelectorSubsystem.h"
 #include "BaseFunctions.h"
 #include "Components/BaseDynamicMeshComponent.h"
+#include "Engine/GameEngine.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
 USelectableBase::USelectableBase()
@@ -29,22 +33,23 @@ void USelectableBase::BeginPlay()
 void USelectableBase::OnActorClicked_Implementation(AActor* TouchedActor, FKey ButtonPressed)
 {
 	ASelectorBase* Selector;
-	GetSelector(Selector);
-
-	AActor* Actor = this->GetOwner();
-	if (Selector->IsSelected(Actor))
+	if (GetSelector(Selector))
 	{
-		bool bIsSelected = false;
-		Selector->Deselect(Actor, bIsSelected);
-		this->ChangeState(bIsSelected);
-	}
-	else
-	{
-		bool bIsSelected = false;
-		Selector->Select(Actor, bIsSelected);
-		this->ChangeState(bIsSelected);
-	}
+		AActor* Actor = this->GetOwner();
+		if (Selector->IsSelected(Actor))
+		{
+			bool bIsSelected = false;
+			Selector->Deselect(Actor, bIsSelected);
+			this->ChangeState(bIsSelected);
+		}
+		else
+		{
+			bool bIsSelected = false;
+			Selector->Select(Actor, bIsSelected);
+			this->ChangeState(bIsSelected);
+		}
 
+	}
 	UE_LOG(LogTemp, Warning, TEXT("Actor.Clicked: %s"), *TouchedActor->GetName())
 }
 
@@ -54,11 +59,10 @@ void USelectableBase::ChangeState_Implementation(const bool bIsSelected)
 }
 
 
-void USelectableBase::GetSelector_Implementation(ASelectorBase*& OutActor)
+bool USelectableBase::GetSelector_Implementation(ASelectorBase*& OutActor)
 {
-	AActor* Actor;
-	UBaseFunctions::GetOrCreateActor(this->GetWorld(), ASelectorBase::StaticClass(), Actor);
-	OutActor = Cast<ASelectorBase>(Actor);
+	USelectorSubsystem* SelectorSubsystem = UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>();
+	return SelectorSubsystem->GetSelector(this, this->Channel, OutActor);
 }
 
 void USelectableBase::SetMaterialForState_Implementation(bool IsSelected, UMaterialInterface* SelectedMaterial)
@@ -66,7 +70,8 @@ void USelectableBase::SetMaterialForState_Implementation(bool IsSelected, UMater
 	// dertemine material to use
 	UMaterialInterface* Material = IsSelected ? SelectedMaterial : nullptr;
 
-	TArray<UActorComponent*> Components = this->GetOwner()->GetComponentsByClass(UMeshComponent::StaticClass());
+	TArray<UActorComponent*> Components;
+	this->GetOwner()->GetComponents(UMeshComponent::StaticClass(), Components);
 	for (int i = 0; i < Components.Num(); i++)
 	{
 		UActorComponent* Comp = Components[i];

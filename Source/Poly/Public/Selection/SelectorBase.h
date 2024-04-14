@@ -8,10 +8,16 @@
 #include "SelectorVisualiserBase.h"
 #include "SelectorBase.generated.h"
 
+
 UCLASS()
 class POLY_API ASelectorBase : public AActor
 {
 	GENERATED_BODY()
+
+protected:
+	UPROPERTY(EditDefaultsOnly)
+	class USceneComponent* SceneComponent;
+
 
 public:	
 	// Sets default values for this actor's properties
@@ -29,6 +35,9 @@ public:
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Default")
 	TObjectPtr<UClass> VisualiserClass = ASelectorVisualiserBase::StaticClass();
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool IsEmpty() { return Selection.IsEmpty(); }
 
 protected:
 	// Called when the game starts or when spawned
