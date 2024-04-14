@@ -1,14 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Actions/ActionBase.h"
+#include "Actions/ActionRef.h"
 
-UPrintAction::UPrintAction()
+UActionRef* UActionBase::GetUnique()
 {
-	Description = "poly.Print";
-}
-
-void UPrintAction::Execute(bool bEmitRecord)
-{
-	UE_LOG(LogTemp, Log, TEXT("%s"), *Text)
+	UActionRef* Ref = NewObject<UActionRef>(this);
+	Ref->Action = this;
+	return Ref;
 }

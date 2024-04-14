@@ -34,8 +34,8 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Default")
 	void OnActorDeselected(ASelectorBase* InSelector, AActor* InActor);
 	void OnActorDeselected_Implementation(ASelectorBase* InSelector, AActor* InActor);
-
-	/** Please add a function description */
+	
+	UFUNCTION()
 	void OnSelectorDestroyed(AActor* DestroyedActor);
 
 public:	

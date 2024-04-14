@@ -67,7 +67,6 @@ public:
 	UPROPERTY(BlueprintAssignable, EditDefaultsOnly, Category = "Default")
 	FActorSelected ActorSelected;
 
-	//DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FActorSelected, ASelectorBase*, Selector, AActor*, Actor);
 	UPROPERTY(BlueprintAssignable, EditDefaultsOnly, Category = "Default")
 	FActorSelected ActorDeselected;
 
