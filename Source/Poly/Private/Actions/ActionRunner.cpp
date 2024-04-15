@@ -27,6 +27,11 @@ void AActionRunner::OnActionSubmitted(UActionBase* Action)
 			if (this->SubmittedAction.IsBound())
 				this->SubmittedAction.Broadcast(Action);
 		}
+		else
+		{
+			FString Description = IsValid(PendingAction) ? PendingAction->GetDescription() : "<No Pending Action>";
+			UE_LOG(LogTemp, Warning, TEXT("Submitted action was not finished. Pending action does not match or is not set: '%s' (total actions: %d)"), *PendingAction->GetDescription(), Actions.Num());
+		}
 	}
 }
 
