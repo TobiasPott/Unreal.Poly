@@ -31,6 +31,12 @@ public:
 	static FName Third;
 	static FName Fourth;
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Selectable")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Selector|Names")
 	void DefaultName(FName& OutName) { OutName = USelectorNames::Default; }
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Selector|Names")
+	void SecondName(FName& OutName) { OutName = USelectorNames::Second; }
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Selector|Names")
+	void ThirdName(FName& OutName) { OutName = USelectorNames::Third; }
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Selector|Names")
+	void FourthName(FName& OutName) { OutName = USelectorNames::Fourth; }
 };
