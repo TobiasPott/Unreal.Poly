@@ -9,12 +9,11 @@ ULogAction::ULogAction()
 	Description = "poly.Log";
 }
 
-bool ULogAction::Execute_Implementation(bool bSilent, bool bEmitRecord)
+bool ULogAction::Execute_Implementation(bool bEmitRecord)
 {
 	if (this->LogCategory == EPolyLogCategory::None)
 	{
-		if (!bSilent)
-			this->Discard();
+		this->Discard();
 		return false;
 	}
 
@@ -22,7 +21,7 @@ bool ULogAction::Execute_Implementation(bool bSilent, bool bEmitRecord)
 	{
 	case EPolyLogCategory::Default:
 		UE_LOG(LogPoly, Log, TEXT("%s"), *Text);
-		GEngine->AddOnScreenDebugMessage(- 1, 5.f, FColor::Yellow, Text);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, Text);
 		break;
 	case EPolyLogCategory::Debug:
 		UE_LOG(LogPolyDebug, Log, TEXT("%s"), *Text);
@@ -33,8 +32,8 @@ bool ULogAction::Execute_Implementation(bool bSilent, bool bEmitRecord)
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, Text);
 		break;
 	}
-	if (!bSilent)
-		this->Submit();
+
+	this->Submit();
 	return true;
 }
 
@@ -43,11 +42,10 @@ UPrintAction::UPrintAction()
 	Description = "poly.Print";
 }
 
-bool UPrintAction::Execute_Implementation(bool bSilent, bool bEmitRecord)
+bool UPrintAction::Execute_Implementation(bool bEmitRecord)
 {
 	UE_LOG(LogTemp, Log, TEXT("%s"), *Text);
 	// call base function to fire events
-	if (!bSilent)
-		this->Submit();
+	this->Submit();
 	return true;
 }

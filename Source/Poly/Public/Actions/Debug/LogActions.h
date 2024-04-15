@@ -28,7 +28,7 @@ UCLASS(Blueprintable)
 	 EPolyLogCategory LogCategory = EPolyLogCategory::Default;
 
  public:
-	 bool Execute_Implementation(bool bSilent, bool bEmitRecord) override;
+	 bool Execute_Implementation(bool bEmitRecord) override;
  };
 
 
@@ -47,5 +47,5 @@ public:
 
 
 public:
-	bool Execute_Implementation(bool bSilent, bool bEmitRecord) override;
+	bool Execute_Implementation(bool bEmitRecord) override;
 };

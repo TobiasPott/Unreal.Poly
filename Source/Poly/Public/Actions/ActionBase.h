@@ -45,8 +45,8 @@ public:
 public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Default")
-	bool Execute(bool bSilent = false, bool bEmitRecord = true);
-	virtual bool Execute_Implementation(bool bSilent = false, bool bEmitRecord = true) { return false; };
+	bool Execute(bool bEmitRecord = true);
+	virtual bool Execute_Implementation(bool bEmitRecord = true) { return false; };
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Default")
 	void Submit();

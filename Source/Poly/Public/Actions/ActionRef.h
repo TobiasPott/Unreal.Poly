@@ -41,6 +41,6 @@ public:
 
 	UActionRef* GetUnique() override;
 
-	bool Execute_Implementation(bool bSilent, bool bEmitRecord) override;
+	bool Execute_Implementation(bool bEmitRecord) override;
 
 };

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "Actions/ActionBase.h"
 #include "ToolInterface.generated.h"
 
 
@@ -32,5 +33,10 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Default")
 	bool Deactivate();
 	virtual bool Deactivate_Implementation();
+
+
+	//UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Default")
+	//bool EmitAction(bool bEmit, UActionBase* EmitAction);
+	//virtual bool EmitAction_Implementation(bool bEmit, UActionBase* EmitAction);
 
 };

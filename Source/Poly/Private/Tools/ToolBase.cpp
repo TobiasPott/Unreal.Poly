@@ -24,3 +24,10 @@ bool UToolBase::Deactivate_Implementation()
 {
 	return false;
 }
+
+bool UToolBase::EmitAction(bool bEmit, UActionBase* EmitAction)
+{
+	if (ActionEmitted.IsBound())
+		ActionEmitted.Broadcast(this, bEmit, EmitAction);
+	return bEmit;
+}

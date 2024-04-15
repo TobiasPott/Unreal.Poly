@@ -17,3 +17,8 @@ bool IToolInterface::Deactivate_Implementation()
 {
 	return false;
 }
+
+//bool IToolInterface::EmitAction_Implementation(bool bEmit, UActionBase* EmitAction)
+//{
+//	return false;
+//}

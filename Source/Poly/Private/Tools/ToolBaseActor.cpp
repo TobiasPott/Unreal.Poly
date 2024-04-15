@@ -22,6 +22,14 @@ void AToolBaseActor::OnToolDeactivated(UToolBase* InTool)
 	}
 }
 
+void AToolBaseActor::OnToolActionEmitted(UToolBase* InTool, bool bEmitted, UActionBase* Action)
+{
+	if (IsValid(InTool) && bEmitted)
+	{
+		// ToDo:@tpott: handle case of tool emitted an action
+	}
+}
+
 bool AToolBaseActor::Activate_Implementation()
 {
 	if (IsValid(Tool))

@@ -20,18 +20,15 @@ UActionRef::UActionRef()
 		InstanceCount = MIN_int32;
 }
 
-bool UActionRef::Execute_Implementation(bool bSilent, bool bEmitRecord)
+bool UActionRef::Execute_Implementation(bool bEmitRecord)
 {
 	bool bExecuted = false;
 	if (IsValid(Action))
 	{
 		bExecuted = Action->Execute(bEmitRecord);
 	}
-	if (!bSilent)
-	{
-		if (bExecuted) this->Submit();
-		else this->Discard();
-	}
+	if (bExecuted) this->Submit();
+	else this->Discard();
 	return bExecuted;
 }
 

@@ -18,14 +18,17 @@ class POLY_API AToolBaseActor : public AActor, public IToolInterface
 	GENERATED_BODY()
 
 protected:
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Intern")
+	UToolBase* Tool = nullptr;
+
+protected:
 	void OnToolActivated(UToolBase* InTool);
 	void OnToolDeactivated(UToolBase* InTool);
+	void OnToolActionEmitted(UToolBase* InTool, bool bEmitted, UActionBase* Action);
 
 	bool Activate_Implementation() override;
 	bool Deactivate_Implementation() override;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Intern")
-	UToolBase* Tool = nullptr;
 
 public:
 
