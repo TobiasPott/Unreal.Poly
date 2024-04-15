@@ -10,6 +10,7 @@
 #include "Engine/GameEngine.h"
 #include "Kismet/GameplayStatics.h"
 
+
 // Sets default values for this component's properties
 USelectableBase::USelectableBase()
 {
@@ -35,6 +36,7 @@ void USelectableBase::OnActorClicked_Implementation(AActor* TouchedActor, FKey B
 	ASelectorBase* Selector;
 	if (GetSelector(Selector))
 	{
+
 		if (Selector->IsSelected(this))
 		{
 			bool bIsSelected = false;
@@ -49,7 +51,6 @@ void USelectableBase::OnActorClicked_Implementation(AActor* TouchedActor, FKey B
 		}
 
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Actor.Clicked: %s"), *TouchedActor->GetName())
 }
 
 void USelectableBase::ChangeState_Implementation(const bool bIsSelected)
@@ -61,7 +62,7 @@ void USelectableBase::ChangeState_Implementation(const bool bIsSelected)
 bool USelectableBase::GetSelector_Implementation(ASelectorBase*& OutActor)
 {
 	USelectorSubsystem* SelectorSubsystem = UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>();
-	return SelectorSubsystem->GetSelector(this, this->Channel, OutActor);
+	return SelectorSubsystem->GetSelector(this, this->SelectorName, OutActor);
 }
 
 void USelectableBase::SetMaterialForState_Implementation(bool IsSelected, UMaterialInterface* SelectedMaterial)

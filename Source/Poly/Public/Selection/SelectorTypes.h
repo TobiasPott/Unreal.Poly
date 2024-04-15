@@ -18,3 +18,19 @@ enum class ESelectorChannel : uint8 {
 	Seventh = 0b01000000,
 	Eighth = 0b10000000,
 };
+
+
+UCLASS()
+class POLY_API USelectorNames : public UObject
+{
+	GENERATED_BODY()
+
+public:
+	static FName Default;
+	static FName Second;
+	static FName Third;
+	static FName Fourth;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Selectable")
+	void DefaultName(FName& OutName) { OutName = USelectorNames::Default; }
+};

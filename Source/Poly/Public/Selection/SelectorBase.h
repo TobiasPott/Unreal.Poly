@@ -15,7 +15,7 @@ class POLY_API ASelectorBase : public AActor
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	class USceneComponent* SceneComponent;
 
 
@@ -24,17 +24,17 @@ public:
 	ASelectorBase();
 
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Default")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Selectable")
 	bool IsSingleSelection = true;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Default")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Selectable")
 	uint8 Stencil = 1;
 
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Selectable")
 	TArray<USelectableBase*> Selection;
 
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Default")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Selectable")
 	TObjectPtr<UClass> VisualiserClass = ASelectorVisualiserBase::StaticClass();
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
@@ -70,7 +70,9 @@ protected:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Intern")
 	void ClearSelection();
 	void ClearSelection_Implementation();
-
+	
+	UFUNCTION()
+	void SetVisualiser(TSubclassOf<ASelectorVisualiserBase> NewVisualiserClass);
 
 public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSelectableSelected, ASelectorBase*, Selector, USelectableBase*, Selectable);

@@ -16,7 +16,7 @@ class POLY_API ASelectorVisualiserBase : public AActor
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	class USceneComponent* SceneComponent;
 
 public:	

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Subsystems/Subsystem.h"
 #include "Selection/SelectorBase.h"
+#include "Selection/SelectorVisualiserBase.h"
 #include "Selection/SelectorTypes.h"
 #include "SelectorSubsystem.generated.h"
 
@@ -42,7 +43,7 @@ private:
 	ASelectorSubsystemRoot* SubsystemRoot;
 
 	UPROPERTY()
-	TMap<ESelectorChannel, ASelectorBase*> Selectors;
+	TMap<FName, ASelectorBase*> Selectors;
 
 protected:
 
@@ -56,8 +57,12 @@ public:
 	void Init(const UObject* WorldContext);
 
 	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category = "Selector")
+	bool HasSelector(FName Name);
+	UFUNCTION(BlueprintCallable, Category = "Selector")
+	ASelectorBase* AddSelector(FName Name, uint8 Stencil = 1);
 	UFUNCTION(BlueprintCallable, Category = "Selector", meta = (WorldContext = "WorldContext"))
-	bool GetSelector(const UObject* WorldContext, ESelectorChannel Channel, ASelectorBase*& OutSelector);
+	bool GetSelector(const UObject* WorldContext, FName Name, ASelectorBase*& OutSelector);
 
 	// ToDo: @tpott: Add functions to change selector behaviours (single selection)
 

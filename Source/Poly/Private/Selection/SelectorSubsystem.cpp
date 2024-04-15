@@ -28,31 +28,43 @@ void USelectorSubsystem::Init(const UObject* WorldContext)
 		SubsystemRoot = WorldContext->GetWorld()->SpawnActor<ASelectorSubsystemRoot>(ASelectorSubsystemRoot::StaticClass());
 	}
 
-	for (int i = 0; i < 8; i++)
+	TArray<FName> SelectorNames = { USelectorNames::Default, USelectorNames::Second, USelectorNames::Third, USelectorNames::Fourth };
+	for (int i = 0; i < SelectorNames.Num(); i++)
 	{
-		const ESelectorChannel Channel = static_cast<ESelectorChannel>(1 << i);
-		if (Channel == ESelectorChannel::Disabled)
-			continue;
-
-		if (!this->Selectors.Contains(Channel))
-		{
-			ASelectorBase* Selector = CreateSelector(WorldContext);
-			Selector->AttachToActor(SubsystemRoot, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, true));
-			this->Selectors.Add(Channel, Selector);
-		}
+		// Add selector (using index as stencil (starting with 1 (i+1))
+		AddSelector(SelectorNames[i], static_cast<uint8>(i + 1));
 	}
+
 }
 
-bool USelectorSubsystem::GetSelector(const UObject* WorldContext, ESelectorChannel Channel, ASelectorBase*& OutSelector)
+bool USelectorSubsystem::HasSelector(FName Name)
 {
-	if (Channel == ESelectorChannel::Disabled)
+	return this->Selectors.Contains(Name);
+}
+
+ASelectorBase* USelectorSubsystem::AddSelector(FName Name, uint8 Stencil)
+{
+	if (!this->Selectors.Contains(Name))
+	{
+		ASelectorBase* Selector = CreateSelector(SubsystemRoot);
+		Selector->AttachToActor(SubsystemRoot, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, true));
+		Selector->Stencil = static_cast<uint8>(Stencil);
+		this->Selectors.Add(Name, Selector);
+		return Selector;
+	}
+	return this->Selectors[Name];
+}
+
+bool USelectorSubsystem::GetSelector(const UObject* WorldContext, FName Name, ASelectorBase*& OutSelector)
+{
+	if (Name.IsNone())
 	{
 		OutSelector = nullptr;
 		return false;
 	}
-	if (this->Selectors.Contains(Channel))
+	if (this->Selectors.Contains(Name))
 	{
-		OutSelector = this->Selectors[Channel];
+		OutSelector = this->Selectors[Name];
 		return true;
 	}
 	return false;

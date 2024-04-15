@@ -22,23 +22,8 @@ void ASelectorBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (IsValid(this->VisualiserClass))
-	{
-		FTransform Transform = FTransform();
-		UClass* Class = this->VisualiserClass.Get();
-		UWorld* World = this->GetWorld();
-
-		FActorSpawnParameters Params = FActorSpawnParameters();
-		Params.Owner = this;
-		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-		// spawn and init visualiser
-		ASelectorVisualiserBase* Visualiser = World->SpawnActor<ASelectorVisualiserBase>(Class, Params);
-		Visualiser->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, true));
-		Visualiser->Selector = this;
-		Visualiser->Init();
-	}
-
+	// set/init visualiser type
+	this->SetVisualiser(this->VisualiserClass);
 }
 
 bool ASelectorBase::IsSelected_Implementation(USelectableBase* InSelectable)
@@ -102,5 +87,28 @@ void ASelectorBase::ClearSelection_Implementation()
 			this->Deselect(Selected, bIsSelected);
 	}
 	Selection.Empty(0);
+}
+
+void ASelectorBase::SetVisualiser(TSubclassOf<ASelectorVisualiserBase> NewVisualiserClass)
+{	
+	// ToDo: @tpott: move visualiser creation to SetVisualiser function
+	//		this should handle destruction of previous visualiser and update of new one
+	if (IsValid(NewVisualiserClass))
+	{
+		this->VisualiserClass = NewVisualiserClass;
+		FTransform Transform = FTransform();
+		UClass* Class = this->VisualiserClass.Get();
+		UWorld* World = this->GetWorld();
+
+		FActorSpawnParameters Params = FActorSpawnParameters();
+		Params.Owner = this;
+		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		// spawn and init visualiser
+		ASelectorVisualiserBase* Visualiser = World->SpawnActor<ASelectorVisualiserBase>(Class, Params);
+		Visualiser->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, true));
+		Visualiser->Selector = this;
+		Visualiser->Init();
+	}
 }
 
