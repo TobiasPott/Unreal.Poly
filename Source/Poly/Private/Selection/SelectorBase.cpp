@@ -31,7 +31,7 @@ void ASelectorBase::BeginPlay()
 		FActorSpawnParameters Params = FActorSpawnParameters();
 		Params.Owner = this;
 		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		
+
 		// spawn and init visualiser
 		ASelectorVisualiserBase* Visualiser = World->SpawnActor<ASelectorVisualiserBase>(Class, Params);
 		Visualiser->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, true));
@@ -41,56 +41,55 @@ void ASelectorBase::BeginPlay()
 
 }
 
-bool ASelectorBase::IsSelected_Implementation(AActor* InActor)
+bool ASelectorBase::IsSelected_Implementation(USelectableBase* InSelectable)
 {
-	return this->Selection.Contains(InActor);
+	return this->Selection.Contains(InSelectable);
 }
 
-void ASelectorBase::Select_Implementation(AActor* InActor, bool& IsSelected)
+void ASelectorBase::Select_Implementation(USelectableBase* InSelectable, bool& IsSelected)
 {
 	if (!Selection.IsEmpty() && IsSingleSelection)
 		this->ClearSelection();
 
-	if (!IsValid(InActor))
+	if (!IsValid(InSelectable))
 	{
 		IsSelected = false;
 		return;
 	}
-	Selection.AddUnique(InActor);
-	IsSelected = Selection.Contains(InActor);
+	Selection.AddUnique(InSelectable);
+	IsSelected = Selection.Contains(InSelectable);
 
 	if (IsSelected)
-		this->ActorSelected.Broadcast(this, InActor);
+		if (this->SelectableSelected.IsBound())
+			this->SelectableSelected.Broadcast(this, InSelectable);
 }
 
-void ASelectorBase::Deselect_Implementation(AActor* InActor, bool& IsSelected)
+void ASelectorBase::Deselect_Implementation(USelectableBase* InSelectable, bool& IsSelected)
 {
-	if (!Selection.Contains(InActor))
+	if (!Selection.Contains(InSelectable))
 	{
 		IsSelected = false;
 		return;
 	}
 
-	Selection.Remove(InActor);
-	IsSelected = Selection.Contains(InActor);
+	Selection.Remove(InSelectable);
+	IsSelected = Selection.Contains(InSelectable);
 
-	if (IsValid(InActor))
+	if (IsValid(InSelectable))
 	{
-		UActorComponent* Component = InActor->GetComponentByClass(USelectableBase::StaticClass());
-		USelectableBase* Selectable = Cast<USelectableBase>(Component);
-		if (IsValid(Selectable))
-			Selectable->ChangeState(IsSelected);
+		InSelectable->ChangeState(IsSelected);
 	}
 
 	if (!IsSelected)
-		this->ActorDeselected.Broadcast(this, InActor);
+		if (this->SelectableDeselected.IsBound())
+			this->SelectableDeselected.Broadcast(this, InSelectable);
 
 }
 
-void ASelectorBase::Replace_Implementation(AActor* InActor, bool& IsSelected)
+void ASelectorBase::Replace_Implementation(USelectableBase* InSelectable, bool& IsSelected)
 {
 	this->ClearSelection();
-	this->Select(InActor, IsSelected);
+	this->Select(InSelectable, IsSelected);
 }
 
 void ASelectorBase::ClearSelection_Implementation()
@@ -98,9 +97,9 @@ void ASelectorBase::ClearSelection_Implementation()
 	bool bIsSelected = false;
 	for (int i = Selection.Num() - 1; i >= 0; i--)
 	{
-		AActor* Actor = Selection[i];
-		if (IsValid(Actor))
-			this->Deselect(Actor, bIsSelected);
+		USelectableBase* Selected = Selection[i];
+		if (IsValid(Selected))
+			this->Deselect(Selected, bIsSelected);
 	}
 	Selection.Empty(0);
 }

@@ -29,21 +29,21 @@ void ASelectorVisualiserBase::Init()
 {
 	if (!bIsInitialised && IsValid(Selector))
 	{
-		Selector->ActorSelected.AddDynamic(this, &ASelectorVisualiserBase::OnActorSelected);
-		Selector->ActorDeselected.AddDynamic(this, &ASelectorVisualiserBase::OnActorDeselected);
+		Selector->SelectableSelected.AddDynamic(this, &ASelectorVisualiserBase::OnSelectableSelected);
+		Selector->SelectableDeselected.AddDynamic(this, &ASelectorVisualiserBase::OnSelectableDeselected);
 		Selector->OnDestroyed.AddDynamic(this, &ASelectorVisualiserBase::OnSelectorDestroyed);
 		bIsInitialised = true;
 	}
 }
 
-void ASelectorVisualiserBase::OnActorSelected_Implementation(ASelectorBase* InSelector, AActor* InActor)
+void ASelectorVisualiserBase::OnSelectableSelected_Implementation(ASelectorBase* InSelector, USelectableBase* InSelectable)
 {
-	UPolyMesh_SelectionFunctions::SetMaterialForState(InActor, true, this->OverlayMaterial, this->StencilValue);
+	UPolyMesh_SelectionFunctions::SetMaterialForState(InSelectable->GetOwner(), true, this->OverlayMaterial, InSelector->Stencil);
 }
 
-void ASelectorVisualiserBase::OnActorDeselected_Implementation(ASelectorBase* InSelector, AActor* InActor)
+void ASelectorVisualiserBase::OnSelectableDeselected_Implementation(ASelectorBase* InSelector, USelectableBase* InSelectable)
 {
-	UPolyMesh_SelectionFunctions::SetMaterialForState(InActor, false, this->OverlayMaterial, this->StencilValue);
+	UPolyMesh_SelectionFunctions::SetMaterialForState(InSelectable->GetOwner(), false, this->OverlayMaterial, InSelector->Stencil);
 }
 
 void ASelectorVisualiserBase::OnSelectorDestroyed(AActor* DestroyedActor)

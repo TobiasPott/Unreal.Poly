@@ -23,6 +23,17 @@ public:
 	// Sets default values for this actor's properties
 	ASelectorVisualiserBase();
 
+	UPROPERTY(BlueprintReadOnly, Category = "Default")
+	bool bIsInitialised = false;
+
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Default", meta = (ExposeOnSpawn = "true"))
+	TObjectPtr<ASelectorBase> Selector = nullptr;
+
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Default")
+	TObjectPtr<UMaterialInterface> OverlayMaterial = nullptr;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -32,31 +43,15 @@ protected:
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Default")
-	void OnActorSelected(ASelectorBase* InSelector, AActor* InActor);
-	void OnActorSelected_Implementation(ASelectorBase* InSelector, AActor* InActor);
+	void OnSelectableSelected(ASelectorBase* InSelector, USelectableBase* InSelectable);
+	void OnSelectableSelected_Implementation(ASelectorBase* InSelector, USelectableBase* InSelectable);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Default")
-	void OnActorDeselected(ASelectorBase* InSelector, AActor* InActor);
-	void OnActorDeselected_Implementation(ASelectorBase* InSelector, AActor* InActor);
+	void OnSelectableDeselected(ASelectorBase* InSelector, USelectableBase* InSelectable);
+	void OnSelectableDeselected_Implementation(ASelectorBase* InSelector, USelectableBase* InSelectable);
 	
 	UFUNCTION()
 	void OnSelectorDestroyed(AActor* DestroyedActor);
 
-public:	
-	UPROPERTY(BlueprintReadOnly, Category = "Default")
-	bool bIsInitialised = false;
-
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Default", meta = (ExposeOnSpawn = "true"))
-	TObjectPtr<ASelectorBase> Selector = nullptr;
-	
-
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Default")
-	uint8 StencilValue = 1;
-
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Default")
-	TObjectPtr<UMaterialInterface> OverlayMaterial = nullptr;
 
 };

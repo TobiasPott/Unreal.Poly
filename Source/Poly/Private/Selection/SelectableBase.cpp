@@ -35,17 +35,16 @@ void USelectableBase::OnActorClicked_Implementation(AActor* TouchedActor, FKey B
 	ASelectorBase* Selector;
 	if (GetSelector(Selector))
 	{
-		AActor* Actor = this->GetOwner();
-		if (Selector->IsSelected(Actor))
+		if (Selector->IsSelected(this))
 		{
 			bool bIsSelected = false;
-			Selector->Deselect(Actor, bIsSelected);
+			Selector->Deselect(this, bIsSelected);
 			this->ChangeState(bIsSelected);
 		}
 		else
 		{
 			bool bIsSelected = false;
-			Selector->Select(Actor, bIsSelected);
+			Selector->Select(this, bIsSelected);
 			this->ChangeState(bIsSelected);
 		}
 
