@@ -12,24 +12,24 @@
  *
  */
 UCLASS(Blueprintable)
-	 class POLY_API ULogAction : public UActionBase
- {
-	 GENERATED_BODY()
+class POLY_API ULogAction : public UActionBase
+{
+	GENERATED_BODY()
 
- public:
-	 // Sets default values for this actor's properties
-	 ULogAction();
+public:
+	// Sets default values for this actor's properties
+	ULogAction();
 
-	 /** Please add a variable description */
-	 UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
-	 FString Text = "None";
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
+	FString Text = "None";
 
-	 UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
-	 EPolyLogCategory LogCategory = EPolyLogCategory::Default;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
+	EPolyLogCategory LogCategory = EPolyLogCategory::Default;
 
- public:
-	 bool Execute_Implementation(bool bEmitRecord) override;
- };
+public:
+	bool Execute_Implementation(bool bEmitRecord) override;
+};
 
 
 UCLASS(Blueprintable)
