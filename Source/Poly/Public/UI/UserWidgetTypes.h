@@ -19,8 +19,8 @@ enum class EPropertyNativeDataType : uint8 {
 	Vector2,
 	Vector3,
 	Vector4,
+	Rotator, // is handled as -180 to 180 ranged Vector3 with rotator labeling
 	String,
-	Rotator,
 	Transform,
 	// ToDo: @tpott: Object is a special case which should be divided into significant subtypes (e.g. Actor, Component, DynamicMesh, etc.)
 	//				 subtypes might be indicated in a different ways (e.g. widget specialisation)
