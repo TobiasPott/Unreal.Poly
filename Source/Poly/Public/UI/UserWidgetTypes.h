@@ -12,6 +12,9 @@ enum class EPropertyNativeDataType : uint8 {
 	Boolean = 0,
 	Byte,
 	Integer,
+	IntVector2, // usses IntVector as in & out type
+	IntVector3,
+	IntVector4,
 	Float,
 	Vector2,
 	Vector3,
