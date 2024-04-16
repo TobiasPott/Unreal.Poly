@@ -8,6 +8,13 @@
 
 
 UENUM(BlueprintType)
+enum class EObjectFieldNativeDataType : uint8 {
+	Object = 0,
+	Actor,
+	Component,
+};
+
+UENUM(BlueprintType)
 enum class EPropertyNativeDataType : uint8 {
 	Boolean = 0,
 	Byte,
