@@ -63,6 +63,8 @@ public:
 
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Selection")
+	int32 Count() { return Actors.Num(); }
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Selection")
 	bool IsEmpty() { return Actors.IsEmpty(); }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Selection")
