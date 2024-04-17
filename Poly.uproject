@@ -11,7 +11,8 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"GeometryFramework",
-				"CoreUObject"
+				"CoreUObject",
+				"UMG"
 			]
 		}
 	],
