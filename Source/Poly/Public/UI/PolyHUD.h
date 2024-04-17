@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
+#include "UI/UserWidgetTypes.h"
 #include "PolyHUD.generated.h"
 
 /**
@@ -22,11 +23,13 @@ public:
 
 
 UCLASS(Blueprintable)
-class POLY_API UMarqueeSelectionRequest : public UObject
+class POLY_API UActorSelectionRequest : public UObject
 {
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
+	EActorSelectionRequestMode Mode = EActorSelectionRequestMode::Click;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
 	FVector2D FirstPoint = FVector2D(0, 0);
@@ -47,13 +50,15 @@ public:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Selection")
-	void Init(const FVector2D& InFirstPoint, const FVector2D& InSecondPoint, TSubclassOf<AActor> InFilterClass, bool bInIncludeNonCollider = false, bool bInOnlyEnclosed = false)
+	void Init(const EActorSelectionRequestMode InMode, const FVector2D& InFirstPoint, const FVector2D& InSecondPoint, TSubclassOf<AActor> InFilterClass,
+		bool bInIncludeNonCollider = false, bool bInOnlyEnclosed = false)
 	{
+		this->Mode = InMode;
 		this->FirstPoint = InFirstPoint;
 		this->SecondPoint = InSecondPoint;
 		this->bIncludeNonCollider = bInIncludeNonCollider;
 		this->bOnlyEnclosed = bInOnlyEnclosed;
-		this->FilterClass = InFilterClass;
+		this->FilterClass = InFilterClass.Get();
 	}
 
 
@@ -82,7 +87,7 @@ public:
 
 public:
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FMarqueeSelectionRequestFinished, UMarqueeSelectionRequest*, Request, bool, bSuccess);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FMarqueeSelectionRequestFinished, UActorSelectionRequest*, Request, bool, bSuccess);
 	UPROPERTY(BlueprintAssignable, EditDefaultsOnly, Category = "Default")
 	FMarqueeSelectionRequestFinished Finished;
 

@@ -7,6 +7,18 @@
 #include "UserWidgetTypes.generated.h"
 
 
+
+UENUM(BlueprintType)
+enum class EActorSelectionRequestMode : uint8 {
+	Click = 0,
+	Marquee,
+	// ClickRepeat, 
+	// MarqueeRepeat#
+	// // posssible variant mode to perform consecutive clicks (perhaps with counter to allow specific numbers of selection to be done)
+	//		repeat modes are more complex as it should count selected objects instead of attempts  (auto-retry)
+	//		this might be implementable as a subtype of the oneshot selector type
+};
+
 UENUM(BlueprintType)
 enum class EObjectFieldNativeDataType : uint8 {
 	Object = 0,
