@@ -43,12 +43,12 @@ protected:
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Default")
-	void OnSelectableSelected(ASelectorBase* InSelector, USelectableBase* InSelectable);
-	void OnSelectableSelected_Implementation(ASelectorBase* InSelector, USelectableBase* InSelectable);
+	void OnSelectableSelected(ASelectorBase* InSelector, AActor* InSelectable);
+	void OnSelectableSelected_Implementation(ASelectorBase* InSelector, AActor* InSelectable);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Default")
-	void OnSelectableDeselected(ASelectorBase* InSelector, USelectableBase* InSelectable);
-	void OnSelectableDeselected_Implementation(ASelectorBase* InSelector, USelectableBase* InSelectable);
+	void OnSelectableDeselected(ASelectorBase* InSelector, AActor* InSelectable);
+	void OnSelectableDeselected_Implementation(ASelectorBase* InSelector, AActor* InSelectable);
 	
 	UFUNCTION()
 	void OnSelectorDestroyed(AActor* DestroyedActor);

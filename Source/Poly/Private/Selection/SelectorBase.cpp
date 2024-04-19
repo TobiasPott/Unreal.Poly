@@ -2,7 +2,9 @@
 
 
 #include "Selection/SelectorBase.h"
+#include "Selection/SelectableBase.h"
 #include "Selection/SelectorVisualiserBase.h"
+#include "PolyMeshFunctions/PolyMesh_SelectionFunctions.h"
 #include "Engine/World.h"
 
 // Sets default values
@@ -26,12 +28,12 @@ void ASelectorBase::BeginPlay()
 	this->SetVisualiser(this->VisualiserClass);
 }
 
-bool ASelectorBase::IsSelected_Implementation(USelectableBase* InSelectable)
+bool ASelectorBase::IsSelected_Implementation(AActor* InSelectable)
 {
 	return this->Selection.Contains(InSelectable);
 }
 
-void ASelectorBase::Select_Implementation(USelectableBase* InSelectable, bool& IsSelected)
+void ASelectorBase::Select_Implementation(AActor* InSelectable, bool& IsSelected)
 {
 	if (!Selection.IsEmpty() && IsSingleSelection)
 		this->ClearSelection();
@@ -44,12 +46,15 @@ void ASelectorBase::Select_Implementation(USelectableBase* InSelectable, bool& I
 	Selection.AddUnique(InSelectable);
 	IsSelected = Selection.Contains(InSelectable);
 
+	UPolyMesh_SelectionFunctions::SetMaterialForState(InSelectable, IsSelected, nullptr, 1);
+
+
 	if (IsSelected)
 		if (this->SelectableSelected.IsBound())
 			this->SelectableSelected.Broadcast(this, InSelectable);
 }
 
-void ASelectorBase::Deselect_Implementation(USelectableBase* InSelectable, bool& IsSelected)
+void ASelectorBase::Deselect_Implementation(AActor* InSelectable, bool& IsSelected)
 {
 	if (!Selection.Contains(InSelectable))
 	{
@@ -60,10 +65,7 @@ void ASelectorBase::Deselect_Implementation(USelectableBase* InSelectable, bool&
 	Selection.Remove(InSelectable);
 	IsSelected = Selection.Contains(InSelectable);
 
-	if (IsValid(InSelectable))
-	{
-		InSelectable->ChangeState(IsSelected);
-	}
+	UPolyMesh_SelectionFunctions::SetMaterialForState(InSelectable, IsSelected, nullptr, 1);
 
 	if (!IsSelected)
 		if (this->SelectableDeselected.IsBound())
@@ -71,10 +73,30 @@ void ASelectorBase::Deselect_Implementation(USelectableBase* InSelectable, bool&
 
 }
 
-void ASelectorBase::Replace_Implementation(USelectableBase* InSelectable, bool& IsSelected)
+void ASelectorBase::Replace_Implementation(AActor* InSelectable, bool& IsSelected)
 {
 	this->ClearSelection();
 	this->Select(InSelectable, IsSelected);
+}
+
+void ASelectorBase::SelectAll(const TArray<AActor*>& InSelectables)
+{
+	bool IsSelected = false;
+	for (int i = 0; i < InSelectables.Num(); i++)
+		this->Select(InSelectables[i], IsSelected);
+}
+
+void ASelectorBase::DeselectAll(const TArray<AActor*>& InSelectables)
+{
+	bool IsSelected = false;
+	for (int i = 0; i < InSelectables.Num(); i++)
+		this->Deselect(InSelectables[i], IsSelected);
+}
+
+void ASelectorBase::ReplaceAll(const TArray<AActor*>& InSelectables)
+{
+	this->ClearSelection();
+	this->SelectAll(InSelectables);
 }
 
 void ASelectorBase::ClearSelection_Implementation()
@@ -82,7 +104,7 @@ void ASelectorBase::ClearSelection_Implementation()
 	bool bIsSelected = false;
 	for (int i = Selection.Num() - 1; i >= 0; i--)
 	{
-		USelectableBase* Selected = Selection[i];
+		AActor* Selected = Selection[i];
 		if (IsValid(Selected))
 			this->Deselect(Selected, bIsSelected);
 	}
@@ -90,7 +112,7 @@ void ASelectorBase::ClearSelection_Implementation()
 }
 
 void ASelectorBase::SetVisualiser(TSubclassOf<ASelectorVisualiserBase> NewVisualiserClass)
-{	
+{
 	// ToDo: @tpott: move visualiser creation to SetVisualiser function
 	//		this should handle destruction of previous visualiser and update of new one
 	if (IsValid(NewVisualiserClass))

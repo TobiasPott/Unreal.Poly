@@ -18,13 +18,6 @@ class POLY_API UPolyMesh_SelectionFunctions : public UBlueprintFunctionLibrary
 public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category = "Visualise|Selection")
-	static void SetMaterialForState(AActor* Actor, const bool IsSelected, UMaterialInterface* SelectedMaterial, const uint8 StencilValue = 1);
-
-
-
-	//UFUNCTION(BlueprintCallable, Category = "Visualise|Selection")
-	//static void DestroySelected(const FName SelectorName);
-
-
+	static void SetMaterialForState(AActor* Actor, const bool IsSelected, UMaterialInterface* SelectedMaterial = nullptr, const uint8 StencilValue = 1);
 
 };
