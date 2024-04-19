@@ -25,3 +25,9 @@ void UActorSelectionRequest::SetActors(TArray<AActor*> InActors)
 	for (int i = 0; i < InActors.Num(); i++)
 		Actors.Add(InActors[i]);
 }
+
+void UActorSelectionRequest::SetActor(AActor* InActor)
+{
+	Actors.Reset(1);
+	Actors.Add(InActor);
+}

@@ -40,6 +40,16 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
 	bool bOnlyEnclosed = false;
 
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Trace")
+	TEnumAsByte<ETraceTypeQuery> TraceChannel = ETraceTypeQuery::TraceTypeQuery1;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Trace")
+	bool bTraceComplex = true;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Trace")
+	float TraceDistance = MAX_FLT;
+
+
+
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
 	TSubclassOf<AActor> FilterClass;
 
@@ -56,6 +66,14 @@ public:
 	void Submit() { this->bSubmitted = true; }
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void UpdateSecondPoint(const FVector2D InSecondPoint) { this->SecondPoint = InSecondPoint; }
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void SetTrace(const TEnumAsByte<ETraceTypeQuery> InTraceChannel, bool bInTraceComplex = true, float InTraceDistance = 100000000)
+	{
+		TraceChannel = InTraceChannel;
+		bTraceComplex = bInTraceComplex;
+		TraceDistance = TraceDistance;
+	}
+
 
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Selection")
@@ -72,6 +90,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SetActors(TArray<AActor*> InActors);
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void SetActor(AActor* InActor);
+
 
 
 public:
