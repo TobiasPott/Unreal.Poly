@@ -21,13 +21,18 @@ USelectableBase::USelectableBase()
 	// ...
 }
 
-
-// Called when the game starts
-void USelectableBase::BeginPlay()
+void USelectableBase::SetEnableSelectOnClick(const bool bInEnable)
 {
-	Super::BeginPlay();
-
-	GetOwner()->OnClicked.AddDynamic(this, &USelectableBase::OnActorClicked);
+	if (bInEnable && !this->bEnableSelectOnClicked)
+	{
+		GetOwner()->OnClicked.AddDynamic(this, &USelectableBase::OnActorClicked);
+		this->bEnableSelectOnClicked = true;
+	}
+	else if (!bInEnable)
+	{
+		GetOwner()->OnClicked.RemoveDynamic(this, &USelectableBase::OnActorClicked);
+		this->bEnableSelectOnClicked = false;
+	}
 }
 
 

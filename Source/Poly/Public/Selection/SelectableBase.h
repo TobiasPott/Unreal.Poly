@@ -20,6 +20,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Selectable")
 	bool bEnabled = true;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Selectable")
+	bool bEnableSelectOnClicked = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Selectable")
 	FName SelectorName = USelectorNames::Default;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Selectable")
@@ -28,10 +31,15 @@ public:
 
 
 protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
+
+
 
 public:	
+
+
+	UFUNCTION(BlueprintCallable, Category = "Selectable")
+	void SetEnableSelectOnClick(const bool bInEnable);
+
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Selectable")
 	void OnActorClicked(AActor* TouchedActor, FKey ButtonPressed);
@@ -41,7 +49,6 @@ public:
 	void ChangeState(const bool bIsSelected);
 	virtual void ChangeState_Implementation(const bool bIsSelected);
 
-	// DeterminesOutputType = "InClass", 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Selectable")
 	bool GetSelector(ASelectorBase*& OutActor);
 	virtual bool GetSelector_Implementation(ASelectorBase*& OutActor);

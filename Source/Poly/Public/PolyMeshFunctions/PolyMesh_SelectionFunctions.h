@@ -20,4 +20,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Visualise|Selection")
 	static void SetMaterialForState(AActor* Actor, const bool IsSelected, UMaterialInterface* SelectedMaterial, const uint8 StencilValue = 1);
 
+
+
+	//UFUNCTION(BlueprintCallable, Category = "Visualise|Selection")
+	//static void DestroySelected(const FName SelectorName);
+
+
+
 };

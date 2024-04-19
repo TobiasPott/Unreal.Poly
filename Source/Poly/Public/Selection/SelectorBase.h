@@ -25,7 +25,7 @@ public:
 
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Selectable")
-	bool IsSingleSelection = true;
+	bool IsSingleSelection = false;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Selectable")
 	uint8 Stencil = 1;
 
