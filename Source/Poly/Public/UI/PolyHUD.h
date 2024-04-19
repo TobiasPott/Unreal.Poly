@@ -30,6 +30,8 @@ class POLY_API UActorSelectionRequest : public UObject
 public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
 	EActorSelectionRequestMode Mode = EActorSelectionRequestMode::Click;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
+	bool bSubmitted = false;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
 	FVector2D FirstPoint = FVector2D(0, 0);
@@ -60,6 +62,12 @@ public:
 		this->bOnlyEnclosed = bInOnlyEnclosed;
 		this->FilterClass = InFilterClass.Get();
 	}
+
+
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void Submit() { this->bSubmitted = true; }
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void UpdateSecondPoint(const FVector2D InSecondPoint) { this->SecondPoint = InSecondPoint; }
 
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Selection")
