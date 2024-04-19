@@ -10,7 +10,9 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"Engine",
-				"GeometryFramework"
+				"GeometryFramework",
+				"CoreUObject",
+				"UMG"
 			]
 		}
 	],
@@ -34,5 +36,13 @@
 			"Name": "GeometryScripting",
 			"Enabled": true
 		}
+	],
+	"TargetPlatforms": [
+		"Android",
+		"IOS",
+		"Linux",
+		"LinuxArm64",
+		"Mac",
+		"Windows"
 	]
 }

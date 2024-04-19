@@ -3,6 +3,11 @@
 
 #include "PolyMeshActor.h"
 
+APolyMeshActor::APolyMeshActor()
+{
+	SetCollision(true);
+}
+
 void APolyMeshActor::SetCollision(bool bIsEnabled)
 {
 	UDynamicMeshComponent* DMC = this->GetDynamicMeshComponent();
