@@ -12,6 +12,7 @@ UENUM(BlueprintType)
 enum class EActorSelectionRequestMode : uint8 {
 	Click = 0,
 	Marquee,
+	Trace
 	// ClickRepeat, 
 	// MarqueeRepeat#
 	// // posssible variant mode to perform consecutive clicks (perhaps with counter to allow specific numbers of selection to be done)

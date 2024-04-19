@@ -5,14 +5,15 @@
 #include "Components/BaseDynamicMeshComponent.h"
 
 void UPolyMesh_SelectionFunctions::SetMaterialForState(AActor* Actor, const bool IsSelected, UMaterialInterface* SelectedMaterial, const uint8 StencilValue)
-{	
+{
 	if (!IsValid(Actor))
 		return;
 
 	// dertemine material to use
 	UMaterialInterface* Material = IsSelected ? SelectedMaterial : nullptr;
 
-	TArray<UActorComponent*> Components = Actor->GetComponentsByClass(UMeshComponent::StaticClass());
+	TInlineComponentArray<UActorComponent*> Components;
+	Actor->GetComponents(Components); //s (UMeshComponent::StaticClass());
 	for (int i = 0; i < Components.Num(); i++)
 	{
 		UActorComponent* Comp = Components[i];

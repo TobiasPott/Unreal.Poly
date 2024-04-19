@@ -2,21 +2,30 @@
 
 
 #include "UI/PolyHUD.h"
-#include "GameFramework/HUD.h"
-#include "GenericPlatform/GenericApplication.h"
-#include "Misc/App.h"
-#include "EngineGlobals.h"
-#include "Layout/Margin.h"
-#include "Engine/Engine.h"
-#include "GameFramework/GameModeBase.h"
-#include "EngineUtils.h"
-#include "Engine/Canvas.h"
-#include "Misc/UObjectToken.h"
-#include "UObject/UObjectIterator.h"
-
+#include "BaseFunctions.h"
 
 APolyHUD::APolyHUD()
 {
 
+}
+
+void APolyHUD::QueueRequest(UActorSelectionRequest* Request)
+{
+	this->MarqueeRequests.AddUnique(Request);
+}
+
+void APolyHUD::ProcessRequests()
+{
+	for (int i = this->MarqueeRequests.Num() - 1; i >= 0; i--)
+	{
+		UActorSelectionRequest* Request = this->MarqueeRequests[i];
+		UBaseFunctions::DrawRequest(Request, this);
+
+		if (Request->bSubmitted)
+		{
+			UBaseFunctions::SelectWithSelectionRequest(Request, this);
+			this->MarqueeRequests.Remove(Request);
+		}
+	}
 }
 
