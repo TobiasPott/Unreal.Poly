@@ -5,7 +5,7 @@
 #include "Selection/SelectableBase.h"
 #include "Selection/SelectorBase.h"
 #include "Selection/SelectorSubsystem.h"
-#include "BaseFunctions.h"
+#include "Functions/Poly_BaseFunctions.h"
 #include "Components/BaseDynamicMeshComponent.h"
 #include "Engine/GameEngine.h"
 #include "Kismet/GameplayStatics.h"

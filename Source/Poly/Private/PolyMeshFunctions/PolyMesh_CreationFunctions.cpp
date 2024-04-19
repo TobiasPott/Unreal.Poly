@@ -31,20 +31,3 @@ void UPolyMesh_CreationFunctions::CreateBoxActor(const UObject* WorldContext, AP
 		UGeometryScriptLibrary_MeshTransformFunctions::TranslateMesh(TargetMesh, InOffset);
 	}
 }
-
-
-UCreateBoxAction::UCreateBoxAction()
-{
-	Description = "poly.CreateBox";
-}
-
-bool UCreateBoxAction::Execute_Implementation(bool bEmitRecord)
-{
-	APolyMeshActor* PolyMeshActor;
-	UPolyMesh_CreationFunctions::CreateBoxActor(this, PolyMeshActor, this->Offset, this->Dimensions);
-	if (IsValid(PolyMeshActor))
-		this->Submit();
-	else
-		this->Discard();
-	return IsValid(PolyMeshActor);
-}

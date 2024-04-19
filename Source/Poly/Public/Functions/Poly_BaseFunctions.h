@@ -5,13 +5,13 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "UI/ActorSelectionRequest.h"
-#include "BaseFunctions.generated.h"
+#include "Poly_BaseFunctions.generated.h"
 
 /**
  *
  */
 UCLASS()
-class POLY_API UBaseFunctions : public UBlueprintFunctionLibrary
+class POLY_API UPoly_BaseFunctions : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 

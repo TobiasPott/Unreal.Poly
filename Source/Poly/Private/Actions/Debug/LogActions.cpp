@@ -3,12 +3,6 @@
 
 #include "Actions/Debug/LogActions.h"
 
-
-ULogAction::ULogAction()
-{
-	Description = "poly.Log";
-}
-
 bool ULogAction::Execute_Implementation(bool bEmitRecord)
 {
 	if (this->LogCategory == EPolyLogCategory::None)
@@ -35,11 +29,6 @@ bool ULogAction::Execute_Implementation(bool bEmitRecord)
 
 	this->Submit();
 	return true;
-}
-
-UPrintAction::UPrintAction()
-{
-	Description = "poly.Print";
 }
 
 bool UPrintAction::Execute_Implementation(bool bEmitRecord)

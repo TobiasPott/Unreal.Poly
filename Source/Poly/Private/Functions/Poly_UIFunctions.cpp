@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "UIFunctions.h"
+#include "Functions/Poly_UIFunctions.h"
 #include "Kismet/GameplayStatics.h"
 
 
-bool UUIFunctions::GetMousePosition(const UObject* WorldContext, const int32 PlayerIndex, FVector2D& OutPosition)
+bool UPoly_UIFunctions::GetMousePosition(const UObject* WorldContext, const int32 PlayerIndex, FVector2D& OutPosition)
 {
 	double X;
 	double Y;
@@ -14,13 +14,13 @@ bool UUIFunctions::GetMousePosition(const UObject* WorldContext, const int32 Pla
 	return bSuccess;
 }
 
-void UUIFunctions::GetRectOriginAndSize(const FVector2D FirstPoint, const FVector2D SecondPoint, FVector2D& OutOrigin, FVector2D& OutSize)
+void UPoly_UIFunctions::GetRectOriginAndSize(const FVector2D FirstPoint, const FVector2D SecondPoint, FVector2D& OutOrigin, FVector2D& OutSize)
 {
 	OutOrigin = FVector2D(FMath::Min(FirstPoint.X, SecondPoint.X), FMath::Min(FirstPoint.Y, SecondPoint.Y));
 	OutSize = (SecondPoint - FirstPoint).GetAbs();
 }
 
-void UUIFunctions::SelectWithRectSelectionRequest(UActorSelectionRequest* Request, AHUD* HUD)
+void UPoly_UIFunctions::SelectWithSelectionRequest(UActorSelectionRequest* Request, AHUD* HUD)
 {
 	switch (Request->Mode)
 	{
@@ -39,9 +39,9 @@ void UUIFunctions::SelectWithRectSelectionRequest(UActorSelectionRequest* Reques
 
 			UWorld* World = GEngine->GetWorldFromContextObject(HUD, EGetWorldErrorMode::LogAndReturnNull);
 			FHitResult OutHit;
-			const  bool bHit = World ? World->LineTraceSingleByChannel(OutHit, Location, Location + (Dir * Request->TraceDistance), CollisionChannel, Params) : false;
+			const bool bHit = World ? World->LineTraceSingleByChannel(OutHit, Location, Location + (Dir * Request->TraceDistance), CollisionChannel, Params) : false;
 
-			if (bHit)
+			if (bHit && OutHit.GetActor()->IsA(Request->FilterClass))
 				Request->SetActor(OutHit.GetActor());
 		}
 	}
@@ -60,7 +60,7 @@ void UUIFunctions::SelectWithRectSelectionRequest(UActorSelectionRequest* Reques
 	Request->OnFinished();
 }
 
-void UUIFunctions::DrawRequest(UActorSelectionRequest* Request, AHUD* HUD)
+void UPoly_UIFunctions::DrawRequest(UActorSelectionRequest* Request, AHUD* HUD)
 {
 	FVector2D Origin;
 	FVector2D Size;

@@ -39,6 +39,8 @@ public:
 
 	FString GetDescription() override { return Action->GetDescription(); };
 
+	FString GetShortName() override { return Action->GetShortName(); };
+
 	UActionRef* GetUnique() override;
 
 	bool Execute_Implementation(bool bEmitRecord) override;

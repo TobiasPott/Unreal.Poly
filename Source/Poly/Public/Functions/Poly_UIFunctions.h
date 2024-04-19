@@ -5,13 +5,13 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "UI/ActorSelectionRequest.h"
-#include "UIFunctions.generated.h"
+#include "Poly_UIFunctions.generated.h"
 
 /**
  *
  */
 UCLASS()
-class POLY_API UUIFunctions : public UBlueprintFunctionLibrary
+class POLY_API UPoly_UIFunctions : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
@@ -26,7 +26,7 @@ public:
 
 
 	UFUNCTION(BlueprintCallable, Category = "Poly|Base")
-	static void SelectWithRectSelectionRequest(UActorSelectionRequest* Request, AHUD* HUD);
+	static void SelectWithSelectionRequest(UActorSelectionRequest* Request, AHUD* HUD);
 	UFUNCTION(BlueprintCallable, Category = "Poly|Base")
 	static void DrawRequest(UActorSelectionRequest* Request, AHUD* HUD);
 

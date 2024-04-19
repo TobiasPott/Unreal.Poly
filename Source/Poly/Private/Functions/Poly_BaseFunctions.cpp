@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BaseFunctions.h"
+#include "Functions/Poly_BaseFunctions.h"
 #include "Kismet/GameplayStatics.h"
 
-void UBaseFunctions::GetOrCreateActor(const UObject* WorldContext, TSubclassOf<AActor> InClass, AActor*& OutActor)
+void UPoly_BaseFunctions::GetOrCreateActor(const UObject* WorldContext, TSubclassOf<AActor> InClass, AActor*& OutActor)
 {
 	// https://benui.ca/unreal/ufunction/
 

@@ -26,6 +26,8 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Default")
 	FString Description = "poly.Action";
+	UPROPERTY(VisibleAnywhere, Category = "Default")
+	FString ShortName = "Action";
 
 
 public:
@@ -37,6 +39,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Default")
 	virtual FString GetDescription() { return Description; };
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Default")
+	virtual FString GetShortName() { return ShortName; };
 
 	UFUNCTION(BlueprintCallable, Category = "Default")
 	virtual UActionRef* GetUnique();

@@ -18,7 +18,11 @@ class POLY_API ULogAction : public UActionBase
 
 public:
 	// Sets default values for this actor's properties
-	ULogAction();
+	ULogAction()
+	{
+		Description = "poly.Log";
+		ShortName = "Log";
+	}
 
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
@@ -39,7 +43,12 @@ class POLY_API UPrintAction : public UActionBase
 
 public:
 	// Sets default values for this actor's properties
-	UPrintAction();
+	UPrintAction()
+	{
+		Description = "poly.Print";
+		ShortName = "Print";
+	}
+
 
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
