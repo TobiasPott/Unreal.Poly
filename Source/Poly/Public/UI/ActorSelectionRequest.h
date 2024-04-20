@@ -19,6 +19,8 @@
 #include "ActorSelectionRequest.generated.h"
 
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FActorSelectionRequestFinished, class UActorSelectionRequest*, Request, bool, bSuccess);
+
 UCLASS(Blueprintable)
 class POLY_API UActorSelectionRequest : public UObject
 {
@@ -97,8 +99,7 @@ public:
 
 public:
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FMarqueeSelectionRequestFinished, UActorSelectionRequest*, Request, bool, bSuccess);
 	UPROPERTY(BlueprintAssignable, EditDefaultsOnly, Category = "Default")
-	FMarqueeSelectionRequestFinished Finished;
+	FActorSelectionRequestFinished Finished;
 
 };

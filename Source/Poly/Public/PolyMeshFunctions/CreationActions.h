@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Actions/ActionBase.h"
-#include "PolyMesh_CreationActions.generated.h"
+#include "CreationActions.generated.h"
 
 /**
  *
