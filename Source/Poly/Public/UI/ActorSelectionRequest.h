@@ -55,7 +55,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
 	TSubclassOf<AActor> FilterClass;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
+	UPROPERTY(VisibleAnywhere, Category = "Selection")
 	TArray<AActor*> Actors;
 
 
@@ -95,6 +95,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SetActor(AActor* InActor);
 
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	TArray<AActor*>& GetActors() { return this->Actors; };
 
 
 public:
