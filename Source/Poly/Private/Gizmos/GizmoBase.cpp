@@ -133,6 +133,19 @@ void AGizmoBase::RegisterDomainComponent(USceneComponent* Component
 		UE_LOG(LogGizmo, Warning, TEXT("Failed to Register Component! Component is not a Shape Component %s"), *Component->GetName());
 }
 
+EGizmoDomain AGizmoBase::GetGizmoDomainForHit()
+{
+	APlayerController* PC = UGameplayStatics::GetPlayerController(this, this->PlayerIndex);
+	const TArray < TEnumAsByte <EObjectTypeQuery>> ObjectTypes = { EObjectTypeQuery::ObjectTypeQuery7 };
+
+	FHitResult HitResult;
+	if (PC->GetHitResultUnderCursorForObjects(ObjectTypes, true, HitResult))
+	{
+		return GetTransformationDomain(HitResult.GetComponent());
+	}
+	return EGizmoDomain::TD_None;
+}
+
 void AGizmoBase::SetInputEnabled(bool bInEnabled)
 {
 	if (bInEnabled)

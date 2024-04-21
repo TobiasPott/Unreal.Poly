@@ -26,6 +26,9 @@ public:
 		, EGizmoDomain Domain
 		, float SnappingValue) const override;
 
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
+	FGizmoRotateTransformDelegate RotationChanged;
+	
 protected:
 
 	//Rotation has a special way of Handling the Scene Scaling and that is, that its AXis need to face the Camera as well!

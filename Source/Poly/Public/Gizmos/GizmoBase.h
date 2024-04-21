@@ -8,6 +8,10 @@
 #include "GizmoBase.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FGizmoStateUpdatedDelegate, EGizmoType, GizmoType, bool, bTransformInProgress, EGizmoDomain, CurrentDomain);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGizmoDeltaTransformDelegate, bool, bEnded, FTransform, DeltaTransform);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGizmoTranslateTransformDelegate, bool, bEnded, FVector, DeltaTranslation);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGizmoScaleTransformDelegate, bool, bEnded, FVector, DeltaScale);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGizmoRotateTransformDelegate, bool, bEnded, FRotator, DeltaRotation);
 
 UCLASS()
 class POLY_API AGizmoBase : public AActor
@@ -77,6 +81,9 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Gizmo")
 	void RegisterDomainComponent(class USceneComponent* Component, EGizmoDomain Domain);
 
+	UFUNCTION(BlueprintCallable, Category = "Gizmo")
+	EGizmoDomain GetGizmoDomainForHit();
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "Gizmo")
 	void SetInputEnabled(bool bInEnabled = true);
@@ -94,6 +101,9 @@ public:
 	 */
 	UPROPERTY(BlueprintAssignable, Category = "Gizmo")
 	FGizmoStateUpdatedDelegate OnGizmoStateChange;
+
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
+	FGizmoDeltaTransformDelegate TransformChanged;
 
 protected:
 
@@ -131,7 +141,12 @@ protected:
 
 	/* The Radius of the Arc (FOV) that the Camera covers. The bigger the value, the smaller the Gizmo would look. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gizmo")
-	float CameraArcRadius;
+	float CameraArcRadius;	
+	
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default")
+	EGizmoDomain ActiveDomain = EGizmoDomain::TD_None;
+
 
 private:
 	// Maps the Box Component to their Respective Domain
