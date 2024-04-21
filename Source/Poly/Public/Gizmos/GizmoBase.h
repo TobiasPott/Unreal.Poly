@@ -75,14 +75,14 @@ protected:
 	 * Adds or modifies an entry to the DomainMap.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Gizmo")
-	void RegisterDomainComponent(class USceneComponent* Component
-		, EGizmoDomain Domain);
+	void RegisterDomainComponent(class USceneComponent* Component, EGizmoDomain Domain);
 
 public:
+	UFUNCTION(BlueprintCallable, Category = "Gizmo")
+	void SetInputEnabled(bool bInEnabled = true);
 
 	UFUNCTION(BlueprintCallable, Category = "Gizmo")
-	void SetTransformProgressState(bool bInProgress
-		, EGizmoDomain CurrentDomain);
+	void SetTransformProgressState(bool bInProgress, EGizmoDomain CurrentDomain);
 
 	UFUNCTION(BlueprintCallable, Category = "Gizmo")
 	bool GetTransformProgressState() const { return bTransformInProgress; }
@@ -119,11 +119,13 @@ protected:
 	class UBoxComponent* Z_AxisBox;
 
 	// Used to calculate the distance the rays have travelled
-	UPROPERTY()
 	FVector PreviousRayStartPoint;
-	UPROPERTY()
 	FVector PreviousRayEndPoint;
 
+	/* The Radius of the Arc (FOV) that the Camera covers. The bigger the value, the smaller the Gizmo would look. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Gizmo")
+	int32 PlayerIndex = 0;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gizmo")
 	float GizmoSceneScaleFactor;
 

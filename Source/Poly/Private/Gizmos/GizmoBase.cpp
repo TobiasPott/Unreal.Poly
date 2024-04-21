@@ -6,6 +6,7 @@
 #include "Components/ShapeComponent.h"
 #include "Components/BoxComponent.h"
 #include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AGizmoBase::AGizmoBase()
@@ -130,6 +131,14 @@ void AGizmoBase::RegisterDomainComponent(USceneComponent* Component
 		DomainMap.Add(ShapeComponent, Domain);
 	else
 		UE_LOG(LogGizmo, Warning, TEXT("Failed to Register Component! Component is not a Shape Component %s"), *Component->GetName());
+}
+
+void AGizmoBase::SetInputEnabled(bool bInEnabled)
+{
+	if (bInEnabled)
+		this->EnableInput(UGameplayStatics::GetPlayerController(this, this->PlayerIndex));
+	else
+		this->DisableInput(UGameplayStatics::GetPlayerController(this, this->PlayerIndex));
 }
 
 void AGizmoBase::SetTransformProgressState(bool bInProgress
