@@ -12,25 +12,25 @@ FVector ARotateGizmo::CalculateGizmoSceneScale(const FVector& ReferenceLocation
 {
 	FVector calculatedScale = Super::CalculateGizmoSceneScale(ReferenceLocation, ReferenceLookDirection, FieldOfView);
 	FVector currentRotationViewScale = PreviousRotationViewScale;
-	
+
 	bool bInProgress = GetTransformProgressState();
 	if (!bInProgress)
 	{
 		FVector deltaLocation = ReferenceLocation - GetActorLocation();
-	
+
 		currentRotationViewScale = FVector(
-			(FVector::DotProduct(GetActorForwardVector(), deltaLocation)	>= 0) ? 1.f : -1.f,
-			(FVector::DotProduct(GetActorRightVector()	, deltaLocation)	>= 0) ? 1.f : -1.f,
-			(FVector::DotProduct(GetActorUpVector()		, deltaLocation)	>= 0) ? 1.f : -1.f
+			(FVector::DotProduct(GetActorForwardVector(), deltaLocation) >= 0) ? 1.f : -1.f,
+			(FVector::DotProduct(GetActorRightVector(), deltaLocation) >= 0) ? 1.f : -1.f,
+			(FVector::DotProduct(GetActorUpVector(), deltaLocation) >= 0) ? 1.f : -1.f
 		);
 
 		PreviousRotationViewScale = currentRotationViewScale;
 	}
-	
-	
+
+
 	calculatedScale *= currentRotationViewScale;
 
-	
+
 
 
 
@@ -38,7 +38,7 @@ FVector ARotateGizmo::CalculateGizmoSceneScale(const FVector& ReferenceLocation
 }
 
 FTransform ARotateGizmo::GetDeltaTransform(const FVector& LookingVector, const FVector& RayStartPoint
-	, const FVector& RayEndPoint,  EGizmoDomain Domain)
+	, const FVector& RayEndPoint, EGizmoDomain Domain)
 {
 	FTransform deltaTransform;
 	deltaTransform.SetScale3D(FVector::ZeroVector);
@@ -49,7 +49,7 @@ FTransform ARotateGizmo::GetDeltaTransform(const FVector& LookingVector, const F
 
 		switch (Domain)
 		{
-		case EGizmoDomain::TD_X_Axis:planeNormal = GetActorForwardVector();break;
+		case EGizmoDomain::TD_X_Axis:planeNormal = GetActorForwardVector(); break;
 		case EGizmoDomain::TD_Y_Axis: planeNormal = GetActorRightVector(); break;
 		case EGizmoDomain::TD_Z_Axis: planeNormal = GetActorUpVector(); break;
 		}
@@ -68,9 +68,9 @@ FTransform ARotateGizmo::GetDeltaTransform(const FVector& LookingVector, const F
 		//determining direction of Angle
 		float factor = (FVector::DotProduct(FVector::CrossProduct(deltaLocation, prevDeltaLocation), planeNormal)) >= 0.f ?
 			-1.f : 1.f;
-		
+
 		FVector diffOfDeltas = deltaLocation - prevDeltaLocation;
-		
+
 		deltaLocation.Normalize();
 		prevDeltaLocation.Normalize();
 
@@ -80,6 +80,14 @@ FTransform ARotateGizmo::GetDeltaTransform(const FVector& LookingVector, const F
 		FQuat rotQuat = FQuat(planeNormal, angle);
 		deltaTransform.SetRotation(rotQuat);
 
+		// Call 'Changed' events
+		if (!deltaTransform.RotationEquals(FTransform::Identity, 0.000001))
+		{
+			if (TransformChanged.IsBound())
+				TransformChanged.Broadcast(false, deltaTransform);
+			if (RotationChanged.IsBound())
+				RotationChanged.Broadcast(false, deltaTransform.Rotator());
+		}
 	}
 
 	UpdateRays(RayStartPoint, RayEndPoint);
@@ -96,9 +104,9 @@ FTransform ARotateGizmo::GetSnappedTransform(FTransform& outCurrentAccumulatedTr
 
 	FTransform result = DeltaTransform;
 
-	FRotator addedRotation = outCurrentAccumulatedTransform.GetRotation().Rotator() 
+	FRotator addedRotation = outCurrentAccumulatedTransform.GetRotation().Rotator()
 		+ DeltaTransform.GetRotation().Rotator();
-	
+
 	FRotator snappedRotation = addedRotation.GridSnap(FRotator(SnappingValue));
 	result.SetRotation(snappedRotation.Quaternion());
 	outCurrentAccumulatedTransform.SetRotation((addedRotation - snappedRotation).Quaternion());

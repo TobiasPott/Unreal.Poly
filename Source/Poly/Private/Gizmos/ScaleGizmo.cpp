@@ -122,6 +122,14 @@ FTransform AScaleGizmo::GetDeltaTransform(const FVector& LookingVector
 		deltaLocation = deltaLocation.ProjectOnTo(targetDirection);
 		deltaTransform.SetScale3D(deltaLocation * ScalingFactor);
 
+		// Call 'Changed' events
+		if (!deltaTransform.Scale3DEquals(FTransform::Identity, 0.000001))
+		{
+			if (TransformChanged.IsBound())
+				TransformChanged.Broadcast(false, deltaTransform);
+			if (ScaleChanged.IsBound())
+				ScaleChanged.Broadcast(false, deltaTransform.GetScale3D());
+		}
 	}
 
 	UpdateRays(RayStartPoint, RayEndPoint);

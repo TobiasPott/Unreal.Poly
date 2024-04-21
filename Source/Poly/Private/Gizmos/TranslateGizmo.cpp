@@ -110,6 +110,15 @@ FTransform ATranslateGizmo::GetDeltaTransform(const FVector& LookingVector
 		}
 
 		deltaTransform.SetLocation(deltaLocation);
+
+		// Call 'Changed' events
+		if (!deltaTransform.TranslationEquals(FTransform::Identity, 0.000001))
+		{
+			if (TransformChanged.IsBound())
+				TransformChanged.Broadcast(false, deltaTransform);
+			if (TranslationChanged.IsBound())
+				TranslationChanged.Broadcast(false, deltaLocation);
+		}
 	}
 
 
