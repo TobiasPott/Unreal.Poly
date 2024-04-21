@@ -75,6 +75,7 @@ protected:
 
 	// Calculates the Gizmo Scene Scale. This can be overriden (e.g. by Rotation Gizmo)
 	// for additional/optional scaling properties.
+	UFUNCTION(BlueprintCallable, Category = "Gizmo")
 	virtual FVector CalculateGizmoSceneScale(const FVector& ReferenceLocation, const FVector& ReferenceLookDirection, float FieldOfView);
 
 	// should be called at the start of the GetDeltaTransformation Implemenation
@@ -160,6 +161,8 @@ protected:
 	int32 PlayerIndex = 0;
 	UPROPERTY()
 	FName InputAction = EKeys::LeftMouseButton.GetFName();
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Gizmo")
+	bool bEnableScreenSpaceScale = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gizmo")
 	float GizmoSceneScaleFactor;
