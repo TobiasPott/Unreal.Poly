@@ -14,6 +14,12 @@ bool UPoly_UIFunctions::GetMousePosition(const UObject* WorldContext, const int3
 	return bSuccess;
 }
 
+bool UPoly_UIFunctions::GetMouseRay(const UObject* WorldContext, const int32 PlayerIndex, FVector& WorldPosition, FVector& WorldDirection)
+{
+	APlayerController* PC = UGameplayStatics::GetPlayerController(WorldContext, PlayerIndex);
+	return PC->DeprojectMousePositionToWorld(WorldPosition, WorldDirection);
+}
+
 void UPoly_UIFunctions::GetRectOriginAndSize(const FVector2D FirstPoint, const FVector2D SecondPoint, FVector2D& OutOrigin, FVector2D& OutSize)
 {
 	OutOrigin = FVector2D(FMath::Min(FirstPoint.X, SecondPoint.X), FMath::Min(FirstPoint.Y, SecondPoint.Y));

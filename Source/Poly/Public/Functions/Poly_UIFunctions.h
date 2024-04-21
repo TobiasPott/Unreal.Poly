@@ -21,6 +21,10 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Poly|Base", meta = (WorldContext = "WorldContext"))
 	static bool GetMousePosition(const UObject* WorldContext, const int32 PlayerIndex, FVector2D& OutPosition);
 
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Poly|Base", meta = (WorldContext = "WorldContext"))
+	static bool GetMouseRay(const UObject* WorldContext, const int32 PlayerIndex, FVector& WorldPosition, FVector& WorldDirection);
+
+
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Poly|Base")
 	static void GetRectOriginAndSize(const FVector2D FirstPoint, const FVector2D SecondPoint, FVector2D& OutOrigin, FVector2D& OutSize);
 
