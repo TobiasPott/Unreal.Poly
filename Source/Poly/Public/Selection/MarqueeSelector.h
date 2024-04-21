@@ -38,7 +38,7 @@ protected:
 
 	// Filter values
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Filter")
-	EActorSelectionRequestMode MarqueeMode;
+	EActorSelectionRequestMode MarqueeMode = EActorSelectionRequestMode::Click;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Filter")
 	TSubclassOf<AActor> FilterClass;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Filter")

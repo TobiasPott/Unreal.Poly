@@ -30,10 +30,6 @@ FVector ARotateGizmo::CalculateGizmoSceneScale(const FVector& ReferenceLocation
 
 	calculatedScale *= currentRotationViewScale;
 
-
-
-
-
 	return calculatedScale;
 }
 

@@ -47,6 +47,21 @@ AGizmoBase::AGizmoBase()
 
 }
 
+// Called when the game starts or when spawned
+void AGizmoBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	this->EnableInput(UGameplayStatics::GetPlayerController(this, this->PlayerIndex));
+
+	FInputActionBinding& IKA_Pressed = InputComponent->BindAction(InputAction, EInputEvent::IE_Pressed, this, &AGizmoBase::OnInputKey_Pressed);
+	IKA_Pressed.bConsumeInput = false;
+	IKA_Pressed.bExecuteWhenPaused = true;
+	FInputActionBinding& IKA_Released = InputComponent->BindAction(InputAction, EInputEvent::IE_Released, this, &AGizmoBase::OnInputKey_Released);
+	IKA_Released.bConsumeInput = false;
+	IKA_Released.bExecuteWhenPaused = true;
+
+}
 void AGizmoBase::UpdateGizmoSpace(ETransformSpace SpaceType)
 {
 	switch (SpaceType)
@@ -182,6 +197,22 @@ FTransform AGizmoBase::UpdateDeltaTransform(const bool bEndTransform, const floa
 	{
 		this->ActiveDomain = EGizmoDomain::TD_None;
 		this->SetTransformProgressState(false, EGizmoDomain::TD_None);
+
+		if (!Delta.Equals(FTransform::Identity, 0.000001))
+		{
+			if (TransformChanged.IsBound())
+				TransformChanged.Broadcast(true, Delta);
+
+			if (TranslationChanged.IsBound() && !Delta.TranslationEquals(FTransform::Identity, 0.000001))
+				TranslationChanged.Broadcast(true, Delta.GetLocation());
+
+			if (RotationChanged.IsBound() && !Delta.RotationEquals(FTransform::Identity, 0.000001))
+				RotationChanged.Broadcast(true, Delta.Rotator());
+
+			if (ScaleChanged.IsBound() && !Delta.Scale3DEquals(FTransform::Identity, 0.000001))
+				ScaleChanged.Broadcast(true, Delta.GetScale3D());
+		}
+
 	}
 	return Delta;
 }
@@ -239,22 +270,30 @@ void AGizmoBase::SetEnableConsumeInput(const bool bInEnable)
 
 }
 
-//
-//void AGizmoBase::OnInputKey_Pressed(FKey InKey)
-//{
-//
-//}
-//
-//void AGizmoBase::OnInputKey_Released(FKey InKey)
-//{
-//}
+void AGizmoBase::OnInputKey_Pressed_Implementation(FKey InKey)
+{
+	bool bSuccess;
+	this->ActiveDomain = this->GetDomainByChannel(ETraceTypeQuery::TraceTypeQuery3, bSuccess);
+	this->SetEnableConsumeInput(bSuccess);
+
+	this->SetTransformProgressState(true, this->ActiveDomain);
+	this->UpdateDeltaTransform(false);
+}
+
+void AGizmoBase::OnInputKey_Released_Implementation(FKey InKey)
+{
+	this->SetEnableConsumeInput(false);
+	this->UpdateDeltaTransform(true);
+}
 
 void AGizmoBase::OnMouseX(float AxisValue)
 {
+	// Only there to consume mouse axis input before pawn or player controller do for camera (i.e.: lock camera)
 }
 
 void AGizmoBase::OnMouseY(float AxisValue)
 {
+	// Only there to consume mouse axis input before pawn or player controller do for camera (i.e.: lock camera)
 }
 
 void AGizmoBase::OnMouse2D_Implementation(FVector AxisValue)

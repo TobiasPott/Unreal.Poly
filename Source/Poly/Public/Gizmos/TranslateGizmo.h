@@ -30,8 +30,6 @@ public:
 		, EGizmoDomain Domain
 		, float SnappingValue) const override;
 
-	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
-	FGizmoTranslateTransformDelegate TranslationChanged;
 
 protected:
 

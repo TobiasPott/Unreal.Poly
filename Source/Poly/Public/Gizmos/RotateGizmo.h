@@ -25,9 +25,6 @@ public:
 		, const FTransform& DeltaTransform
 		, EGizmoDomain Domain
 		, float SnappingValue) const override;
-
-	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
-	FGizmoRotateTransformDelegate RotationChanged;
 	
 protected:
 

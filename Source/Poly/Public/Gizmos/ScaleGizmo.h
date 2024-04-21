@@ -38,9 +38,6 @@ public:
 		, EGizmoDomain Domain
 		, float SnappingValue) const override;
 
-	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
-	FGizmoScaleTransformDelegate ScaleChanged;
-
 protected:
 
 	//To see how much an Unreal Unit affects Scaling (e.g. how powerful the mouse scales the object!)

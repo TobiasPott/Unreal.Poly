@@ -65,6 +65,9 @@ public:
 
 protected:
 
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
 	// Calculates the Gizmo Scene Scale. This can be overriden (e.g. by Rotation Gizmo)
 	// for additional/optional scaling properties.
 	virtual FVector CalculateGizmoSceneScale(const FVector& ReferenceLocation, const FVector& ReferenceLookDirection, float FieldOfView);
@@ -113,6 +116,15 @@ public:
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
 	FGizmoDeltaTransformDelegate TransformChanged;
 
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
+	FGizmoTranslateTransformDelegate TranslationChanged;
+
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
+	FGizmoRotateTransformDelegate RotationChanged;
+
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
+	FGizmoScaleTransformDelegate ScaleChanged;
+
 protected:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Gizmo")
@@ -143,6 +155,8 @@ protected:
 	/* The Radius of the Arc (FOV) that the Camera covers. The bigger the value, the smaller the Gizmo would look. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Gizmo")
 	int32 PlayerIndex = 0;
+	UPROPERTY()
+	FName InputAction = EKeys::LeftMouseButton.GetFName();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gizmo")
 	float GizmoSceneScaleFactor;
@@ -174,10 +188,12 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Gizmo")
 	void SetEnableConsumeInput(const bool bInEnable);
 
-	//UFUNCTION()
-	//virtual void OnInputKey_Pressed(FKey InKey);
-	//UFUNCTION()
-	//virtual void OnInputKey_Released(FKey InKey);
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Gizmo")
+	void OnInputKey_Pressed(FKey InKey);
+	virtual void OnInputKey_Pressed_Implementation(FKey InKey);
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Gizmo")
+	void OnInputKey_Released(FKey InKey);
+	virtual void OnInputKey_Released_Implementation(FKey InKey);
 	UFUNCTION()
 	virtual void OnMouseX(float AxisValue);
 	UFUNCTION()
