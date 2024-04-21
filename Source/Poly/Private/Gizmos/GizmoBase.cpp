@@ -2,6 +2,7 @@
 
 
 #include "Gizmos/GizmoBase.h"
+#include "Functions/Poly_UIFunctions.h"
 #include "Components/SceneComponent.h"
 #include "Components/ShapeComponent.h"
 #include "Components/BoxComponent.h"
@@ -144,6 +145,27 @@ EGizmoDomain AGizmoBase::GetGizmoDomainForHit()
 		return GetTransformationDomain(HitResult.GetComponent());
 	}
 	return EGizmoDomain::TD_None;
+}
+
+FTransform AGizmoBase::UpdateDeltaTransform(const bool bEndTransform, const float MaxDistance)
+{
+
+	FTransform Delta = FTransform::Identity;
+	if (this->ActiveDomain != EGizmoDomain::TD_None)
+	{
+		const FVector LookVector = UGameplayStatics::GetPlayerCameraManager(this, this->PlayerIndex)->GetActorForwardVector();
+		FVector Start, End;
+		if (UPoly_UIFunctions::GetMouseRaySegment(this, this->PlayerIndex, Start, End, MaxDistance))
+		{
+			Delta = GetDeltaTransform(LookVector, Start, End, this->ActiveDomain);
+		}
+	}
+	if (bEndTransform)
+	{
+		this->ActiveDomain = EGizmoDomain::TD_None;
+		this->SetTransformProgressState(false, EGizmoDomain::TD_None);
+	}
+	return Delta;
 }
 
 void AGizmoBase::SetInputEnabled(bool bInEnabled)

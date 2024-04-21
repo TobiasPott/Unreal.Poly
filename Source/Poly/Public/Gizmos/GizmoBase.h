@@ -84,6 +84,10 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Gizmo")
 	EGizmoDomain GetGizmoDomainForHit();
 
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category = "Gizmo")
+	FTransform UpdateDeltaTransform(const bool bEndTransform, const float MaxDistance = 10000);
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "Gizmo")
 	void SetInputEnabled(bool bInEnabled = true);
