@@ -18,6 +18,11 @@ class POLY_API AGizmoBase : public AActor
 {
 	GENERATED_BODY()
 
+
+	// ToDo: @tpott: Expose SnappedDeltaTransform as Changed events 
+	//				This should be solved by only firing the events when the snapped GetDeltaTransform has a value
+
+
 public:
 	// Sets default values for this actor's properties
 	AGizmoBase();
@@ -96,8 +101,6 @@ protected:
 	FTransform UpdateDeltaTransform(const bool bEndTransform, const float MaxDistance = 10000);
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "Gizmo")
-	void SetInputEnabled(bool bInEnabled = true);
 
 	UFUNCTION(BlueprintCallable, Category = "Gizmo")
 	void SetTransformProgressState(bool bInProgress, EGizmoDomain CurrentDomain);

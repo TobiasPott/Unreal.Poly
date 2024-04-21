@@ -217,14 +217,6 @@ FTransform AGizmoBase::UpdateDeltaTransform(const bool bEndTransform, const floa
 	return Delta;
 }
 
-void AGizmoBase::SetInputEnabled(bool bInEnabled)
-{
-	if (bInEnabled)
-		this->EnableInput(UGameplayStatics::GetPlayerController(this, this->PlayerIndex));
-	else
-		this->DisableInput(UGameplayStatics::GetPlayerController(this, this->PlayerIndex));
-}
-
 void AGizmoBase::SetTransformProgressState(bool bInProgress, EGizmoDomain CurrentDomain)
 {
 	if (bInProgress != bTransformInProgress)
