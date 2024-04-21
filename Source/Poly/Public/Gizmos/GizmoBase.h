@@ -51,7 +51,7 @@ public:
 	virtual FTransform GetSnappedTransform(FTransform& outCurrentAccumulatedTransform
 		, const FTransform& DeltaTransform
 		, EGizmoDomain Domain
-		, float SnappingValue) const ;
+		, float SnappingValue) const;
 
 	// Snapped Transform per Component is used when we need Absolute Snapping
 	// For Scaling, Absolute Snapping is needed and not delta ones 
@@ -59,7 +59,9 @@ public:
 	virtual FTransform GetSnappedTransformPerComponent(const FTransform& OldComponentTransform
 		, const FTransform& NewComponentTransform
 		, EGizmoDomain Domain
-		, float SnappingValue) const {	return NewComponentTransform; }
+		, float SnappingValue) const {
+		return NewComponentTransform;
+	}
 
 protected:
 
@@ -82,7 +84,9 @@ protected:
 	void RegisterDomainComponent(class USceneComponent* Component, EGizmoDomain Domain);
 
 	UFUNCTION(BlueprintCallable, Category = "Gizmo")
-	EGizmoDomain GetGizmoDomainForHit();
+	EGizmoDomain GetDomainByTypes(const TArray<TEnumAsByte<EObjectTypeQuery>>& ObjectTypes, bool& bSuccess);
+	UFUNCTION(BlueprintCallable, Category = "Gizmo")
+	EGizmoDomain GetDomainByChannel(const ETraceTypeQuery Channel, bool& bSuccess);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category = "Gizmo")
@@ -139,14 +143,14 @@ protected:
 	/* The Radius of the Arc (FOV) that the Camera covers. The bigger the value, the smaller the Gizmo would look. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Gizmo")
 	int32 PlayerIndex = 0;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gizmo")
 	float GizmoSceneScaleFactor;
 
 	/* The Radius of the Arc (FOV) that the Camera covers. The bigger the value, the smaller the Gizmo would look. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gizmo")
-	float CameraArcRadius;	
-	
+	float CameraArcRadius;
+
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default")
 	EGizmoDomain ActiveDomain = EGizmoDomain::TD_None;
@@ -163,5 +167,25 @@ protected:
 
 	//bool to check whether the PrevRay vectors have been set
 	bool bIsPrevRayValid;
+
+protected:
+
+
+	UFUNCTION(BlueprintCallable, Category = "Gizmo")
+	void SetEnableConsumeInput(const bool bInEnable);
+
+	//UFUNCTION()
+	//virtual void OnInputKey_Pressed(FKey InKey);
+	//UFUNCTION()
+	//virtual void OnInputKey_Released(FKey InKey);
+	UFUNCTION()
+	virtual void OnMouseX(float AxisValue);
+	UFUNCTION()
+	virtual void OnMouseY(float AxisValue);
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Gizmo")
+	void OnMouse2D(FVector AxisValue);
+	virtual void OnMouse2D_Implementation(FVector AxisValue);
+
+
 };
 

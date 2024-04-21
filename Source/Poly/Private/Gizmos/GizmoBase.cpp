@@ -44,6 +44,7 @@ AGizmoBase::AGizmoBase()
 
 	bTransformInProgress = false;
 	bIsPrevRayValid = false;
+
 }
 
 void AGizmoBase::UpdateGizmoSpace(ETransformSpace SpaceType)
@@ -134,16 +135,33 @@ void AGizmoBase::RegisterDomainComponent(USceneComponent* Component
 		UE_LOG(LogGizmo, Warning, TEXT("Failed to Register Component! Component is not a Shape Component %s"), *Component->GetName());
 }
 
-EGizmoDomain AGizmoBase::GetGizmoDomainForHit()
+EGizmoDomain AGizmoBase::GetDomainByTypes(const TArray<TEnumAsByte<EObjectTypeQuery>>& ObjectTypes, bool& bSuccess)
 {
 	APlayerController* PC = UGameplayStatics::GetPlayerController(this, this->PlayerIndex);
-	const TArray < TEnumAsByte <EObjectTypeQuery>> ObjectTypes = { EObjectTypeQuery::ObjectTypeQuery7 };
 
 	FHitResult HitResult;
 	if (PC->GetHitResultUnderCursorForObjects(ObjectTypes, true, HitResult))
 	{
+		const EGizmoDomain Domain = GetTransformationDomain(HitResult.GetComponent());
+		bSuccess = Domain != EGizmoDomain::TD_None;
+		return Domain;
+	}
+	bSuccess = false;
+	return EGizmoDomain::TD_None;
+}
+
+EGizmoDomain AGizmoBase::GetDomainByChannel(const ETraceTypeQuery Channel, bool& bSuccess)
+{
+	APlayerController* PC = UGameplayStatics::GetPlayerController(this, this->PlayerIndex);
+
+	FHitResult HitResult;
+	if (PC->GetHitResultUnderCursorByChannel(Channel, true, HitResult))
+	{
+		const EGizmoDomain Domain = GetTransformationDomain(HitResult.GetComponent());
+		bSuccess = Domain != EGizmoDomain::TD_None;
 		return GetTransformationDomain(HitResult.GetComponent());
 	}
+	bSuccess = false;
 	return EGizmoDomain::TD_None;
 }
 
@@ -176,8 +194,7 @@ void AGizmoBase::SetInputEnabled(bool bInEnabled)
 		this->DisableInput(UGameplayStatics::GetPlayerController(this, this->PlayerIndex));
 }
 
-void AGizmoBase::SetTransformProgressState(bool bInProgress
-	, EGizmoDomain CurrentDomain)
+void AGizmoBase::SetTransformProgressState(bool bInProgress, EGizmoDomain CurrentDomain)
 {
 	if (bInProgress != bTransformInProgress)
 	{
@@ -185,4 +202,62 @@ void AGizmoBase::SetTransformProgressState(bool bInProgress
 		bTransformInProgress = bInProgress;
 		OnGizmoStateChange.Broadcast(GetGizmoType(), bTransformInProgress, CurrentDomain);
 	}
+}
+
+
+
+void AGizmoBase::SetEnableConsumeInput(const bool bInEnable)
+{
+	//bIsEnabled = bInEnable;
+	if (bInEnable)
+	{
+		// bind primary input key pressed/released events
+
+		// bind mouse axes events (to conume their input from other receivers)
+		FInputVectorAxisBinding& Mouse2D_Axis = InputComponent->BindVectorAxis("Mouse2D");
+		Mouse2D_Axis.AxisDelegate.BindDelegate(this, &AGizmoBase::OnMouse2D);
+		Mouse2D_Axis.bConsumeInput = true;
+		Mouse2D_Axis.bExecuteWhenPaused = true;
+
+		InputComponent->AxisKeyBindings.Reset(0);
+		FInputAxisKeyBinding& MouseX_Axis = InputComponent->BindAxisKey("MouseX");
+		MouseX_Axis.AxisDelegate.BindDelegate(this, &AGizmoBase::OnMouseX);
+		MouseX_Axis.bConsumeInput = true;
+		MouseX_Axis.bExecuteWhenPaused = true;
+			
+		FInputAxisKeyBinding& MouseY_Axis = InputComponent->BindAxisKey("MouseY");
+		MouseY_Axis.AxisDelegate.BindDelegate(this, &AGizmoBase::OnMouseY);
+		MouseY_Axis.bConsumeInput = true;
+		MouseY_Axis.bExecuteWhenPaused = true;
+
+	}
+	else
+	{
+		InputComponent->AxisKeyBindings.Reset(0);
+		InputComponent->VectorAxisBindings.Reset(0);
+	}
+
+}
+
+//
+//void AGizmoBase::OnInputKey_Pressed(FKey InKey)
+//{
+//
+//}
+//
+//void AGizmoBase::OnInputKey_Released(FKey InKey)
+//{
+//}
+
+void AGizmoBase::OnMouseX(float AxisValue)
+{
+}
+
+void AGizmoBase::OnMouseY(float AxisValue)
+{
+}
+
+void AGizmoBase::OnMouse2D_Implementation(FVector AxisValue)
+{
+	this->UpdateDeltaTransform(false);
 }
