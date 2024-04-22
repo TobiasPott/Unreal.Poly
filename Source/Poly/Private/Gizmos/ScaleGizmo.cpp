@@ -26,8 +26,6 @@ AScaleGizmo::AScaleGizmo()
 	RegisterDomainComponent(XZ_PlaneBox, EGizmoDomain::TD_XZ_Plane);
 	RegisterDomainComponent(XYZ_Sphere, EGizmoDomain::TD_XYZ);
 
-	ScalingFactor = 0.05f;
-
 }
 
 void AScaleGizmo::UpdateGizmoSpace(ETransformSpace SpaceType)

@@ -4,6 +4,8 @@
 
 ARotateGizmo::ARotateGizmo()
 {
+	// set higher arc radius to scale rotate gizmo slightly smaller than scale and translate
+	CameraArcRadius = 150.0f;
 }
 
 FTransform ARotateGizmo::GetDeltaTransform(const FVector& LookingVector, const FVector& RayStartPoint

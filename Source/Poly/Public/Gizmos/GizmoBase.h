@@ -121,15 +121,23 @@ public:
 
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
 	FGizmoDeltaTransformDelegate TransformChanged;
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
+	FGizmoDeltaTransformDelegate TransformEnded;
 
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
 	FGizmoTranslateTransformDelegate TranslationChanged;
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
+	FGizmoTranslateTransformDelegate TranslationEnded;
 
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
 	FGizmoRotateTransformDelegate RotationChanged;
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
+	FGizmoRotateTransformDelegate RotationEnded;
 
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
 	FGizmoScaleTransformDelegate ScaleChanged;
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
+	FGizmoScaleTransformDelegate ScaleEnded;
 
 protected:
 
@@ -167,7 +175,7 @@ protected:
 
 	/* The Radius of the Arc (FOV) that the Camera covers. The bigger the value, the smaller the Gizmo would look. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gizmo")
-	float CameraArcRadius;
+	float CameraArcRadius = 100.0f;
 
 	/** Please add a variable description */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Default")
@@ -176,6 +184,8 @@ protected:
 
 	bool bInputKeyPressCaptured = false;
 	// Used to calculate the distance the rays have travelled
+	FVector FirstRayStartPoint;
+	FVector FirstRayEndPoint;
 	FVector PreviousRayStartPoint;
 	FVector PreviousRayEndPoint;
 	FVector PreviousViewScale;
@@ -221,6 +231,8 @@ protected:
 	void SetActorHidden(const bool bHiddenInGame = false);
 
 
+	void OnTransformChanged(const bool bEndTransform, const FTransform InDelta);
+	void OnTransformEnded(const FTransform InDelta);
 
 };
 

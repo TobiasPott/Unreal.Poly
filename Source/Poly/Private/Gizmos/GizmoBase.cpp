@@ -36,8 +36,6 @@ AGizmoBase::AGizmoBase()
 	RegisterDomainComponent(Y_AxisBox, EGizmoDomain::TD_Y_Axis);
 	RegisterDomainComponent(Z_AxisBox, EGizmoDomain::TD_Z_Axis);
 
-	CameraArcRadius = 150.f;
-
 	PreviousRayStartPoint = FVector::ZeroVector;
 	PreviousRayEndPoint = FVector::ZeroVector;
 	PreviousViewScale = FVector::OneVector;
@@ -158,6 +156,11 @@ bool AGizmoBase::AreRaysValid() const
 
 void AGizmoBase::UpdateRays(const FVector& RayStart, const FVector& RayEnd)
 {
+	if (!bIsPrevRayValid)
+	{
+		FirstRayStartPoint = RayStart;
+		FirstRayEndPoint = RayEnd;
+	}
 	PreviousRayStartPoint = RayStart;
 	PreviousRayEndPoint = RayEnd;
 	bIsPrevRayValid = true;
@@ -208,10 +211,10 @@ FTransform AGizmoBase::UpdateDeltaTransform(const bool bEndTransform, const floa
 {
 
 	FTransform Delta = FTransform::Identity;
+	FVector Start, End;
 	if (this->ActiveDomain != EGizmoDomain::TD_None)
 	{
 		const FVector LookVector = UGameplayStatics::GetPlayerCameraManager(this, this->PlayerIndex)->GetActorForwardVector();
-		FVector Start, End;
 		if (UPoly_UIFunctions::GetMouseRaySegment(this, this->PlayerIndex, Start, End, MaxDistance))
 		{
 			Delta = GetDeltaTransform(LookVector, Start, End, this->ActiveDomain);
@@ -219,21 +222,17 @@ FTransform AGizmoBase::UpdateDeltaTransform(const bool bEndTransform, const floa
 	}
 	if (bEndTransform)
 	{
-		this->ActiveDomain = EGizmoDomain::TD_None;
-		this->SetTransformProgressState(false, EGizmoDomain::TD_None);
-
 		// always fire events if bEndTransform is sets
-		if (TransformChanged.IsBound())
-			TransformChanged.Broadcast(true, Delta);
+		this->OnTransformChanged(true, Delta);
+		// reset rays to first rays
+		const FVector LookVector = UGameplayStatics::GetPlayerCameraManager(this, this->PlayerIndex)->GetActorForwardVector();
+		GetDeltaTransform(LookVector, FirstRayStartPoint, FirstRayEndPoint, this->ActiveDomain);
+		// get delta between first ray and current (last) ray
+		Delta = GetDeltaTransform(LookVector, Start, End, this->ActiveDomain);
+		this->OnTransformEnded(Delta);
 
-		if (TranslationChanged.IsBound())
-			TranslationChanged.Broadcast(true, Delta.GetLocation());
-
-		if (RotationChanged.IsBound())
-			RotationChanged.Broadcast(true, Delta.Rotator());
-
-		if (ScaleChanged.IsBound())
-			ScaleChanged.Broadcast(true, Delta.GetScale3D());
+		this->SetTransformProgressState(false, EGizmoDomain::TD_None);
+		this->ActiveDomain = EGizmoDomain::TD_None;
 
 	}
 	return Delta;
@@ -353,4 +352,29 @@ void AGizmoBase::SetActorHidden(const bool bHiddenInGame)
 		this->SetActorHiddenInGame(bHiddenInGame);
 		this->SetActorEnableCollision(!bHiddenInGame);
 	}
+}
+
+void AGizmoBase::OnTransformChanged(const bool bEndTransform, const FTransform InDelta)
+{
+	if (TransformChanged.IsBound())
+		TransformChanged.Broadcast(bEndTransform, InDelta);
+	if (TranslationChanged.IsBound())
+		TranslationChanged.Broadcast(bEndTransform, InDelta.GetLocation());
+	if (RotationChanged.IsBound())
+		RotationChanged.Broadcast(bEndTransform, InDelta.Rotator());
+	if (ScaleChanged.IsBound())
+		ScaleChanged.Broadcast(bEndTransform, InDelta.GetScale3D());
+}
+
+void AGizmoBase::OnTransformEnded(const FTransform InDelta)
+{
+	if (TransformEnded.IsBound())
+		TransformEnded.Broadcast(true, InDelta);
+	if (TranslationEnded.IsBound())
+		TranslationEnded.Broadcast(true, InDelta.GetLocation());
+	if (RotationEnded.IsBound())
+		RotationEnded.Broadcast(true, InDelta.Rotator());
+	if (ScaleEnded.IsBound())
+		ScaleEnded.Broadcast(true, InDelta.GetScale3D());
+
 }
