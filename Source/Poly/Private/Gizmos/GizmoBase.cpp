@@ -222,20 +222,18 @@ FTransform AGizmoBase::UpdateDeltaTransform(const bool bEndTransform, const floa
 		this->ActiveDomain = EGizmoDomain::TD_None;
 		this->SetTransformProgressState(false, EGizmoDomain::TD_None);
 
-		if (!Delta.Equals(FTransform::Identity, 0.000001))
-		{
-			if (TransformChanged.IsBound())
-				TransformChanged.Broadcast(true, Delta);
+		// always fire events if bEndTransform is sets
+		if (TransformChanged.IsBound())
+			TransformChanged.Broadcast(true, Delta);
 
-			if (TranslationChanged.IsBound() && !Delta.TranslationEquals(FTransform::Identity, 0.000001))
-				TranslationChanged.Broadcast(true, Delta.GetLocation());
+		if (TranslationChanged.IsBound())
+			TranslationChanged.Broadcast(true, Delta.GetLocation());
 
-			if (RotationChanged.IsBound() && !Delta.RotationEquals(FTransform::Identity, 0.000001))
-				RotationChanged.Broadcast(true, Delta.Rotator());
+		if (RotationChanged.IsBound())
+			RotationChanged.Broadcast(true, Delta.Rotator());
 
-			if (ScaleChanged.IsBound() && !Delta.Scale3DEquals(FTransform::Identity, 0.000001))
-				ScaleChanged.Broadcast(true, Delta.GetScale3D());
-		}
+		if (ScaleChanged.IsBound())
+			ScaleChanged.Broadcast(true, Delta.GetScale3D());
 
 	}
 	return Delta;
@@ -279,14 +277,13 @@ void AGizmoBase::SetEnableConsumeInput(const bool bInEnable)
 	//bIsEnabled = bInEnable;
 	if (bInEnable)
 	{
-		// bind primary input key pressed/released events
-
 		// bind mouse axes events (to conume their input from other receivers)
 		FInputVectorAxisBinding& Mouse2D_Axis = InputComponent->BindVectorAxis("Mouse2D");
 		Mouse2D_Axis.AxisDelegate.BindDelegate(this, &AGizmoBase::OnMouse2D);
 		Mouse2D_Axis.bConsumeInput = true;
 		Mouse2D_Axis.bExecuteWhenPaused = true;
 
+		// bind primary input key pressed/released events
 		InputComponent->AxisKeyBindings.Reset(0);
 		FInputAxisKeyBinding& MouseX_Axis = InputComponent->BindAxisKey("MouseX");
 		MouseX_Axis.AxisDelegate.BindDelegate(this, &AGizmoBase::OnMouseX);
@@ -311,6 +308,7 @@ void AGizmoBase::OnInputKey_Pressed_Implementation(FKey InKey)
 {
 	bool bSuccess;
 	this->ActiveDomain = this->GetDomainByChannel(ETraceTypeQuery::TraceTypeQuery3, bSuccess);
+	this->bInputKeyPressCaptured = bSuccess;
 	this->SetEnableConsumeInput(bSuccess);
 
 	this->SetTransformProgressState(true, this->ActiveDomain);
@@ -320,8 +318,17 @@ void AGizmoBase::OnInputKey_Pressed_Implementation(FKey InKey)
 
 void AGizmoBase::OnInputKey_Released_Implementation(FKey InKey)
 {
-	this->SetEnableConsumeInput(false);
-	this->UpdateDeltaTransform(true);
+	if (bInputKeyPressCaptured)
+	{
+		// update delta transform (with end flag set)
+		this->UpdateDeltaTransform(true);
+		// disable input consumption (including input key pressed/released)
+		this->SetEnableConsumeInput(false);
+	}
+
+	// triggers gizmo state change if necessary
+	this->SetTransformProgressState(false, EGizmoDomain::TD_None);
+	bInputKeyPressCaptured = false;
 }
 
 void AGizmoBase::OnMouseX(float AxisValue)

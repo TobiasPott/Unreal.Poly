@@ -22,6 +22,7 @@ class POLY_API AGizmoBase : public AActor
 	// ToDo: @tpott: Expose SnappedDeltaTransform as Changed events 
 	//				This should be solved by only firing the events when the snapped GetDeltaTransform has a value
 
+	// ToDo: @tpott: Add flag to track if sgizmo was clicked (if not don't do input key release handling)
 
 public:
 	// Sets default values for this actor's properties
@@ -153,11 +154,6 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Gizmo")
 	class UBoxComponent* Z_AxisBox;
 
-	// Used to calculate the distance the rays have travelled
-	FVector PreviousRayStartPoint;
-	FVector PreviousRayEndPoint;
-	FVector PreviousViewScale;
-
 	/* The Radius of the Arc (FOV) that the Camera covers. The bigger the value, the smaller the Gizmo would look. */
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Gizmo")
 	int32 PlayerIndex = 0;
@@ -177,6 +173,12 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Default")
 	EGizmoDomain ActiveDomain = EGizmoDomain::TD_None;
 
+
+	bool bInputKeyPressCaptured = false;
+	// Used to calculate the distance the rays have travelled
+	FVector PreviousRayStartPoint;
+	FVector PreviousRayEndPoint;
+	FVector PreviousViewScale;
 
 private:
 	// Maps the Box Component to their Respective Domain
