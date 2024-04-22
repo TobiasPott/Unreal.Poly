@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Gizmos/GizmoBase.h"
+#include "Gizmos/GizmoBaseActor.h"
 #include "ScaleGizmo.generated.h"
 
 /**
  *
  */
 UCLASS(BlueprintType)
-class POLY_API AScaleGizmo : public AGizmoBase
+class POLY_API AScaleGizmo : public AGizmoBaseActor
 {
 	GENERATED_BODY()
 
@@ -19,25 +19,16 @@ public:
 
 	AScaleGizmo();
 
-	virtual EGizmoType GetGizmoType() const final { return EGizmoType::TT_Scale; }
+	virtual EGizmoType GetGizmoType() const final { return EGizmoType::GT_Scale; }
 
 	virtual void UpdateGizmoSpace(ETransformSpace SpaceType);
 
-	virtual FTransform GetDeltaTransform(const FVector& LookingVector
-		, const FVector& RayStartPoint
-		, const FVector& RayEndPoint
-		, EGizmoDomain Domain) override;
+	virtual FTransform GetDeltaTransform(const FVector& LookingVector, const FVector& RayStartPoint, const FVector& RayEndPoint, EGizmoDomain Domain) override;
 
 	// Returns a Snapped Transform based on how much has been accumulated, the Delta Transform and Snapping Value
-	virtual FTransform GetSnappedTransform(FTransform& outCurrentAccumulatedTransform
-		, const FTransform& DeltaTransform
-		, EGizmoDomain Domain
-		, float SnappingValue) const override;
+	virtual FTransform GetSnappedTransform(FTransform& outCurrentAccumulatedTransform, const FTransform& DeltaTransform, EGizmoDomain Domain, float SnappingValue) const override;
 
-	virtual FTransform GetSnappedTransformPerComponent(const FTransform& OldComponentTransform
-		, const FTransform& NewComponentTransform
-		, EGizmoDomain Domain
-		, float SnappingValue) const override;
+	virtual FTransform GetSnappedTransformPerComponent(const FTransform& OldComponentTransform, const FTransform& NewComponentTransform, EGizmoDomain Domain, float SnappingValue) const override;
 
 protected:
 	//To see how much an Unreal Unit affects Scaling (e.g. how powerful the mouse scales the object!)

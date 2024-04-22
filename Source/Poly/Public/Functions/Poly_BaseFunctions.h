@@ -21,7 +21,7 @@ public:
 
 
 
-	UFUNCTION(BlueprintCallable, Category = "Poly|Base", meta = (DisplayName = "Set Actor Hidden (with Collision)"))
+	UFUNCTION(BlueprintCallable, Category = "Poly|Base", meta = (DisplayName = "Set Actor Hidden (w Collision)"))
 	static void SetActorHidden(AActor* Target, const bool bHiddenInGame = false);
 
 

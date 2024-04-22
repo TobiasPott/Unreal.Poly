@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Gizmos/GizmoBase.h"
+#include "Gizmos/GizmoBaseActor.h"
 #include "RotateGizmo.generated.h"
 
 /**
  *
  */
 UCLASS(BlueprintType)
-class POLY_API ARotateGizmo : public AGizmoBase
+class POLY_API ARotateGizmo : public AGizmoBaseActor
 {
 	GENERATED_BODY()
 
@@ -19,7 +19,7 @@ public:
 
 	ARotateGizmo();
 
-	virtual EGizmoType GetGizmoType() const final { return EGizmoType::TT_Rotation; }
+	virtual EGizmoType GetGizmoType() const final { return EGizmoType::GT_Rotation; }
 
 	// Returns a Snapped Transform based on how much has been accumulated, the Delta Transform and Snapping Value
 	virtual FTransform GetSnappedTransform(FTransform& outCurrentAccumulatedTransform

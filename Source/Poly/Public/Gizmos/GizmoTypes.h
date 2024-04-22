@@ -11,18 +11,18 @@ DECLARE_LOG_CATEGORY_EXTERN(LogGizmo, Log, All);
 UENUM(BlueprintType)
 enum class EGizmoType : uint8
 {
-	TT_NoTransform			UMETA(DisplayName = "None"),
-	TT_Translation			UMETA(DisplayName = "Translation"),
-	TT_Rotation				UMETA(DisplayName = "Rotation"),
-	TT_Scale				UMETA(DisplayName = "Scale")
+	GT_NoTransform			UMETA(DisplayName = "None"),
+	GT_Translation			UMETA(DisplayName = "Translation"),
+	GT_Rotation				UMETA(DisplayName = "Rotation"),
+	GT_Scale				UMETA(DisplayName = "Scale")
 };
 
 UENUM(BlueprintType)
 enum class ETransformSpace : uint8
 {
-	ST_None				UMETA(DisplayName = "None"),
-	ST_Local			UMETA(DisplayName = "Local Space"),
-	ST_World			UMETA(DisplayName = "World Space"),
+	TS_None				UMETA(DisplayName = "None"),
+	TS_Local			UMETA(DisplayName = "Local Space"),
+	TS_World			UMETA(DisplayName = "World Space"),
 };
 
 UENUM(BlueprintType) 
@@ -41,3 +41,21 @@ enum class EGizmoDomain : uint8
 	TD_XYZ				UMETA(DisplayName = "XYZ"),
 
 };
+
+
+UENUM(BlueprintType, meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true"))
+enum class EGizmoDomainMask : uint8
+{
+	GDM_NONE = 0 UMETA(Hidden),
+	GDM_X_Axis = 1			UMETA(DisplayName = "X Axis"),
+	GDM_Y_Axis = 2			UMETA(DisplayName = "Y Axis"),
+	GDM_Z_Axis = 4			UMETA(DisplayName = "Z Axis"),
+};
+ENUM_CLASS_FLAGS(EGizmoDomainMask);
+
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FGizmoStateUpdatedDelegate, EGizmoType, GizmoType, bool, bTransformInProgress, EGizmoDomain, CurrentDomain);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGizmoDeltaTransformDelegate, bool, bEnded, FTransform, DeltaTransform);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGizmoTranslateTransformDelegate, bool, bEnded, FVector, DeltaTranslation);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGizmoScaleTransformDelegate, bool, bEnded, FVector, DeltaScale);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGizmoRotateTransformDelegate, bool, bEnded, FRotator, DeltaRotation);
