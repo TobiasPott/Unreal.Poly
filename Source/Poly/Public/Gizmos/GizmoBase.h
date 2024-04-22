@@ -22,7 +22,7 @@ class POLY_API AGizmoBase : public AActor
 	// ToDo: @tpott: Expose SnappedDeltaTransform as Changed events 
 	//				This should be solved by only firing the events when the snapped GetDeltaTransform has a value
 
-	// ToDo: @tpott: Add flag to track if sgizmo was clicked (if not don't do input key release handling)
+	// ToDo: @tpott: Extract some of the code to custom base type AGizmoCoreActor and AGizmoBase to reduce length of header (unchanging types like event delegates, ray data and similar)
 
 public:
 	// Sets default values for this actor's properties
@@ -118,89 +118,57 @@ public:
 	 */
 	UPROPERTY(BlueprintAssignable, Category = "Gizmo")
 	FGizmoStateUpdatedDelegate OnGizmoStateChange;
-
-	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
-	FGizmoDeltaTransformDelegate TransformChanged;
-	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
-	FGizmoDeltaTransformDelegate TransformEnded;
-
-	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
-	FGizmoTranslateTransformDelegate TranslationChanged;
-	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
-	FGizmoTranslateTransformDelegate TranslationEnded;
-
-	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
-	FGizmoRotateTransformDelegate RotationChanged;
-	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
-	FGizmoRotateTransformDelegate RotationEnded;
-
-	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
-	FGizmoScaleTransformDelegate ScaleChanged;
-	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
-	FGizmoScaleTransformDelegate ScaleEnded;
-
 protected:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Gizmo")
 	class USceneComponent* RootScene;
-
 	/* Scene Component that will go Under the Root Scene
 	 * This is so that we can Scale all the things under it without Scaling the Actor itself (i.e. root component)
 	*/
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Gizmo")
 	class USceneComponent* ScalingScene;
 
-	// The Hit Box for the X-Axis Direction Transform
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Gizmo")
 	class UBoxComponent* X_AxisBox;
-
-	// The Hit Box for the X-Axis Direction Transform
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Gizmo")
 	class UBoxComponent* Y_AxisBox;
-
-	// The Hit Box for the X-Axis Direction Transform
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Gizmo")
 	class UBoxComponent* Z_AxisBox;
 
-	/* The Radius of the Arc (FOV) that the Camera covers. The bigger the value, the smaller the Gizmo would look. */
+
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Gizmo")
 	int32 PlayerIndex = 0;
 	UPROPERTY()
 	FName InputAction = EKeys::LeftMouseButton.GetFName();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Default")
+	EGizmoDomain ActiveDomain = EGizmoDomain::TD_None;
+
+	// Scale behaviour
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Gizmo")
 	bool bEnableScaleToScreenSpace = true;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gizmo")
 	float GizmoSceneScaleFactor = 0.15f;
-
 	/* The Radius of the Arc (FOV) that the Camera covers. The bigger the value, the smaller the Gizmo would look. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gizmo")
 	float CameraArcRadius = 100.0f;
-
-	/** Please add a variable description */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Default")
-	EGizmoDomain ActiveDomain = EGizmoDomain::TD_None;
 
 
 	bool bInputKeyPressCaptured = false;
 	// Used to calculate the distance the rays have travelled
 	FVector FirstRayStartPoint;
 	FVector FirstRayEndPoint;
+	//bool to check whether the PrevRay vectors have been set
+	bool bIsPrevRayValid;
 	FVector PreviousRayStartPoint;
 	FVector PreviousRayEndPoint;
 	FVector PreviousViewScale;
 
 private:
-	// Maps the Box Component to their Respective Domain
-	TMap<class UShapeComponent*, EGizmoDomain> DomainMap;
-
 	//Whether Transform is in Progress or Not 
 	bool bTransformInProgress;
-
-protected:
-
-	//bool to check whether the PrevRay vectors have been set
-	bool bIsPrevRayValid;
+	// Maps the Box Component to their Respective Domain
+	TMap<class UShapeComponent*, EGizmoDomain> DomainMap;
 
 protected:
 
@@ -233,6 +201,29 @@ protected:
 
 	void OnTransformChanged(const bool bEndTransform, const FTransform InDelta);
 	void OnTransformEnded(const FTransform InDelta);
+
+
+public:
+
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
+	FGizmoDeltaTransformDelegate TransformChanged;
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
+	FGizmoDeltaTransformDelegate TransformEnded;
+
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
+	FGizmoTranslateTransformDelegate TranslationChanged;
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
+	FGizmoTranslateTransformDelegate TranslationEnded;
+
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
+	FGizmoRotateTransformDelegate RotationChanged;
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
+	FGizmoRotateTransformDelegate RotationEnded;
+
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
+	FGizmoScaleTransformDelegate ScaleChanged;
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Gizmo")
+	FGizmoScaleTransformDelegate ScaleEnded;
 
 };
 
