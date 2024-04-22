@@ -36,7 +36,6 @@ AGizmoBase::AGizmoBase()
 	RegisterDomainComponent(Y_AxisBox, EGizmoDomain::TD_Y_Axis);
 	RegisterDomainComponent(Z_AxisBox, EGizmoDomain::TD_Z_Axis);
 
-	GizmoSceneScaleFactor = 0.1f;
 	CameraArcRadius = 150.f;
 
 	PreviousRayStartPoint = FVector::ZeroVector;
@@ -338,4 +337,13 @@ void AGizmoBase::OnMouseY(float AxisValue)
 void AGizmoBase::OnMouse2D_Implementation(FVector AxisValue)
 {
 	this->UpdateDeltaTransform(false);
+}
+
+void AGizmoBase::SetActorHidden(const bool bHiddenInGame)
+{
+	if (IsValid(this))
+	{
+		this->SetActorHiddenInGame(bHiddenInGame);
+		this->SetActorEnableCollision(!bHiddenInGame);
+	}
 }

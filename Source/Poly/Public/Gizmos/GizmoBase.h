@@ -167,7 +167,7 @@ protected:
 	bool bEnableScaleToScreenSpace = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gizmo")
-	float GizmoSceneScaleFactor;
+	float GizmoSceneScaleFactor = 0.15f;
 
 	/* The Radius of the Arc (FOV) that the Camera covers. The bigger the value, the smaller the Gizmo would look. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gizmo")
@@ -213,6 +213,11 @@ protected:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Gizmo")
 	void OnMouse2D(FVector AxisValue);
 	virtual void OnMouse2D_Implementation(FVector AxisValue);
+
+
+	UFUNCTION(BlueprintCallable, Category = "Gizmo", meta = (DisplayName = "Set Actor Hidden (with Collision)"))
+	void SetActorHidden(const bool bHiddenInGame = false);
+
 
 
 };
