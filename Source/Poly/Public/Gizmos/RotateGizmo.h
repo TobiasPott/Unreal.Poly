@@ -3,13 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
 #include "Gizmos/GizmoBase.h"
 #include "RotateGizmo.generated.h"
 
 /**
  *
  */
-UCLASS()
+UCLASS(BlueprintType)
 class POLY_API ARotateGizmo : public AGizmoBase
 {
 	GENERATED_BODY()
@@ -28,10 +29,6 @@ public:
 	
 protected:
 
-	//Rotation has a special way of Handling the Scene Scaling and that is, that its AXis need to face the Camera as well!
-	virtual FVector CalculateGizmoSceneScale(const FVector& ReferenceLocation, const FVector& ReferenceLookDirection
-		, float FieldOfView) override;
-
 	virtual FTransform GetDeltaTransform(const FVector& LookingVector
 		, const FVector& RayStartPoint
 		, const FVector& RayEndPoint
@@ -39,5 +36,4 @@ protected:
 
 private:
 
-	FVector PreviousRotationViewScale;
 };

@@ -113,8 +113,6 @@ void ASelectorBase::ClearSelection_Implementation()
 
 void ASelectorBase::SetVisualiser(TSubclassOf<ASelectorVisualiserBase> NewVisualiserClass)
 {
-	// ToDo: @tpott: move visualiser creation to SetVisualiser function
-	//		this should handle destruction of previous visualiser and update of new one
 	if (IsValid(NewVisualiserClass))
 	{
 		this->VisualiserClass = NewVisualiserClass;

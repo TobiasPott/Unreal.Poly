@@ -4,33 +4,6 @@
 
 ARotateGizmo::ARotateGizmo()
 {
-	PreviousRotationViewScale = FVector::OneVector;
-}
-
-FVector ARotateGizmo::CalculateGizmoSceneScale(const FVector& ReferenceLocation
-	, const FVector& ReferenceLookDirection, float FieldOfView)
-{
-	FVector calculatedScale = Super::CalculateGizmoSceneScale(ReferenceLocation, ReferenceLookDirection, FieldOfView);
-	FVector currentRotationViewScale = PreviousRotationViewScale;
-
-	bool bInProgress = GetTransformProgressState();
-	if (!bInProgress)
-	{
-		FVector deltaLocation = ReferenceLocation - GetActorLocation();
-
-		currentRotationViewScale = FVector(
-			(FVector::DotProduct(GetActorForwardVector(), deltaLocation) >= 0) ? 1.f : -1.f,
-			(FVector::DotProduct(GetActorRightVector(), deltaLocation) >= 0) ? 1.f : -1.f,
-			(FVector::DotProduct(GetActorUpVector(), deltaLocation) >= 0) ? 1.f : -1.f
-		);
-
-		PreviousRotationViewScale = currentRotationViewScale;
-	}
-
-
-	calculatedScale *= currentRotationViewScale;
-
-	return calculatedScale;
 }
 
 FTransform ARotateGizmo::GetDeltaTransform(const FVector& LookingVector, const FVector& RayStartPoint

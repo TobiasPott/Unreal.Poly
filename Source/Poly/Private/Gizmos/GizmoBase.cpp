@@ -41,6 +41,7 @@ AGizmoBase::AGizmoBase()
 
 	PreviousRayStartPoint = FVector::ZeroVector;
 	PreviousRayEndPoint = FVector::ZeroVector;
+	PreviousViewScale = FVector::OneVector;
 
 	bTransformInProgress = false;
 	bIsPrevRayValid = false;
@@ -61,6 +62,11 @@ void AGizmoBase::BeginPlay()
 	IKA_Released.bConsumeInput = false;
 	IKA_Released.bExecuteWhenPaused = true;
 
+}
+void AGizmoBase::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	this->ScaleToScreenSpace();
 }
 void AGizmoBase::UpdateGizmoSpace(ETransformSpace SpaceType)
 {
@@ -120,11 +126,30 @@ EGizmoDomain AGizmoBase::GetTransformationDomain(USceneComponent* ComponentHit) 
 
 FVector AGizmoBase::CalculateGizmoSceneScale(const FVector& ReferenceLocation, const FVector& ReferenceLookDirection, float FieldOfView)
 {
-	FVector deltaLocation = (GetActorLocation() - ReferenceLocation);
-	float distance = deltaLocation.ProjectOnTo(ReferenceLookDirection).Size();
-	float scaleView = (distance * FMath::Sin(FMath::DegreesToRadians(FieldOfView))) / CameraArcRadius;
-	scaleView *= GizmoSceneScaleFactor;
-	return FVector(scaleView);
+	FVector DeltaLocation = (GetActorLocation() - ReferenceLocation);
+	float Distance = DeltaLocation.ProjectOnTo(ReferenceLookDirection).Size();
+	float ScaleView = (Distance * FMath::Sin(FMath::DegreesToRadians(FieldOfView))) / CameraArcRadius;
+	ScaleView *= GizmoSceneScaleFactor;
+	FVector CalculatedScale = FVector(ScaleView);
+
+	FVector CurrentRotationViewScale = PreviousViewScale;
+
+	bool bInProgress = GetTransformProgressState();
+	if (!bInProgress)
+	{
+		FVector deltaLocationInv = ReferenceLocation - GetActorLocation();
+		// ToDo: @tpott: transfer this view angle dependend scale to translate and scale gizmo (I like the axis flip for rotation)
+		CurrentRotationViewScale = FVector(
+			(FVector::DotProduct(GetActorForwardVector(), deltaLocationInv) >= 0) ? 1.f : -1.f,
+			(FVector::DotProduct(GetActorRightVector(), deltaLocationInv) >= 0) ? 1.f : -1.f,
+			(FVector::DotProduct(GetActorUpVector(), deltaLocationInv) >= 0) ? 1.f : -1.f
+		);
+
+		PreviousViewScale = CurrentRotationViewScale;
+	}
+
+	CalculatedScale *= CurrentRotationViewScale;
+	return CalculatedScale;
 }
 
 bool AGizmoBase::AreRaysValid() const
@@ -229,6 +254,27 @@ void AGizmoBase::SetTransformProgressState(bool bInProgress, EGizmoDomain Curren
 
 
 
+
+void AGizmoBase::SetEnableScaleToScreenSpace(const bool bInEnable)
+{
+	this->bEnableScaleToScreenSpace = bInEnable;
+	this->ScaleToScreenSpace();
+}
+
+void AGizmoBase::ScaleToScreenSpace()
+{
+	if (bEnableScaleToScreenSpace)
+	{
+		APlayerCameraManager* CameraManager = UGameplayStatics::GetPlayerCameraManager(this, this->PlayerIndex);
+		FVector NewScale = this->CalculateGizmoSceneScale(CameraManager->GetCameraLocation(), CameraManager->GetActorForwardVector(), 75.0f);
+		this->ScalingScene->SetRelativeScale3D(NewScale);
+	}
+	else
+	{
+		this->ScalingScene->SetRelativeScale3D(FVector::OneVector);
+	}
+}
+
 void AGizmoBase::SetEnableConsumeInput(const bool bInEnable)
 {
 	//bIsEnabled = bInEnable;
@@ -247,7 +293,7 @@ void AGizmoBase::SetEnableConsumeInput(const bool bInEnable)
 		MouseX_Axis.AxisDelegate.BindDelegate(this, &AGizmoBase::OnMouseX);
 		MouseX_Axis.bConsumeInput = true;
 		MouseX_Axis.bExecuteWhenPaused = true;
-			
+
 		FInputAxisKeyBinding& MouseY_Axis = InputComponent->BindAxisKey("MouseY");
 		MouseY_Axis.AxisDelegate.BindDelegate(this, &AGizmoBase::OnMouseY);
 		MouseY_Axis.bConsumeInput = true;
@@ -270,6 +316,7 @@ void AGizmoBase::OnInputKey_Pressed_Implementation(FKey InKey)
 
 	this->SetTransformProgressState(true, this->ActiveDomain);
 	this->UpdateDeltaTransform(false);
+	this->ScaleToScreenSpace();
 }
 
 void AGizmoBase::OnInputKey_Released_Implementation(FKey InKey)

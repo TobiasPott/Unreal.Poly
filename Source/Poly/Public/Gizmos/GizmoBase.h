@@ -13,7 +13,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGizmoTranslateTransformDelegate, b
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGizmoScaleTransformDelegate, bool, bEnded, FVector, DeltaScale);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGizmoRotateTransformDelegate, bool, bEnded, FRotator, DeltaRotation);
 
-UCLASS()
+UCLASS(BlueprintType)
 class POLY_API AGizmoBase : public AActor
 {
 	GENERATED_BODY()
@@ -72,6 +72,7 @@ protected:
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
 
 	// Calculates the Gizmo Scene Scale. This can be overriden (e.g. by Rotation Gizmo)
 	// for additional/optional scaling properties.
@@ -155,14 +156,15 @@ protected:
 	// Used to calculate the distance the rays have travelled
 	FVector PreviousRayStartPoint;
 	FVector PreviousRayEndPoint;
+	FVector PreviousViewScale;
 
 	/* The Radius of the Arc (FOV) that the Camera covers. The bigger the value, the smaller the Gizmo would look. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Gizmo")
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Gizmo")
 	int32 PlayerIndex = 0;
 	UPROPERTY()
 	FName InputAction = EKeys::LeftMouseButton.GetFName();
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Gizmo")
-	bool bEnableScreenSpaceScale = true;
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Gizmo")
+	bool bEnableScaleToScreenSpace = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gizmo")
 	float GizmoSceneScaleFactor;
@@ -172,7 +174,7 @@ protected:
 	float CameraArcRadius;
 
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Default")
 	EGizmoDomain ActiveDomain = EGizmoDomain::TD_None;
 
 
@@ -190,6 +192,10 @@ protected:
 
 protected:
 
+	UFUNCTION(BlueprintCallable, Category = "Gizmo")
+	void SetEnableScaleToScreenSpace(const bool bInEnable);
+	UFUNCTION()
+	void ScaleToScreenSpace();
 
 	UFUNCTION(BlueprintCallable, Category = "Gizmo")
 	void SetEnableConsumeInput(const bool bInEnable);

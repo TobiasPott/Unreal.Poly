@@ -3,13 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
 #include "Gizmos/GizmoBase.h"
 #include "ScaleGizmo.generated.h"
 
 /**
  *
  */
-UCLASS()
+UCLASS(BlueprintType)
 class POLY_API AScaleGizmo : public AGizmoBase
 {
 	GENERATED_BODY()
@@ -39,10 +40,9 @@ public:
 		, float SnappingValue) const override;
 
 protected:
-
 	//To see how much an Unreal Unit affects Scaling (e.g. how powerful the mouse scales the object!)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gizmo")
-	float ScalingFactor;
+	float ScalingFactor = 0.05;
 
 	// The Hit Box for the XY-Plane Translation
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Gizmo")

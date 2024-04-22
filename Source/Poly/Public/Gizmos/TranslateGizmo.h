@@ -3,13 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
 #include "Gizmos/GizmoBase.h"
 #include "TranslateGizmo.generated.h"
 
 /**
  *
  */
-UCLASS()
+UCLASS(BlueprintType)
 class POLY_API ATranslateGizmo : public AGizmoBase
 {
 	GENERATED_BODY()
