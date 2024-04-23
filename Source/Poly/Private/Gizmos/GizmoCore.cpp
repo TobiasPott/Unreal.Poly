@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Gizmos/GizmoBase.h"
+#include "Gizmos/GizmoCore.h"
 
 // Sets default values
-AGizmoBase::AGizmoBase()
+AGizmoCore::AGizmoCore()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -12,7 +12,7 @@ AGizmoBase::AGizmoBase()
 }
 
 
-void AGizmoBase::SetGizmoHidden(const bool bHiddenInGame)
+void AGizmoCore::SetGizmoHidden(const bool bHiddenInGame)
 {
 	if (IsValid(this))
 	{
@@ -21,7 +21,7 @@ void AGizmoBase::SetGizmoHidden(const bool bHiddenInGame)
 	}
 }
 
-void AGizmoBase::OnTransformChanged(const bool bEndTransform, const FTransform InDelta)
+void AGizmoCore::OnTransformChanged(const bool bEndTransform, const FTransform InDelta)
 {
 	if (TransformChanged.IsBound())
 		TransformChanged.Broadcast(bEndTransform, InDelta);
@@ -33,7 +33,7 @@ void AGizmoBase::OnTransformChanged(const bool bEndTransform, const FTransform I
 		ScaleChanged.Broadcast(bEndTransform, InDelta.GetScale3D());
 }
 
-void AGizmoBase::OnTransformEnded(const FTransform InDelta)
+void AGizmoCore::OnTransformEnded(const FTransform InDelta)
 {
 	if (TransformEnded.IsBound())
 		TransformEnded.Broadcast(true, InDelta);

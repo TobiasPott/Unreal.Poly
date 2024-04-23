@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Gizmos/GizmoBaseActor.h"
+#include "Gizmos/GizmoCoreActor.h"
 #include "TranslateGizmo.generated.h"
 
 /**
  *
  */
 UCLASS(BlueprintType)
-class POLY_API ATranslateGizmo : public AGizmoBaseActor
+class POLY_API ATranslateGizmo : public AGizmoCoreActor
 {
 	GENERATED_BODY()
 

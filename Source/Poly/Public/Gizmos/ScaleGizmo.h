@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Gizmos/GizmoBaseActor.h"
+#include "Gizmos/GizmoCoreActor.h"
 #include "ScaleGizmo.generated.h"
 
 /**
  *
  */
 UCLASS(BlueprintType)
-class POLY_API AScaleGizmo : public AGizmoBaseActor
+class POLY_API AScaleGizmo : public AGizmoCoreActor
 {
 	GENERATED_BODY()
 

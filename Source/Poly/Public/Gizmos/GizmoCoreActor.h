@@ -5,12 +5,12 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Gizmos/GizmoTypes.h"
-#include "Gizmos/GizmoBase.h"
-#include "GizmoBaseActor.generated.h"
+#include "Gizmos/GizmoCore.h"
+#include "GizmoCoreActor.generated.h"
 
 
 UCLASS(BlueprintType)
-class POLY_API AGizmoBaseActor : public AGizmoBase
+class POLY_API AGizmoCoreActor : public AGizmoCore
 {
 	GENERATED_BODY()
 
@@ -24,7 +24,7 @@ class POLY_API AGizmoBaseActor : public AGizmoBase
 	//								(e.g.: exclude x results in XY and XZ plane to be disabled too)
 public:
 	// Sets default values for this actor's properties
-	AGizmoBaseActor();
+	AGizmoCoreActor();
 
 	virtual EGizmoType GetGizmoType() const { return EGizmoType::GT_NoTransform; }
 

@@ -5,16 +5,16 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Gizmos/GizmoTypes.h"
-#include "GizmoBase.generated.h"
+#include "GizmoCore.generated.h"
 
 UCLASS()
-class POLY_API AGizmoBase : public AActor
+class POLY_API AGizmoCore : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AGizmoBase();
+	AGizmoCore();
 
 
 
