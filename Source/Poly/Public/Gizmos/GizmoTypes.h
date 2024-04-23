@@ -18,6 +18,18 @@ enum class EGizmoType : uint8
 };
 
 UENUM(BlueprintType)
+enum class EGizmoExtType : uint8
+{
+	GET_NoTransform			UMETA(DisplayName = "None"),
+	GET_Translation			UMETA(DisplayName = "Translation"),
+	GET_Rotation			UMETA(DisplayName = "Rotation"),
+	GET_Scale				UMETA(DisplayName = "Scale"),
+	GET_Select				UMETA(DisplayName = "Select"),
+	GET_TRS					UMETA(DisplayName = "TRS"), // declared for late use, as a combiend translate, rotate & scale gizmo
+};
+
+
+UENUM(BlueprintType)
 enum class ETransformSpace : uint8
 {
 	TS_None				UMETA(DisplayName = "None"),
