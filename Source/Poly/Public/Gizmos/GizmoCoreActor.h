@@ -10,7 +10,7 @@
 
 
 UCLASS(BlueprintType)
-class POLY_API AGizmoCoreActor : public AGizmoCore
+class POLY_API AGizmoCoreActor : public ATransformCore
 {
 	GENERATED_BODY()
 

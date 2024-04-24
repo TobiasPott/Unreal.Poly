@@ -5,16 +5,17 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "UI/ActorSelectionRequest.h"
-#include "MarqueeSelector.generated.h"
+#include "Gizmos/GizmoCore.h"
+#include "SelectGizmo.generated.h"
 
 UCLASS(Blueprintable, BlueprintType)
-class POLY_API AMarqueeSelector : public AActor
+class POLY_API ASelectGizmo : public AGizmoCore
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
-	AMarqueeSelector();
+	ASelectGizmo();
 
 protected:
 	bool bIsMousePressed = false;
@@ -58,9 +59,9 @@ protected:
 	void Setup(EActorSelectionRequestMode InMarqueeMode, UClass* InFilterClass, bool bInIncludeNonCollider = false, bool bInIncludeOnlyEnclosed = false, 
 		bool bInDisableOnFinish = false);
 
-	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SetEnabled(const bool bInEnable);
 
+	virtual void SetGizmoHidden(const bool bHiddenInGame = false) override;
 
 	UFUNCTION()
 	virtual void OnInputKey_Pressed(FKey InKey);

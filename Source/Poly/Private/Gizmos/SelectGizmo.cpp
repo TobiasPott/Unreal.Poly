@@ -1,13 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Selection/MarqueeSelector.h"
+#include "Gizmos/SelectGizmo.h"
 #include "Functions/Poly_UIFunctions.h"
 #include "UI/PolyHUD.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
-AMarqueeSelector::AMarqueeSelector()
+ASelectGizmo::ASelectGizmo()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
@@ -15,7 +15,7 @@ AMarqueeSelector::AMarqueeSelector()
 }
 
 // Called when the game starts or when spawned
-void AMarqueeSelector::BeginPlay()
+void ASelectGizmo::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -25,7 +25,7 @@ void AMarqueeSelector::BeginPlay()
 
 }
 
-void AMarqueeSelector::Setup(EActorSelectionRequestMode InMarqueeMode, UClass* InFilterClass, bool bInIncludeNonCollider, bool bInIncludeOnlyEnclosed,
+void ASelectGizmo::Setup(EActorSelectionRequestMode InMarqueeMode, UClass* InFilterClass, bool bInIncludeNonCollider, bool bInIncludeOnlyEnclosed,
 	bool bInDisableOnFinish)
 {
 	MarqueeMode = InMarqueeMode;
@@ -35,32 +35,32 @@ void AMarqueeSelector::Setup(EActorSelectionRequestMode InMarqueeMode, UClass* I
 	bDisableOnFinish = bInDisableOnFinish;
 }
 
-void AMarqueeSelector::SetEnabled(const bool bInEnable)
+void ASelectGizmo::SetEnabled(const bool bInEnable)
 {
 	if (!bIsEnabled && bInEnable)
 	{
 		// bind primary input key pressed/released events
 		this->EnableInput(UGameplayStatics::GetPlayerController(this, PlayerIndex));
 
-		FInputActionBinding& IKA_Pressed = InputComponent->BindAction(InputAction, EInputEvent::IE_Pressed, this, &AMarqueeSelector::OnInputKey_Pressed);
+		FInputActionBinding& IKA_Pressed = InputComponent->BindAction(InputAction, EInputEvent::IE_Pressed, this, &ASelectGizmo::OnInputKey_Pressed);
 		IKA_Pressed.bConsumeInput = true;
 		IKA_Pressed.bExecuteWhenPaused = true;
-		FInputActionBinding& IKA_Released = InputComponent->BindAction(InputAction, EInputEvent::IE_Released, this, &AMarqueeSelector::OnInputKey_Released);
+		FInputActionBinding& IKA_Released = InputComponent->BindAction(InputAction, EInputEvent::IE_Released, this, &ASelectGizmo::OnInputKey_Released);
 		IKA_Released.bConsumeInput = true;
 		IKA_Released.bExecuteWhenPaused = true;
 
 		// bind mouse axes events (to conume their input from other receivers)
 		FInputVectorAxisBinding& Mouse2D_Axis = InputComponent->BindVectorAxis("Mouse2D");
-		Mouse2D_Axis.AxisDelegate.BindDelegate(this, &AMarqueeSelector::OnMouse2D);
+		Mouse2D_Axis.AxisDelegate.BindDelegate(this, &ASelectGizmo::OnMouse2D);
 		Mouse2D_Axis.bConsumeInput = false;
 		Mouse2D_Axis.bExecuteWhenPaused = true;
 
 		FInputAxisKeyBinding& MouseX_Axis = InputComponent->BindAxisKey("MouseX");
-		MouseX_Axis.AxisDelegate.BindDelegate(this, &AMarqueeSelector::OnMouseX);
+		MouseX_Axis.AxisDelegate.BindDelegate(this, &ASelectGizmo::OnMouseX);
 		MouseX_Axis.bConsumeInput = false;
 		MouseX_Axis.bExecuteWhenPaused = true;
 		FInputAxisKeyBinding& MouseY_Axis = InputComponent->BindAxisKey("MouseY");
-		MouseY_Axis.AxisDelegate.BindDelegate(this, &AMarqueeSelector::OnMouseY);
+		MouseY_Axis.AxisDelegate.BindDelegate(this, &ASelectGizmo::OnMouseY);
 		MouseY_Axis.bConsumeInput = false;
 		MouseY_Axis.bExecuteWhenPaused = true;
 
@@ -84,8 +84,14 @@ void AMarqueeSelector::SetEnabled(const bool bInEnable)
 	bIsEnabled = bInEnable;
 }
 
+void ASelectGizmo::SetGizmoHidden(const bool bHiddenInGame)
+{
+	Super::SetGizmoHidden(bHiddenInGame);
+	this->SetEnabled(!bHiddenInGame);
+}
 
-void AMarqueeSelector::OnInputKey_Pressed(FKey InKey)
+
+void ASelectGizmo::OnInputKey_Pressed(FKey InKey)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("OnInputKey_Pressed"));
 	UPoly_UIFunctions::GetMousePosition(this, PlayerIndex, FirstPoint);
@@ -102,7 +108,7 @@ void AMarqueeSelector::OnInputKey_Pressed(FKey InKey)
 	bIsMousePressed = true;
 }
 
-void AMarqueeSelector::OnInputKey_Released(FKey InKey)
+void ASelectGizmo::OnInputKey_Released(FKey InKey)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("OnInputKey_Released"));
 	bIsMousePressed = false;
@@ -110,18 +116,18 @@ void AMarqueeSelector::OnInputKey_Released(FKey InKey)
 	Request->UpdateSecondPoint(SecondPoint);
 
 	Request->Submit();
-	Request->Finished.AddDynamic(this, &AMarqueeSelector::OnRequestFinished);
+	Request->Finished.AddDynamic(this, &ASelectGizmo::OnRequestFinished);
 }
 
-void AMarqueeSelector::OnMouseX(float AxisValue)
+void ASelectGizmo::OnMouseX(float AxisValue)
 {
 }
 
-void AMarqueeSelector::OnMouseY(float AxisValue)
+void ASelectGizmo::OnMouseY(float AxisValue)
 {
 }
 
-void AMarqueeSelector::OnMouse2D(FVector AxisValue)
+void ASelectGizmo::OnMouse2D(FVector AxisValue)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Axis 2D %s"), *AxisValue.ToString());
 	if (bIsMousePressed)
@@ -131,15 +137,15 @@ void AMarqueeSelector::OnMouse2D(FVector AxisValue)
 	}
 }
 
-void AMarqueeSelector::OnRequestFinished(UActorSelectionRequest* InRequest, bool bSuccess)
+void ASelectGizmo::OnRequestFinished(UActorSelectionRequest* InRequest, bool bSuccess)
 {
 	//Request = InRequest;
-	Request->Finished.RemoveDynamic(this, &AMarqueeSelector::OnRequestFinished);
+	Request->Finished.RemoveDynamic(this, &ASelectGizmo::OnRequestFinished);
 	//this->Request = InRequest;
 	this->OnFinished();
 }
 
-void AMarqueeSelector::OnFinished()
+void ASelectGizmo::OnFinished()
 {
 	if (Finished.IsBound())
 		Finished.Broadcast(this->Request, this->Request->IsNotEmpty());

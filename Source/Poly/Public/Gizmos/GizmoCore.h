@@ -7,25 +7,38 @@
 #include "Gizmos/GizmoTypes.h"
 #include "GizmoCore.generated.h"
 
+
+
 UCLASS()
 class POLY_API AGizmoCore : public AActor
+{
+	GENERATED_BODY()
+
+public:
+	// Sets default values for this actor's properties
+	AGizmoCore();
+
+
+	UFUNCTION(BlueprintCallable, Category = "Gizmo")
+	virtual void SetGizmoHidden(const bool bHiddenInGame = false);
+
+
+public:
+
+};
+
+
+UCLASS()
+class POLY_API ATransformCore : public AGizmoCore
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AGizmoCore();
-
-
+	ATransformCore();
 
 	void OnTransformChanged(const bool bEndTransform, const FTransform InDelta);
 	void OnTransformEnded(const FTransform InDelta);
-
-
-
-	UFUNCTION(BlueprintCallable, Category = "Gizmo")
-	void SetGizmoHidden(const bool bHiddenInGame = false);
-
 
 public:
 
