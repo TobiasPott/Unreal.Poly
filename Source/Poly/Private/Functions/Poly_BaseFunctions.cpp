@@ -22,3 +22,12 @@ void UPoly_BaseFunctions::GetOrCreateActor(const UObject* WorldContext, TSubclas
 		
 	
 }
+
+void UPoly_BaseFunctions::SetActorHidden(AActor* Target, const bool bHiddenInGame)
+{
+	if (IsValid(Target))
+	{
+		Target->SetActorHiddenInGame(bHiddenInGame);
+		Target->SetActorEnableCollision(!bHiddenInGame);
+	}
+}

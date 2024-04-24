@@ -21,6 +21,14 @@ public:
 
 
 
+	UFUNCTION(BlueprintCallable, Category = "Poly|Base", meta = (DisplayName = "Set Actor Hidden (w Collision)"))
+	static void SetActorHidden(AActor* Target, const bool bHiddenInGame = false);
+
+
+
+
+
+
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Utilities")
 	static FTransform Transform_Identity() { return FTransform::Identity; }
 

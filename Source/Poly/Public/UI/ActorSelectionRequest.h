@@ -19,6 +19,8 @@
 #include "ActorSelectionRequest.generated.h"
 
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FActorSelectionRequestFinished, class UActorSelectionRequest*, Request, bool, bSuccess);
+
 UCLASS(Blueprintable)
 class POLY_API UActorSelectionRequest : public UObject
 {
@@ -53,7 +55,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
 	TSubclassOf<AActor> FilterClass;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
+	UPROPERTY(VisibleAnywhere, Category = "Selection")
 	TArray<AActor*> Actors;
 
 
@@ -93,12 +95,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SetActor(AActor* InActor);
 
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	TArray<AActor*>& GetActors() { return this->Actors; };
 
 
 public:
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FMarqueeSelectionRequestFinished, UActorSelectionRequest*, Request, bool, bSuccess);
 	UPROPERTY(BlueprintAssignable, EditDefaultsOnly, Category = "Default")
-	FMarqueeSelectionRequestFinished Finished;
+	FActorSelectionRequestFinished Finished;
 
 };

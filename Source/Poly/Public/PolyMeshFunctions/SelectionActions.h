@@ -6,7 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Actions/ActionBase.h"
 #include "Selection/SelectorTypes.h"
-#include "PolyMesh_SelectionActions.generated.h"
+#include "SelectionActions.generated.h"
 
 /**
  * 
