@@ -7,7 +7,7 @@
 #include "UI/ActorSelectionRequest.h"
 #include "MarqueeSelector.generated.h"
 
-UCLASS()
+UCLASS(Blueprintable, BlueprintType)
 class POLY_API AMarqueeSelector : public AActor
 {
 	GENERATED_BODY()
