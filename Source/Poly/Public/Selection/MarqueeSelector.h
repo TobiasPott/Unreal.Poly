@@ -24,6 +24,8 @@ protected:
 	int32 PlayerIndex = 0;
 	UPROPERTY()
 	FName InputAction = EKeys::LeftMouseButton.GetFName();
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Filter")
+	bool bDisableOnFinish = false;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
 	FVector2D FirstPoint;
@@ -53,7 +55,8 @@ protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
-	void Setup(EActorSelectionRequestMode InMarqueeMode, UClass* InFilterClass, bool bInIncludeNonCollider = false, bool bInIncludeOnlyEnclosed = false);
+	void Setup(EActorSelectionRequestMode InMarqueeMode, UClass* InFilterClass, bool bInIncludeNonCollider = false, bool bInIncludeOnlyEnclosed = false, 
+		bool bInDisableOnFinish = false);
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SetEnabled(const bool bInEnable);

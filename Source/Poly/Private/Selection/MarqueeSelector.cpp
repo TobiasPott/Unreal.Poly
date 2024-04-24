@@ -25,18 +25,19 @@ void AMarqueeSelector::BeginPlay()
 
 }
 
-void AMarqueeSelector::Setup(EActorSelectionRequestMode InMarqueeMode, UClass* InFilterClass, bool bInIncludeNonCollider, bool bInIncludeOnlyEnclosed)
+void AMarqueeSelector::Setup(EActorSelectionRequestMode InMarqueeMode, UClass* InFilterClass, bool bInIncludeNonCollider, bool bInIncludeOnlyEnclosed,
+	bool bInDisableOnFinish)
 {
 	MarqueeMode = InMarqueeMode;
 	FilterClass = InFilterClass;
 	bIncludeNonCollider = bInIncludeNonCollider;
 	bIncludeOnlyEnclosed = bInIncludeOnlyEnclosed;
+	bDisableOnFinish = bInDisableOnFinish;
 }
 
 void AMarqueeSelector::SetEnabled(const bool bInEnable)
 {
-	bIsEnabled = bInEnable;
-	if (bInEnable)
+	if (!bIsEnabled && bInEnable)
 	{
 		// bind primary input key pressed/released events
 		this->EnableInput(UGameplayStatics::GetPlayerController(this, PlayerIndex));
@@ -51,24 +52,24 @@ void AMarqueeSelector::SetEnabled(const bool bInEnable)
 		// bind mouse axes events (to conume their input from other receivers)
 		FInputVectorAxisBinding& Mouse2D_Axis = InputComponent->BindVectorAxis("Mouse2D");
 		Mouse2D_Axis.AxisDelegate.BindDelegate(this, &AMarqueeSelector::OnMouse2D);
-		Mouse2D_Axis.bConsumeInput = true;
+		Mouse2D_Axis.bConsumeInput = false;
 		Mouse2D_Axis.bExecuteWhenPaused = true;
 
 		FInputAxisKeyBinding& MouseX_Axis = InputComponent->BindAxisKey("MouseX");
 		MouseX_Axis.AxisDelegate.BindDelegate(this, &AMarqueeSelector::OnMouseX);
-		MouseX_Axis.bConsumeInput = true;
+		MouseX_Axis.bConsumeInput = false;
 		MouseX_Axis.bExecuteWhenPaused = true;
 		FInputAxisKeyBinding& MouseY_Axis = InputComponent->BindAxisKey("MouseY");
 		MouseY_Axis.AxisDelegate.BindDelegate(this, &AMarqueeSelector::OnMouseY);
-		MouseY_Axis.bConsumeInput = true;
+		MouseY_Axis.bConsumeInput = false;
 		MouseY_Axis.bExecuteWhenPaused = true;
 
-		if (!IsValid(Request))
-			Request = NewObject<UActorSelectionRequest>(this);
+		//if (!IsValid(Request))
+		//	Request = NewObject<UActorSelectionRequest>(this);
 	}
-	else
+	else if (bIsEnabled && !bInEnable)
 	{
-		
+
 		InputComponent->RemoveAxisBinding("Mouse2D");
 		InputComponent->RemoveAxisBinding("MouseX");
 		InputComponent->RemoveAxisBinding("MouseY");
@@ -80,6 +81,7 @@ void AMarqueeSelector::SetEnabled(const bool bInEnable)
 		this->DisableInput(UGameplayStatics::GetPlayerController(this, PlayerIndex));
 	}
 
+	bIsEnabled = bInEnable;
 }
 
 
@@ -89,6 +91,7 @@ void AMarqueeSelector::OnInputKey_Pressed(FKey InKey)
 	UPoly_UIFunctions::GetMousePosition(this, PlayerIndex, FirstPoint);
 	SecondPoint = FirstPoint;
 
+	Request = NewObject<UActorSelectionRequest>(this);
 	Request->Init(MarqueeMode, FirstPoint, FirstPoint, FilterClass, bIncludeNonCollider, bIncludeOnlyEnclosed);
 
 	APolyHUD* Hud = Cast<APolyHUD>(UGameplayStatics::GetPlayerController(this, PlayerIndex)->GetHUD());
@@ -142,6 +145,7 @@ void AMarqueeSelector::OnFinished()
 		Finished.Broadcast(this->Request, this->Request->IsNotEmpty());
 
 	// ToDo: Consider making this behaviour configurable per instance to allow reuse
-	this->SetEnabled(false);
+	if (bDisableOnFinish)
+		this->SetEnabled(false);
 	this->Request = nullptr;
 }
