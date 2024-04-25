@@ -18,8 +18,6 @@ class POLY_API AGizmoCoreActor : public ATransformCore
 	// ToDo: @tpott: Expose SnappedDeltaTransform as Changed events 
 	//				This should be solved by only firing the events when the snapped GetDeltaTransform has a value
 
-	// ToDo: @tpott: Extract some of the code to custom base type AGizmoCoreActor and AGizmoBase to reduce length of header (unchanging types like event delegates, ray data and similar)
-
 	// ToDo: @tpott: Add DomainExclusionMask to disable specific domains (mask with maini axis only, axis planes should disable accordingly)
 	//								(e.g.: exclude x results in XY and XZ plane to be disabled too)
 public:
@@ -35,6 +33,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Gizmo")
 	virtual FTransform GetDeltaTransform(const FVector& LookingVector, const FVector& RayStartPoint, const FVector& RayEvndPoint, EGizmoDomain Domain);
+
+	UFUNCTION(BlueprintCallable, Category = "Gizmo")
+	FTransform UpdateDeltaTransform(const bool bEndTransform, const float MaxDistance = 10000);
 
 	/**
 	 * Scales the Gizmo Scene depending on a Reference Point
@@ -89,10 +90,6 @@ protected:
 	EGizmoDomain GetDomainByTypes(const TArray<TEnumAsByte<EObjectTypeQuery>>& ObjectTypes, bool& bSuccess);
 	UFUNCTION(BlueprintCallable, Category = "Gizmo")
 	EGizmoDomain GetDomainByChannel(const ETraceTypeQuery Channel, bool& bSuccess);
-
-	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, Category = "Gizmo")
-	FTransform UpdateDeltaTransform(const bool bEndTransform, const float MaxDistance = 10000);
 
 public:
 

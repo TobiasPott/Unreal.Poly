@@ -8,8 +8,7 @@ ARotateGizmo::ARotateGizmo()
 	CameraArcRadius = 150.0f;
 }
 
-FTransform ARotateGizmo::GetDeltaTransform(const FVector& LookingVector, const FVector& RayStartPoint
-	, const FVector& RayEndPoint, EGizmoDomain Domain)
+FTransform ARotateGizmo::GetDeltaTransform(const FVector& LookingVector, const FVector& RayStartPoint, const FVector& RayEndPoint, EGizmoDomain Domain)
 {
 	FTransform deltaTransform;
 	deltaTransform.SetScale3D(FVector::ZeroVector);
@@ -66,10 +65,7 @@ FTransform ARotateGizmo::GetDeltaTransform(const FVector& LookingVector, const F
 	return deltaTransform;
 }
 
-FTransform ARotateGizmo::GetSnappedTransform(FTransform& outCurrentAccumulatedTransform
-	, const FTransform& DeltaTransform
-	, EGizmoDomain Domain
-	, float SnappingValue) const
+FTransform ARotateGizmo::GetSnappedTransform(FTransform& outCurrentAccumulatedTransform, const FTransform& DeltaTransform, EGizmoDomain Domain, float SnappingValue) const
 {
 	if (SnappingValue == 0.f) return DeltaTransform;
 
