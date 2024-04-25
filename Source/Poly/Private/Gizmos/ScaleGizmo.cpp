@@ -63,27 +63,27 @@ FTransform AScaleGizmo::GetDeltaTransform(const FVector& LookingVector, const FV
 		case EGizmoDomain::TD_X_Axis:
 		{
 			targetDirection = forwardVector;
-			if (FMath::Abs(FVector::DotProduct(LookingVector, rightVector)) > Cos45Deg) 
+			if (FMath::Abs(FVector::DotProduct(LookingVector, rightVector)) > Cos45Deg)
 				planeNormal = rightVector;
-			else 
+			else
 				planeNormal = upVector;
 			break;
 		}
 		case EGizmoDomain::TD_Y_Axis:
 		{
 			targetDirection = rightVector;
-			if (FMath::Abs(FVector::DotProduct(LookingVector, forwardVector)) > Cos45Deg) 
+			if (FMath::Abs(FVector::DotProduct(LookingVector, forwardVector)) > Cos45Deg)
 				planeNormal = forwardVector;
-			else 
+			else
 				planeNormal = upVector;
 			break;
 		}
 		case EGizmoDomain::TD_Z_Axis:
 		{
 			targetDirection = upVector;
-			if (FMath::Abs(FVector::DotProduct(LookingVector, forwardVector)) > Cos45Deg) 
+			if (FMath::Abs(FVector::DotProduct(LookingVector, forwardVector)) > Cos45Deg)
 				planeNormal = forwardVector;
-			else 
+			else
 				planeNormal = rightVector;
 			break;
 		}
@@ -119,13 +119,15 @@ FTransform AScaleGizmo::GetDeltaTransform(const FVector& LookingVector, const FV
 		deltaTransform.SetScale3D(deltaLocation * ScalingFactor);
 
 		// Call 'Changed' events
-		if (!deltaTransform.Scale3DEquals(FTransform::Identity, 0.000001))
-		{
-			if (TransformChanged.IsBound())
-				TransformChanged.Broadcast(false, deltaTransform);
-			if (ScaleChanged.IsBound())
-				ScaleChanged.Broadcast(false, deltaTransform.GetScale3D());
-		}
+
+		if (!bSilent)
+			if (!deltaTransform.Scale3DEquals(FTransform::Identity, 0.000001))
+			{
+				if (TransformChanged.IsBound())
+					TransformChanged.Broadcast(false, deltaTransform);
+				if (ScaleChanged.IsBound())
+					ScaleChanged.Broadcast(false, deltaTransform.GetScale3D());
+			}
 	}
 
 	UpdateRays(RayStartPoint, RayEndPoint);
@@ -165,7 +167,7 @@ FTransform AScaleGizmo::GetSnappedTransform(FTransform& outCurrentAccumulatedTra
 FTransform AScaleGizmo::GetSnappedTransformPerComponent(const FTransform& OldComponentTransform, const FTransform& NewComponentTransform, EGizmoDomain Domain, float SnappingValue) const
 {
 
-	FTransform result= NewComponentTransform;
+	FTransform result = NewComponentTransform;
 
 	FVector newScale = NewComponentTransform.GetScale3D();
 	if (!newScale.Equals(OldComponentTransform.GetScale3D(), 0.0001f))

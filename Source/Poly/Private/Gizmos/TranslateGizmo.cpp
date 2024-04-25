@@ -44,9 +44,9 @@ FTransform ATranslateGizmo::GetDeltaTransform(const FVector& LookingVector, cons
 		// the direction of travel (only used for Axis Domains)
 		FVector targetDirection(0.f);
 
-		FVector forwardVector	= GetActorForwardVector();
-		FVector rightVector		= GetActorRightVector();
-		FVector upVector		= GetActorUpVector();
+		FVector forwardVector = GetActorForwardVector();
+		FVector rightVector = GetActorRightVector();
+		FVector upVector = GetActorUpVector();
 
 
 		switch (Domain)
@@ -54,7 +54,7 @@ FTransform ATranslateGizmo::GetDeltaTransform(const FVector& LookingVector, cons
 		case EGizmoDomain::TD_X_Axis:
 		{
 			targetDirection = forwardVector;
-			if (FMath::Abs(FVector::DotProduct(LookingVector, rightVector)) > Cos45Deg) 
+			if (FMath::Abs(FVector::DotProduct(LookingVector, rightVector)) > Cos45Deg)
 				planeNormal = rightVector;
 			else planeNormal = upVector;
 			break;
@@ -109,13 +109,14 @@ FTransform ATranslateGizmo::GetDeltaTransform(const FVector& LookingVector, cons
 		deltaTransform.SetLocation(deltaLocation);
 
 		// Call 'Changed' events
-		if (!deltaTransform.TranslationEquals(FTransform::Identity, 0.000001))
-		{
-			if (TransformChanged.IsBound())
-				TransformChanged.Broadcast(false, deltaTransform);
-			if (TranslationChanged.IsBound())
-				TranslationChanged.Broadcast(false, deltaLocation);
-		}
+		if (!bSilent)
+			if (!deltaTransform.TranslationEquals(FTransform::Identity, 0.000001))
+			{
+				if (TransformChanged.IsBound())
+					TransformChanged.Broadcast(false, deltaTransform);
+				if (TranslationChanged.IsBound())
+					TranslationChanged.Broadcast(false, deltaLocation);
+			}
 	}
 
 

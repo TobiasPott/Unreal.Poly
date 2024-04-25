@@ -51,13 +51,15 @@ FTransform ARotateGizmo::GetDeltaTransform(const FVector& LookingVector, const F
 		deltaTransform.SetRotation(rotQuat);
 
 		// Call 'Changed' events
-		if (!deltaTransform.RotationEquals(FTransform::Identity, 0.000001))
-		{
-			if (TransformChanged.IsBound())
-				TransformChanged.Broadcast(false, deltaTransform);
-			if (RotationChanged.IsBound())
-				RotationChanged.Broadcast(false, deltaTransform.Rotator());
-		}
+
+		if (!bSilent)
+			if (!deltaTransform.RotationEquals(FTransform::Identity, 0.000001))
+			{
+				if (TransformChanged.IsBound())
+					TransformChanged.Broadcast(false, deltaTransform);
+				if (RotationChanged.IsBound())
+					RotationChanged.Broadcast(false, deltaTransform.Rotator());
+			}
 	}
 
 	UpdateRays(RayStartPoint, RayEndPoint);

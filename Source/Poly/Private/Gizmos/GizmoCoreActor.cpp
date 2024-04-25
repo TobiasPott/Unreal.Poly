@@ -222,9 +222,9 @@ FTransform AGizmoCoreActor::UpdateDeltaTransform(const bool bEndTransform, const
 	{
 		// reset rays to first rays
 		const FVector LookVector = UGameplayStatics::GetPlayerCameraManager(this, this->PlayerIndex)->GetActorForwardVector();
-		GetDeltaTransform(LookVector, FirstRayStartPoint, FirstRayEndPoint, this->ActiveDomain);
+		GetDeltaTransform(LookVector, FirstRayStartPoint, FirstRayEndPoint, this->ActiveDomain, true);
 		// get delta between first ray and current (last) ray
-		Delta = GetDeltaTransform(LookVector, Start, End, this->ActiveDomain);
+		Delta = GetDeltaTransform(LookVector, Start, End, this->ActiveDomain, true);
 		// always fire events if bEndTransform is sets
 		this->OnTransformChanged(true, Delta);
 		this->OnTransformEnded(Delta);
