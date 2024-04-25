@@ -34,7 +34,7 @@ void AScaleGizmo::UpdateGizmoSpace(ETransformSpace SpaceType)
 	SetActorRelativeRotation(FQuat(EForceInit::ForceInit));
 }
 
-FTransform AScaleGizmo::GetDeltaTransform(const FVector& LookingVector, const FVector& RayStartPoint, const FVector& RayEndPoint, EGizmoDomain Domain)
+FTransform AScaleGizmo::GetDeltaTransform(const FVector& LookingVector, const FVector& RayStartPoint, const FVector& RayEndPoint, EGizmoDomain Domain, bool bSilent)
 {
 	FTransform deltaTransform;
 	deltaTransform.SetScale3D(FVector::ZeroVector);

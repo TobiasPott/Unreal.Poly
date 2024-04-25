@@ -28,7 +28,7 @@ ATranslateGizmo::ATranslateGizmo()
 
 }
 
-FTransform ATranslateGizmo::GetDeltaTransform(const FVector& LookingVector, const FVector& RayStartPoint, const FVector& RayEndPoint, EGizmoDomain Domain)
+FTransform ATranslateGizmo::GetDeltaTransform(const FVector& LookingVector, const FVector& RayStartPoint, const FVector& RayEndPoint, EGizmoDomain Domain, bool bSilent)
 {
 	FTransform deltaTransform;
 	deltaTransform.SetScale3D(FVector::ZeroVector); //used so that the default FVector(1.f, 1.f, 1.f) does not affect further scaling

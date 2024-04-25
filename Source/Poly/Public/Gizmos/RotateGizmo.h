@@ -26,7 +26,7 @@ public:
 	
 protected:
 
-	virtual FTransform GetDeltaTransform(const FVector& LookingVector, const FVector& RayStartPoint, const FVector& RayEndPoint, EGizmoDomain Domain) override;
+	virtual FTransform GetDeltaTransform(const FVector& LookingVector, const FVector& RayStartPoint, const FVector& RayEndPoint, EGizmoDomain Domain, bool bSilent = false) override;
 
 private:
 

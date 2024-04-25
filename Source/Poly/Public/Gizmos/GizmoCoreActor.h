@@ -32,7 +32,7 @@ public:
 	// This func is overriden by each Transform Gizmo
 
 	UFUNCTION(BlueprintCallable, Category = "Gizmo")
-	virtual FTransform GetDeltaTransform(const FVector& LookingVector, const FVector& RayStartPoint, const FVector& RayEvndPoint, EGizmoDomain Domain);
+	virtual FTransform GetDeltaTransform(const FVector& LookingVector, const FVector& RayStartPoint, const FVector& RayEvndPoint, EGizmoDomain Domain, bool bSilent = false);
 
 	UFUNCTION(BlueprintCallable, Category = "Gizmo")
 	FTransform UpdateDeltaTransform(const bool bEndTransform, const float MaxDistance = 10000);
