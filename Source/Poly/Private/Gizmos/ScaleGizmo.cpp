@@ -73,9 +73,7 @@ FTransform AScaleGizmo::GetDeltaTransform(const FVector& LookingVector, const FV
 			planeNormal = rightVector;
 			break;
 		case EGizmoDomain::TD_XYZ:			
-			// ToDo: @tpott: XYZ scale should consider screen space up/down to set positive/negative scale
 			planeNormal = LookingVector;
-			//planeNormal = (forwardVector + rightVector + upVector) * PreviousViewScale;
 			break;
 		}
 
