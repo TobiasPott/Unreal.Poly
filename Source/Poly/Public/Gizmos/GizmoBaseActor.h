@@ -36,27 +36,27 @@ protected:
 	void CreateSelectCore(ASelectGizmo*& OutSelectCore);
 	virtual void CreateSelectCore_Implementation(ASelectGizmo*& OutSelectCore);
 
-	///** Please add a function description */
-	//UFUNCTION(BlueprintCallable, Category = "Protected/Event Listener")
-	//void Translate_TranslationChanged(bool bEnded, FVector DeltaTranslation);
-	//UFUNCTION(BlueprintCallable, Category = "Protected/Event Listener")
-	//void Translate_TransformEnded(bool bEnded, FTransform DeltaTransform);
 
-	///** Please add a function description */
-	//UFUNCTION(BlueprintCallable, Category = "Protected/Event Listener")
-	//void Rotate_RotationChanged(bool bEnded, FRotator DeltaRotation);
-	//UFUNCTION(BlueprintCallable, Category = "Protected/Event Listener")
-	//void Rotate_TransformEnded(bool bEnded, FTransform DeltaTransform);
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Protected|Core Events")
+	void Translate_TranslationChanged(bool bEnded, FVector DeltaTranslation);
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Protected|Core Events")
+	void Translate_TransformEnded(bool bEnded, FTransform DeltaTransform);
 
-	///** Please add a function description */
-	//UFUNCTION(BlueprintCallable, Category = "Protected/Event Listener")
-	//void Scale_ScaleChanged(bool bEnded, FVector DeltaScale);
-	//UFUNCTION(BlueprintCallable, Category = "Protected/Event Listener")
-	//void Scale_TransformEnded(bool bEnded, FTransform DeltaTransform);
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Protected|Core Events")
+	void Rotate_RotationChanged(bool bEnded, FRotator DeltaRotation);
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Protected|Core Events")
+	void Rotate_TransformEnded(bool bEnded, FTransform DeltaTransform);
 
-	///** Please add a function description */
-	//UFUNCTION(BlueprintCallable, Category = "Protected/ Event Listener")
-	//void Select_Finished(UActorSelectionRequest* Request, bool bSuccess);
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Protected|Core Events")
+	void Scale_ScaleChanged(bool bEnded, FVector DeltaScale);
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Protected|Core Events")
+	void Scale_TransformEnded(bool bEnded, FTransform DeltaTransform);
+
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Protected|Core Events")
+	void Select_Finished(UActorSelectionRequest* Request, bool bSuccess);
 
 
 public:
@@ -65,21 +65,21 @@ public:
 	TObjectPtr<USceneComponent> DefaultSceneRoot;
 
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Cores")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default|Cores")
 	TObjectPtr<ATranslateGizmo> TranslateCore;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Cores")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default|Cores")
 	TSubclassOf<ATranslateGizmo> TranslateCoreClass;
 
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Cores")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default|Cores")
 	TObjectPtr<ARotateGizmo> RotateCore;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Cores")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default|Cores")
 	TSubclassOf<ARotateGizmo> RotateCoreClass;
 
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Cores")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default|Cores")
 	TObjectPtr<AScaleGizmo> ScaleCore;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Cores")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default|Cores")
 	TSubclassOf<AScaleGizmo> ScaleCoreClass;
 
 	/** Please add a variable description */
