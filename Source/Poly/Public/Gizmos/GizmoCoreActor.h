@@ -80,6 +80,10 @@ protected:
 	//should be called at the end of the GetDeltaTransformation Implemenation
 	void UpdateRays(const FVector& RayStart, const FVector& RayEnd);
 
+	UFUNCTION(BlueprintNativeEvent, Category = "Gizmo")
+	void TransformVisualElements(const FTransform& DeltaTransform, bool bEndTransform);
+	virtual void TransformVisualElements_Implementation(const FTransform& DeltaTransform, bool bEndTransform) { };
+
 	/**
 	 * Adds or modifies an entry to the DomainMap.
 	*/

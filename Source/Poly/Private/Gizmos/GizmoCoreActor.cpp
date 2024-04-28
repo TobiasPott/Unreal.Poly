@@ -216,6 +216,7 @@ FTransform AGizmoCoreActor::UpdateDeltaTransform(const bool bEndTransform, const
 		if (UPoly_UIFunctions::GetMouseRaySegment(this, this->PlayerIndex, Start, End, MaxDistance))
 		{
 			Delta = GetDeltaTransform(LookVector, Start, End, this->ActiveDomain);
+			this->TransformVisualElements(Delta, false);
 		}
 	}
 	if (bEndTransform)
@@ -225,6 +226,7 @@ FTransform AGizmoCoreActor::UpdateDeltaTransform(const bool bEndTransform, const
 		GetDeltaTransform(LookVector, FirstRayStartPoint, FirstRayEndPoint, this->ActiveDomain, true);
 		// get delta between first ray and current (last) ray
 		Delta = GetDeltaTransform(LookVector, Start, End, this->ActiveDomain, true);
+		this->TransformVisualElements(Delta, true);
 		// always fire events if bEndTransform is sets
 		this->OnTransformChanged(true, Delta);
 		this->OnTransformEnded(Delta);
