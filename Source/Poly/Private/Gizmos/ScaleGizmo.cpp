@@ -72,8 +72,10 @@ FTransform AScaleGizmo::GetDeltaTransform(const FVector& LookingVector, const FV
 		case EGizmoDomain::TD_XZ_Plane:
 			planeNormal = rightVector;
 			break;
-		case EGizmoDomain::TD_XYZ:
+		case EGizmoDomain::TD_XYZ:			
+			// ToDo: @tpott: XYZ scale should consider screen space up/down to set positive/negative scale
 			planeNormal = LookingVector;
+			//planeNormal = (forwardVector + rightVector + upVector) * PreviousViewScale;
 			break;
 		}
 
@@ -96,6 +98,10 @@ FTransform AScaleGizmo::GetDeltaTransform(const FVector& LookingVector, const FV
 			break;
 		}
 
+		// unify delta with z component for XYZ domain
+		if (Domain == EGizmoDomain::TD_XYZ)
+			deltaLocation = FVector(deltaLocation.Z) * PreviousViewScale;
+
 		deltaLocation = (deltaLocation * PreviousViewScale * ScalingFactor) / 100.0f;
 		deltaTransform.SetScale3D(deltaLocation);
 
@@ -116,6 +122,7 @@ FTransform AScaleGizmo::GetDeltaTransform(const FVector& LookingVector, const FV
 	return deltaTransform;
 
 }
+
 //
 //FTransform AScaleGizmo::GetSnappedTransform(FTransform& outCurrentAccumulatedTransform, const FTransform& DeltaTransform, EGizmoDomain Domain, float SnappingValue) const
 //{
