@@ -25,16 +25,16 @@ protected:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Setup")
 	void CreateTranslateCore(ATranslateGizmo*& OutTranslateCore);
-	virtual void CreateTranslateCore_Implementation(ATranslateGizmo*& OutTranslateCore) { };
+	virtual void CreateTranslateCore_Implementation(ATranslateGizmo*& OutTranslateCore);
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Setup")
 	void CreateRotateCore(ARotateGizmo*& OutRotateCore);
-	virtual void CreateRotateCore_Implementation(ARotateGizmo*& OutRotateCore) { };
+	virtual void CreateRotateCore_Implementation(ARotateGizmo*& OutRotateCore);
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Setup")
 	void CreateScaleCore(AScaleGizmo*& OutScaleCore);
-	virtual void CreateScaleCore_Implementation(AScaleGizmo*& OutScaleCore) { };
+	virtual void CreateScaleCore_Implementation(AScaleGizmo*& OutScaleCore);
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Setup")
 	void CreateSelectCore(ASelectGizmo*& OutSelectCore);
-	virtual void CreateSelectCore_Implementation(ASelectGizmo*& OutSelectCore) { };
+	virtual void CreateSelectCore_Implementation(ASelectGizmo*& OutSelectCore);
 
 	///** Please add a function description */
 	//UFUNCTION(BlueprintCallable, Category = "Protected/Event Listener")
