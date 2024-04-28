@@ -67,23 +67,14 @@ void AGizmoCoreActor::Tick(float DeltaSeconds)
 }
 void AGizmoCoreActor::UpdateGizmoSpace(ETransformSpace SpaceType)
 {
-	switch (SpaceType)
-	{
-	case ETransformSpace::TS_Local:
-		SetActorRelativeRotation(FQuat(EForceInit::ForceInit));
-		break;
-	case ETransformSpace::TS_World:
-		SetActorRotation(FQuat(EForceInit::ForceInit), ETeleportType::TeleportPhysics);
-		break;
-	}
+	ActiveSpace = SpaceType;
+	SetActorRelativeRotation(FQuat::Identity);
 }
 
 //Base Gizmo does not affect anything and returns No Delta Transform.
 // This func is overriden by each Transform Gizmo
 
-FTransform AGizmoCoreActor::GetDeltaTransform(const FVector& LookingVector
-	, const FVector& RayStartPoint, const FVector& RayEndPoint
-	, EGizmoDomain Domain)
+FTransform AGizmoCoreActor::GetDeltaTransform(const FVector& LookingVector, const FVector& RayStartPoint, const FVector& RayEndPoint, EGizmoDomain Domain, bool bSilent)
 {
 	FTransform deltaTransform;
 	deltaTransform.SetScale3D(FVector::ZeroVector);
@@ -93,15 +84,11 @@ FTransform AGizmoCoreActor::GetDeltaTransform(const FVector& LookingVector
 void AGizmoCoreActor::ScaleGizmoScene(const FVector& ReferenceLocation, const FVector& ReferenceLookDirection, float FieldOfView)
 {
 	FVector Scale = CalculateGizmoSceneScale(ReferenceLocation, ReferenceLookDirection, FieldOfView);
-	//UE_LOG(LogGizmo, Warning, TEXT("Scale: %s"), *Scale.ToString());
 	if (ScalingScene)
 		ScalingScene->SetWorldScale3D(Scale);
 }
 
-FTransform AGizmoCoreActor::GetSnappedTransform(FTransform& outCurrentAccumulatedTransform
-	, const FTransform& DeltaTransform
-	, EGizmoDomain Domain
-	, float SnappingValue) const
+FTransform AGizmoCoreActor::GetSnappedTransform(FTransform& outCurrentAccumulatedTransform, const FTransform& DeltaTransform, EGizmoDomain Domain, float SnappingValue) const
 {
 	return DeltaTransform;
 }
@@ -135,7 +122,6 @@ FVector AGizmoCoreActor::CalculateGizmoSceneScale(const FVector& ReferenceLocati
 	if (!bInProgress)
 	{
 		FVector deltaLocationInv = ReferenceLocation - GetActorLocation();
-		// ToDo: @tpott: transfer this view angle dependend scale to translate and scale gizmo (I like the axis flip for rotation)
 		CurrentRotationViewScale = FVector(
 			(FVector::DotProduct(GetActorForwardVector(), deltaLocationInv) >= 0) ? 1.f : -1.f,
 			(FVector::DotProduct(GetActorRightVector(), deltaLocationInv) >= 0) ? 1.f : -1.f,
@@ -218,15 +204,17 @@ FTransform AGizmoCoreActor::UpdateDeltaTransform(const bool bEndTransform, const
 		if (UPoly_UIFunctions::GetMouseRaySegment(this, this->PlayerIndex, Start, End, MaxDistance))
 		{
 			Delta = GetDeltaTransform(LookVector, Start, End, this->ActiveDomain);
+			this->TransformVisualElements(Delta, false);
 		}
 	}
 	if (bEndTransform)
 	{
 		// reset rays to first rays
 		const FVector LookVector = UGameplayStatics::GetPlayerCameraManager(this, this->PlayerIndex)->GetActorForwardVector();
-		GetDeltaTransform(LookVector, FirstRayStartPoint, FirstRayEndPoint, this->ActiveDomain);
+		GetDeltaTransform(LookVector, FirstRayStartPoint, FirstRayEndPoint, this->ActiveDomain, true);
 		// get delta between first ray and current (last) ray
-		Delta = GetDeltaTransform(LookVector, Start, End, this->ActiveDomain);
+		Delta = GetDeltaTransform(LookVector, Start, End, this->ActiveDomain, true);
+		this->TransformVisualElements(Delta, true);
 		// always fire events if bEndTransform is sets
 		this->OnTransformChanged(true, Delta);
 		this->OnTransformEnded(Delta);
@@ -273,7 +261,6 @@ void AGizmoCoreActor::ScaleToScreenSpace()
 
 void AGizmoCoreActor::SetEnableConsumeInput(const bool bInEnable)
 {
-	//bIsEnabled = bInEnable;
 	if (bInEnable)
 	{
 		// bind mouse axes events (to conume their input from other receivers)
@@ -300,7 +287,6 @@ void AGizmoCoreActor::SetEnableConsumeInput(const bool bInEnable)
 		InputComponent->AxisKeyBindings.Reset(0);
 		InputComponent->VectorAxisBindings.Reset(0);
 	}
-
 }
 
 void AGizmoCoreActor::OnInputKey_Pressed_Implementation(FKey InKey)

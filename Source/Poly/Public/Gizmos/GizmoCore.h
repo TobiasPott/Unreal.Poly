@@ -8,7 +8,6 @@
 #include "GizmoCore.generated.h"
 
 
-
 UCLASS()
 class POLY_API AGizmoCore : public AActor
 {

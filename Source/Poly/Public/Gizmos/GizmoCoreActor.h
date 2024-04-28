@@ -14,27 +14,26 @@ class POLY_API AGizmoCoreActor : public ATransformCore
 {
 	GENERATED_BODY()
 
-
 	// ToDo: @tpott: Expose SnappedDeltaTransform as Changed events 
 	//				This should be solved by only firing the events when the snapped GetDeltaTransform has a value
 
-	// ToDo: @tpott: Extract some of the code to custom base type AGizmoCoreActor and AGizmoBase to reduce length of header (unchanging types like event delegates, ray data and similar)
-
-	// ToDo: @tpott: Add DomainExclusionMask to disable specific domains (mask with maini axis only, axis planes should disable accordingly)
-	//								(e.g.: exclude x results in XY and XZ plane to be disabled too)
 public:
 	// Sets default values for this actor's properties
 	AGizmoCoreActor();
 
 	virtual EGizmoType GetGizmoType() const { return EGizmoType::GT_NoTransform; }
 
+	UFUNCTION(BlueprintCallable, Category = "Gizmo")
 	virtual void UpdateGizmoSpace(ETransformSpace SpaceType);
 
 	//Base Gizmo does not affect anything and returns No Delta Transform.
 	// This func is overriden by each Transform Gizmo
 
 	UFUNCTION(BlueprintCallable, Category = "Gizmo")
-	virtual FTransform GetDeltaTransform(const FVector& LookingVector, const FVector& RayStartPoint, const FVector& RayEvndPoint, EGizmoDomain Domain);
+	virtual FTransform GetDeltaTransform(const FVector& LookingVector, const FVector& RayStartPoint, const FVector& RayEvndPoint, EGizmoDomain Domain, bool bSilent = false);
+
+	UFUNCTION(BlueprintCallable, Category = "Gizmo")
+	FTransform UpdateDeltaTransform(const bool bEndTransform, const float MaxDistance = 10000);
 
 	/**
 	 * Scales the Gizmo Scene depending on a Reference Point
@@ -79,6 +78,10 @@ protected:
 	//should be called at the end of the GetDeltaTransformation Implemenation
 	void UpdateRays(const FVector& RayStart, const FVector& RayEnd);
 
+	UFUNCTION(BlueprintNativeEvent, Category = "Gizmo")
+	void TransformVisualElements(const FTransform& DeltaTransform, bool bEndTransform);
+	virtual void TransformVisualElements_Implementation(const FTransform& DeltaTransform, bool bEndTransform) { };
+
 	/**
 	 * Adds or modifies an entry to the DomainMap.
 	*/
@@ -89,10 +92,6 @@ protected:
 	EGizmoDomain GetDomainByTypes(const TArray<TEnumAsByte<EObjectTypeQuery>>& ObjectTypes, bool& bSuccess);
 	UFUNCTION(BlueprintCallable, Category = "Gizmo")
 	EGizmoDomain GetDomainByChannel(const ETraceTypeQuery Channel, bool& bSuccess);
-
-	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, Category = "Gizmo")
-	FTransform UpdateDeltaTransform(const bool bEndTransform, const float MaxDistance = 10000);
 
 public:
 
@@ -136,7 +135,9 @@ protected:
 	int32 DomainMask = static_cast<int32>(EGizmoDomainMask::GDM_X_Axis | EGizmoDomainMask::GDM_Y_Axis | EGizmoDomainMask::GDM_Z_Axis);
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Default")
 	EGizmoDomain ActiveDomain = EGizmoDomain::TD_None;
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Default")
+	ETransformSpace ActiveSpace = ETransformSpace::TS_World;
+	
 	// Scale behaviour
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Default")
 	bool bEnableScaleToScreenSpace = true;

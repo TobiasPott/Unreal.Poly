@@ -19,9 +19,9 @@ public:
 
 	ATranslateGizmo();
 
-	virtual EGizmoType GetGizmoType() const final { return EGizmoType::GT_Translation; }
+	virtual EGizmoType GetGizmoType() const { return EGizmoType::GT_Translation; }
 
-	virtual FTransform GetDeltaTransform(const FVector& LookingVector, const FVector& RayStartPoint, const FVector& RayEndPoint,  EGizmoDomain Domain) override;
+	virtual FTransform GetDeltaTransform(const FVector& LookingVector, const FVector& RayStartPoint, const FVector& RayEndPoint,  EGizmoDomain Domain, bool bSilent = false) override;
 
 	// Returns a Snapped Transform based on how much has been accumulated, the Delta Transform and Snapping Value
 	virtual FTransform GetSnappedTransform(FTransform& outCurrentAccumulatedTransform, const FTransform& DeltaTransform, EGizmoDomain Domain, float SnappingValue) const override;

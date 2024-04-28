@@ -5,13 +5,14 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Gizmos/GizmoCoreActor.h"
+#include "Gizmos/TranslateGizmo.h"
 #include "ScaleGizmo.generated.h"
 
 /**
  *
  */
 UCLASS(BlueprintType)
-class POLY_API AScaleGizmo : public AGizmoCoreActor
+class POLY_API AScaleGizmo : public ATranslateGizmo
 {
 	GENERATED_BODY()
 
@@ -21,33 +22,16 @@ public:
 
 	virtual EGizmoType GetGizmoType() const final { return EGizmoType::GT_Scale; }
 
-	virtual void UpdateGizmoSpace(ETransformSpace SpaceType);
+	virtual FTransform GetDeltaTransform(const FVector& LookingVector, const FVector& RayStartPoint, const FVector& RayEndPoint, EGizmoDomain Domain, bool bSilent = false) override;
 
-	virtual FTransform GetDeltaTransform(const FVector& LookingVector, const FVector& RayStartPoint, const FVector& RayEndPoint, EGizmoDomain Domain) override;
+	//// Returns a Snapped Transform based on how much has been accumulated, the Delta Transform and Snapping Value
+	//virtual FTransform GetSnappedTransform(FTransform& outCurrentAccumulatedTransform, const FTransform& DeltaTransform, EGizmoDomain Domain, float SnappingValue) const override;
 
-	// Returns a Snapped Transform based on how much has been accumulated, the Delta Transform and Snapping Value
-	virtual FTransform GetSnappedTransform(FTransform& outCurrentAccumulatedTransform, const FTransform& DeltaTransform, EGizmoDomain Domain, float SnappingValue) const override;
-
-	virtual FTransform GetSnappedTransformPerComponent(const FTransform& OldComponentTransform, const FTransform& NewComponentTransform, EGizmoDomain Domain, float SnappingValue) const override;
+	//virtual FTransform GetSnappedTransformPerComponent(const FTransform& OldComponentTransform, const FTransform& NewComponentTransform, EGizmoDomain Domain, float SnappingValue) const override;
 
 protected:
 	//To see how much an Unreal Unit affects Scaling (e.g. how powerful the mouse scales the object!)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gizmo")
-	float ScalingFactor = 0.05;
+	float ScalingFactor = 0.1;
 
-	// The Hit Box for the XY-Plane Translation
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Gizmo")
-	class UBoxComponent* XY_PlaneBox;
-
-	// The Hit Box for the YZ-Plane Translation
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Gizmo")
-	class UBoxComponent* YZ_PlaneBox;
-
-	// The Hit Box for the	XZ-Plane Translation
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Gizmo")
-	class UBoxComponent* XZ_PlaneBox;
-
-	// The Hit Box for the	XYZ Free Translation
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Gizmo")
-	class USphereComponent* XYZ_Sphere;
 };
