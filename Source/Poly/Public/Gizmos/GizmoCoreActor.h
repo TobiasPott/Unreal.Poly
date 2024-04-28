@@ -26,6 +26,7 @@ public:
 
 	virtual EGizmoType GetGizmoType() const { return EGizmoType::GT_NoTransform; }
 
+	UFUNCTION(BlueprintCallable, Category = "Gizmo")
 	virtual void UpdateGizmoSpace(ETransformSpace SpaceType);
 
 	//Base Gizmo does not affect anything and returns No Delta Transform.
@@ -137,7 +138,9 @@ protected:
 	int32 DomainMask = static_cast<int32>(EGizmoDomainMask::GDM_X_Axis | EGizmoDomainMask::GDM_Y_Axis | EGizmoDomainMask::GDM_Z_Axis);
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Default")
 	EGizmoDomain ActiveDomain = EGizmoDomain::TD_None;
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Default")
+	ETransformSpace ActiveSpace = ETransformSpace::TS_World;
+	
 	// Scale behaviour
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Default")
 	bool bEnableScaleToScreenSpace = true;

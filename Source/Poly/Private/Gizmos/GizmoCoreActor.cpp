@@ -70,9 +70,11 @@ void AGizmoCoreActor::UpdateGizmoSpace(ETransformSpace SpaceType)
 	switch (SpaceType)
 	{
 	case ETransformSpace::TS_Local:
+		ActiveSpace = ETransformSpace::TS_Local;
 		SetActorRelativeRotation(FQuat(EForceInit::ForceInit));
 		break;
 	case ETransformSpace::TS_World:
+		ActiveSpace = ETransformSpace::TS_World;
 		SetActorRotation(FQuat(EForceInit::ForceInit), ETeleportType::TeleportPhysics);
 		break;
 	}

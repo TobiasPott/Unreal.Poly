@@ -14,7 +14,9 @@ AScaleGizmo::AScaleGizmo()
 void AScaleGizmo::UpdateGizmoSpace(ETransformSpace SpaceType)
 {
 	//Force to always be Local
+	ActiveSpace = SpaceType;
 	SetActorRelativeRotation(FQuat(EForceInit::ForceInit));
+	//Super::UpdateGizmoSpace(SpaceType);
 }
 
 FTransform AScaleGizmo::GetDeltaTransform(const FVector& LookingVector, const FVector& RayStartPoint, const FVector& RayEndPoint, EGizmoDomain Domain, bool bSilent)
@@ -64,17 +66,33 @@ FTransform AScaleGizmo::GetDeltaTransform(const FVector& LookingVector, const FV
 			break;
 		}
 		case EGizmoDomain::TD_XY_Plane:
+			targetDirection = forwardVector + rightVector;
 			planeNormal = upVector;
 			break;
 		case EGizmoDomain::TD_YZ_Plane:
+			targetDirection = rightVector + upVector;
 			planeNormal = forwardVector;
 			break;
 		case EGizmoDomain::TD_XZ_Plane:
+			targetDirection = forwardVector + upVector;
 			planeNormal = rightVector;
 			break;
-		case EGizmoDomain::TD_XYZ:			
+		case EGizmoDomain::TD_XYZ:
+			targetDirection = forwardVector + rightVector + upVector;
 			planeNormal = LookingVector;
 			break;
+		//case EGizmoDomain::TD_XY_Plane:
+		//	planeNormal = upVector;
+		//	break;
+		//case EGizmoDomain::TD_YZ_Plane:
+		//	planeNormal = forwardVector;
+		//	break;
+		//case EGizmoDomain::TD_XZ_Plane:
+		//	planeNormal = rightVector;
+		//	break;
+		//case EGizmoDomain::TD_XYZ:			
+		//	planeNormal = LookingVector;
+		//	break;
 		}
 
 		FPlane plane;
@@ -100,7 +118,15 @@ FTransform AScaleGizmo::GetDeltaTransform(const FVector& LookingVector, const FV
 		if (Domain == EGizmoDomain::TD_XYZ)
 			deltaLocation = FVector(deltaLocation.Z) * PreviousViewScale;
 
-		deltaLocation = (deltaLocation * PreviousViewScale * ScalingFactor) / 100.0f;
+		if (this->ActiveSpace == ETransformSpace::TS_Local)
+		{
+			deltaLocation = this->GetActorTransform().InverseTransformVectorNoScale(deltaLocation);
+			deltaLocation = (deltaLocation * PreviousViewScale * ScalingFactor) / 100.0f;
+		}
+		if (this->ActiveSpace == ETransformSpace::TS_World)
+		{
+			deltaLocation = (deltaLocation * PreviousViewScale * ScalingFactor) / 100.0f;
+		}
 		deltaTransform.SetScale3D(deltaLocation);
 
 		// Call 'Changed' events
