@@ -14,12 +14,9 @@ class POLY_API AGizmoCoreActor : public ATransformCore
 {
 	GENERATED_BODY()
 
-
 	// ToDo: @tpott: Expose SnappedDeltaTransform as Changed events 
 	//				This should be solved by only firing the events when the snapped GetDeltaTransform has a value
 
-	// ToDo: @tpott: Add DomainExclusionMask to disable specific domains (mask with maini axis only, axis planes should disable accordingly)
-	//								(e.g.: exclude x results in XY and XZ plane to be disabled too)
 public:
 	// Sets default values for this actor's properties
 	AGizmoCoreActor();

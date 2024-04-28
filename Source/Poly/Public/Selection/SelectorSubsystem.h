@@ -64,6 +64,4 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Selector", meta = (WorldContext = "WorldContext"))
 	bool GetSelector(const UObject* WorldContext, FName Name, ASelectorBase*& OutSelector);
 
-	// ToDo: @tpott: Add functions to change selector behaviours (single selection)
-
 };

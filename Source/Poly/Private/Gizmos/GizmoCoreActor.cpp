@@ -84,15 +84,11 @@ FTransform AGizmoCoreActor::GetDeltaTransform(const FVector& LookingVector, cons
 void AGizmoCoreActor::ScaleGizmoScene(const FVector& ReferenceLocation, const FVector& ReferenceLookDirection, float FieldOfView)
 {
 	FVector Scale = CalculateGizmoSceneScale(ReferenceLocation, ReferenceLookDirection, FieldOfView);
-	//UE_LOG(LogGizmo, Warning, TEXT("Scale: %s"), *Scale.ToString());
 	if (ScalingScene)
 		ScalingScene->SetWorldScale3D(Scale);
 }
 
-FTransform AGizmoCoreActor::GetSnappedTransform(FTransform& outCurrentAccumulatedTransform
-	, const FTransform& DeltaTransform
-	, EGizmoDomain Domain
-	, float SnappingValue) const
+FTransform AGizmoCoreActor::GetSnappedTransform(FTransform& outCurrentAccumulatedTransform, const FTransform& DeltaTransform, EGizmoDomain Domain, float SnappingValue) const
 {
 	return DeltaTransform;
 }
