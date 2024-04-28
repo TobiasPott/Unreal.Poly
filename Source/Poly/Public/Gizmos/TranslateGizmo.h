@@ -19,7 +19,7 @@ public:
 
 	ATranslateGizmo();
 
-	virtual EGizmoType GetGizmoType() const final { return EGizmoType::GT_Translation; }
+	virtual EGizmoType GetGizmoType() const { return EGizmoType::GT_Translation; }
 
 	virtual FTransform GetDeltaTransform(const FVector& LookingVector, const FVector& RayStartPoint, const FVector& RayEndPoint,  EGizmoDomain Domain, bool bSilent = false) override;
 
