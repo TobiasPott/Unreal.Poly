@@ -150,7 +150,6 @@ void ASelectGizmo::OnFinished()
 	if (Finished.IsBound())
 		Finished.Broadcast(this->Request, this->Request->IsNotEmpty());
 
-	// ToDo: Consider making this behaviour configurable per instance to allow reuse
 	if (bDisableOnFinish)
 		this->SetEnabled(false);
 	this->Request = nullptr;

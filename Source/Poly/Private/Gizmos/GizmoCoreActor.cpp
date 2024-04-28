@@ -126,7 +126,6 @@ FVector AGizmoCoreActor::CalculateGizmoSceneScale(const FVector& ReferenceLocati
 	if (!bInProgress)
 	{
 		FVector deltaLocationInv = ReferenceLocation - GetActorLocation();
-		// ToDo: @tpott: transfer this view angle dependend scale to translate and scale gizmo (I like the axis flip for rotation)
 		CurrentRotationViewScale = FVector(
 			(FVector::DotProduct(GetActorForwardVector(), deltaLocationInv) >= 0) ? 1.f : -1.f,
 			(FVector::DotProduct(GetActorRightVector(), deltaLocationInv) >= 0) ? 1.f : -1.f,
