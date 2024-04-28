@@ -11,14 +11,6 @@ AScaleGizmo::AScaleGizmo()
 
 }
 
-void AScaleGizmo::UpdateGizmoSpace(ETransformSpace SpaceType)
-{
-	//Force to always be Local
-	ActiveSpace = SpaceType;
-	SetActorRelativeRotation(FQuat(EForceInit::ForceInit));
-	//Super::UpdateGizmoSpace(SpaceType);
-}
-
 FTransform AScaleGizmo::GetDeltaTransform(const FVector& LookingVector, const FVector& RayStartPoint, const FVector& RayEndPoint, EGizmoDomain Domain, bool bSilent)
 {
 

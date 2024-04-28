@@ -31,5 +31,13 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Utilities")
 	static FTransform Transform_Identity() { return FTransform::Identity; }
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Utilities", meta = (DisplayName = "Translation Only (Transform)"))
+	static FTransform Transform_TranslationOnly(const FVector& InTranslation) { return FTransform(FRotator::ZeroRotator, InTranslation, FVector::ZeroVector); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Utilities", meta = (DisplayName = "Rotation Only (Transform)"))
+	static FTransform Transform_RotationOnly(const FRotator& InRotation) { return FTransform(InRotation, FVector::ZeroVector, FVector::ZeroVector); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Utilities", meta = (DisplayName = "Scale Only (Transform)"))
+	static FTransform Transform_ScaleOnly(const FVector& InScale) { return FTransform(FRotator::ZeroRotator, FVector::ZeroVector, InScale); }
 
 };

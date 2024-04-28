@@ -67,17 +67,8 @@ void AGizmoCoreActor::Tick(float DeltaSeconds)
 }
 void AGizmoCoreActor::UpdateGizmoSpace(ETransformSpace SpaceType)
 {
-	switch (SpaceType)
-	{
-	case ETransformSpace::TS_Local:
-		ActiveSpace = ETransformSpace::TS_Local;
-		SetActorRelativeRotation(FQuat(EForceInit::ForceInit));
-		break;
-	case ETransformSpace::TS_World:
-		ActiveSpace = ETransformSpace::TS_World;
-		SetActorRotation(FQuat(EForceInit::ForceInit), ETeleportType::TeleportPhysics);
-		break;
-	}
+	ActiveSpace = SpaceType;
+	SetActorRelativeRotation(FQuat::Identity);
 }
 
 //Base Gizmo does not affect anything and returns No Delta Transform.
@@ -275,7 +266,6 @@ void AGizmoCoreActor::ScaleToScreenSpace()
 
 void AGizmoCoreActor::SetEnableConsumeInput(const bool bInEnable)
 {
-	//bIsEnabled = bInEnable;
 	if (bInEnable)
 	{
 		// bind mouse axes events (to conume their input from other receivers)
@@ -302,7 +292,6 @@ void AGizmoCoreActor::SetEnableConsumeInput(const bool bInEnable)
 		InputComponent->AxisKeyBindings.Reset(0);
 		InputComponent->VectorAxisBindings.Reset(0);
 	}
-
 }
 
 void AGizmoCoreActor::OnInputKey_Pressed_Implementation(FKey InKey)
