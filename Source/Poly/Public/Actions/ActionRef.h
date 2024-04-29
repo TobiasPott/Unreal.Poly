@@ -33,9 +33,6 @@ public:
 	UActionBase* Action = nullptr;
 
 public:
-	uint8 GetCategory() override { return Action->GetCategory(); };
-
-	int32 GetTarget() override { return Action->GetTarget(); };
 
 	FString GetDescription() override { return Action->GetDescription(); };
 

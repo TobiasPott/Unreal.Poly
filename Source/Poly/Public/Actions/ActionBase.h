@@ -10,19 +10,13 @@ class UActionRef;
 /**
  *
  */
+
 UCLASS(Blueprintable)
 class POLY_API UActionBase : public UObject
 {
 	GENERATED_BODY()
 
 protected:
-
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, Category = "Default", meta = (ExposeOnSpawn = "true"))
-	uint8 Category = 0;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Default", meta = (ExposeOnSpawn = "true"))
-	int32 Target = -1;
 
 	UPROPERTY(VisibleAnywhere, Category = "Default")
 	FString Description = "poly.Action";
@@ -31,12 +25,6 @@ protected:
 
 
 public:
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Default")
-	virtual uint8 GetCategory() { return Category; };
-
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Default")
-	virtual int32 GetTarget() { return Target; };
-
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Default")
 	virtual FString GetDescription() { return Description; };
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Default")
@@ -69,4 +57,52 @@ public:
 	//DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FActorSelected, ASelectorBase*, Selector, AActor*, Actor);
 	UPROPERTY(BlueprintAssignable, EditDefaultsOnly, Category = "Default")
 	FActionEvent Discarded;
+};
+
+
+UCLASS(Blueprintable)
+class POLY_API UActionCollection : public UActionBase
+{
+	GENERATED_BODY()
+
+protected:
+
+	UPROPERTY(VisibleAnywhere, Category = "Default")
+	TArray<UActionBase*> Actions;
+
+
+public:
+
+	UFUNCTION(BlueprintCallable, Category = "Default")
+	void AddItems(TArray<UActionBase*> InActions);
+	UFUNCTION(BlueprintCallable, Category = "Default")
+	void AddItem(UActionBase* InAction);
+
+	UFUNCTION(BlueprintCallable, Category = "Default")
+	TArray<UActionBase*>& GetActions() { return this->Actions; };
+
+
+	UFUNCTION(BlueprintCallable, Category = "Default")
+	void SetShortName(const FString InShortName) { this->ShortName = InShortName; };
+	UFUNCTION(BlueprintCallable, Category = "Default")
+	void SetDescription(const FString InDescription) { this->Description = InDescription; };
+
+
+	UFUNCTION(BlueprintCallable, Category = "Default")
+	void SetShortNameAndDescription(const FString InShortName, const FString InDescription) 
+	{
+		this->ShortName = InShortName;
+		this->Description = InDescription;
+	};
+
+
+public:
+	/** Please add a function description */
+	virtual bool Execute_Implementation(bool bEmitRecord = true) override { return false; };
+
+	virtual void Submit_Implementation() override { };
+
+	virtual void Discard_Implementation() override { };
+
+
 };

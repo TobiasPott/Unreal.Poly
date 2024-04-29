@@ -9,3 +9,19 @@ UActionRef* UActionBase::GetUnique()
 	Ref->Action = this;
 	return Ref;
 }
+
+
+
+/**
+*	UActionCollection
+*/
+void UActionCollection::AddItems(TArray<UActionBase*> InActions)
+{
+	for (int i = 0; i < InActions.Num(); i++)
+		this->Actions.AddUnique(InActions[i]);
+}
+
+void UActionCollection::AddItem(UActionBase* InAction)
+{
+	this->Actions.AddUnique(InAction);
+}
