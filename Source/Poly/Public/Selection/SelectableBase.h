@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "InputCoreTypes.h"
 #include "Components/ActorComponent.h"
+#include "Selection/SelectorTypes.h"
 #include "SelectableBase.generated.h"
 
 
@@ -13,27 +14,49 @@ class POLY_API USelectableBase : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bEnabled = true;
-
-
+public:
 	// Sets default values for this component's properties
 	USelectableBase();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Selectable")
+	bool bEnabled = true;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Selectable")
+	bool bEnableSelectOnClicked = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Selectable")
+	FName SelectorName = USelectorNames::Default;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Selectable")
+	ESelectorChannel Channel = ESelectorChannel::Default;
+
+
+
 protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
+
+
 
 public:	
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Default")
+
+	UFUNCTION(BlueprintCallable, Category = "Selectable")
+	void SetEnableSelectOnClick(const bool bInEnable);
+
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Selectable")
 	void OnActorClicked(AActor* TouchedActor, FKey ButtonPressed);
 	virtual void OnActorClicked_Implementation(AActor* TouchedActor, FKey ButtonPressed);
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Default")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Selectable")
 	void ChangeState(const bool bIsSelected);
 	virtual void ChangeState_Implementation(const bool bIsSelected);
-		
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Selectable")
+	bool GetSelector(ASelectorBase*& OutActor);
+	virtual bool GetSelector_Implementation(ASelectorBase*& OutActor);
+
+
+	/** Please add a function description */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Selectable")
+	void SetMaterialForState(bool IsSelected, UMaterialInterface* SelectedMaterial);
+	void SetMaterialForState_Implementation(bool IsSelected, UMaterialInterface* SelectedMaterial);
+
 };

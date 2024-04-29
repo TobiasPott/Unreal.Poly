@@ -4,13 +4,16 @@
 
 #include "CoreMinimal.h"
 
-/**
- * 
- */
+
+DECLARE_LOG_CATEGORY_EXTERN(LogPoly, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogPolyDebug, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogPolyTemp, Log, All);
+
+
 UENUM(BlueprintType)
-enum class EObjectSelectionMode : uint8 {
+enum class EPolyLogCategory : uint8 {
 	None = 0, // disable change to selection
-	Add = 1, // add objects to selection
-	Remove = 2, // remove objects from selection
-	Toggle = 3 // add items not  yet selected, remove items already selected (one iteration)
+	Default = 1,
+	Debug = 2,
+	Temp = 3,
 };
