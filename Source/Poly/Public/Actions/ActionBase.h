@@ -10,6 +10,7 @@ class UActionRef;
 /**
  *
  */
+
 UCLASS(Blueprintable)
 class POLY_API UActionBase : public UObject
 {
@@ -17,30 +18,22 @@ class POLY_API UActionBase : public UObject
 
 protected:
 
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, Category = "Default", meta = (ExposeOnSpawn = "true"))
-	uint8 Category = 0;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Default", meta = (ExposeOnSpawn = "true"))
-	int32 Target = -1;
-
 	UPROPERTY(VisibleAnywhere, Category = "Default")
 	FString Description = "poly.Action";
 	UPROPERTY(VisibleAnywhere, Category = "Default")
 	FString ShortName = "Action";
 
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
+	uint8 Indent = 0; // only used for UI nesting and collection nesting tracking
 
 public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Default")
-	virtual uint8 GetCategory() { return Category; };
+	virtual FString GetDescription() { return this->Description; };
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Default")
+	virtual FString GetShortName() { return this->ShortName; };
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Default")
-	virtual int32 GetTarget() { return Target; };
-
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Default")
-	virtual FString GetDescription() { return Description; };
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Default")
-	virtual FString GetShortName() { return ShortName; };
+	UFUNCTION(BlueprintCallable, Category = "Default")
+	virtual void SetIndent(const uint8 InIndent) { this->Indent = InIndent; };
 
 	UFUNCTION(BlueprintCallable, Category = "Default")
 	virtual UActionRef* GetUnique();
@@ -70,3 +63,4 @@ public:
 	UPROPERTY(BlueprintAssignable, EditDefaultsOnly, Category = "Default")
 	FActionEvent Discarded;
 };
+

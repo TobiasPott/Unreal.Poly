@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "UserWidgetTypes.generated.h"
 
+// UI Icon resources
+// https://fonts.google.com/icons?icon.category=Common+actions&icon.style=Rounded&icon.size=96&icon.color=%23FFFFFF
 
 
 UENUM(BlueprintType)
