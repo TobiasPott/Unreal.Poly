@@ -23,12 +23,17 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Default")
 	FString ShortName = "Action";
 
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
+	uint8 Indent = 0; // only used for UI nesting and collection nesting tracking
 
 public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Default")
-	virtual FString GetDescription() { return Description; };
+	virtual FString GetDescription() { return this->Description; };
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Default")
-	virtual FString GetShortName() { return ShortName; };
+	virtual FString GetShortName() { return this->ShortName; };
+
+	UFUNCTION(BlueprintCallable, Category = "Default")
+	virtual void SetIndent(const uint8 InIndent) { this->Indent = InIndent; };
 
 	UFUNCTION(BlueprintCallable, Category = "Default")
 	virtual UActionRef* GetUnique();
@@ -59,50 +64,3 @@ public:
 	FActionEvent Discarded;
 };
 
-
-UCLASS(Blueprintable)
-class POLY_API UActionCollection : public UActionBase
-{
-	GENERATED_BODY()
-
-protected:
-
-	UPROPERTY(VisibleAnywhere, Category = "Default")
-	TArray<UActionBase*> Actions;
-
-
-public:
-
-	UFUNCTION(BlueprintCallable, Category = "Default")
-	void AddItems(TArray<UActionBase*> InActions);
-	UFUNCTION(BlueprintCallable, Category = "Default")
-	void AddItem(UActionBase* InAction);
-
-	UFUNCTION(BlueprintCallable, Category = "Default")
-	TArray<UActionBase*>& GetActions() { return this->Actions; };
-
-
-	UFUNCTION(BlueprintCallable, Category = "Default")
-	void SetShortName(const FString InShortName) { this->ShortName = InShortName; };
-	UFUNCTION(BlueprintCallable, Category = "Default")
-	void SetDescription(const FString InDescription) { this->Description = InDescription; };
-
-
-	UFUNCTION(BlueprintCallable, Category = "Default")
-	void SetShortNameAndDescription(const FString InShortName, const FString InDescription) 
-	{
-		this->ShortName = InShortName;
-		this->Description = InDescription;
-	};
-
-
-public:
-	/** Please add a function description */
-	virtual bool Execute_Implementation(bool bEmitRecord = true) override { return false; };
-
-	virtual void Submit_Implementation() override { };
-
-	virtual void Discard_Implementation() override { };
-
-
-};
