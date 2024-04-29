@@ -23,7 +23,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Default")
 	FString ShortName = "Action";
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
 	uint8 Indent = 0; // only used for UI nesting and collection nesting tracking
 
 public:
