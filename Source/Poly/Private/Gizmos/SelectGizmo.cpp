@@ -111,12 +111,15 @@ void ASelectGizmo::OnInputKey_Pressed(FKey InKey)
 void ASelectGizmo::OnInputKey_Released(FKey InKey)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("OnInputKey_Released"));
-	bIsMousePressed = false;
-	UPoly_UIFunctions::GetMousePosition(this, PlayerIndex, SecondPoint);
-	Request->UpdateSecondPoint(SecondPoint);
+	if (bIsMousePressed && IsValid(Request))
+	{
+		bIsMousePressed = false;
+		UPoly_UIFunctions::GetMousePosition(this, PlayerIndex, SecondPoint);
+		Request->UpdateSecondPoint(SecondPoint);
 
-	Request->Submit();
-	Request->Finished.AddDynamic(this, &ASelectGizmo::OnRequestFinished);
+		Request->Submit();
+		Request->Finished.AddDynamic(this, &ASelectGizmo::OnRequestFinished);
+	}
 }
 
 void ASelectGizmo::OnMouseX(float AxisValue)
