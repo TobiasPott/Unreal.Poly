@@ -6,6 +6,7 @@
 APolyMeshActor::APolyMeshActor()
 {
 	SetCollision(true);
+	this->GetRootComponent()->SetMobility(EComponentMobility::Movable);
 }
 
 void APolyMeshActor::SetCollision(bool bIsEnabled)
