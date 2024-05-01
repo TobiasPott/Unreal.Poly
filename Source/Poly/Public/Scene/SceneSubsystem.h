@@ -64,7 +64,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Scene")
 	ASceneActor* AddScene(FName Name);
 	UFUNCTION(BlueprintCallable, Category = "Scene", meta = (WorldContext = "WorldContext"))
-	bool GetScene(const UObject* WorldContext, FName Name, ASceneActor*& OutScene);
+	ASceneActor* GetScene(const UObject* WorldContext, FName Name, bool& bSuccess);
 
 	UFUNCTION(BlueprintCallable, Category = "Scene", meta = (WorldContext = "WorldContext"))
 	ASceneActor* GetActiveScene();

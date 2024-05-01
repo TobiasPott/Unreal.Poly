@@ -39,7 +39,8 @@ void USceneSubsystem::Init(const UObject* WorldContext)
 		}
 
 		// set active scene
-		GetScene(WorldContext, USceneNames::Default, this->ActiveScene);
+		bool bSuccess = false;
+		this->ActiveScene = GetScene(WorldContext, USceneNames::Default, bSuccess);
 
 		bIsInitialised = true;
 	}
@@ -63,19 +64,20 @@ ASceneActor* USceneSubsystem::AddScene(FName Name)
 	return this->Scenes[Name];
 }
 
-bool USceneSubsystem::GetScene(const UObject* WorldContext, FName Name, ASceneActor*& OutScene)
+ASceneActor* USceneSubsystem::GetScene(const UObject* WorldContext, FName Name, bool& bSuccess)
 {
 	if (Name.IsNone())
 	{
-		OutScene = nullptr;
-		return false;
+		bSuccess = false;
+		return nullptr;
 	}
 	if (this->Scenes.Contains(Name))
 	{
-		OutScene = this->Scenes[Name];
-		return true;
+		bSuccess = true;
+		return this->Scenes[Name];
 	}
-	return false;
+	bSuccess = false;
+	return nullptr;
 }
 
 ASceneActor* USceneSubsystem::GetActiveScene()

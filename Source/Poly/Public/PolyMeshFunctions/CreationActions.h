@@ -82,7 +82,6 @@ public:
 };
 
 
-
 UCLASS(Blueprintable)
 class POLY_API UCreateCylinderAction : public UCreateShapeActionBase
 {
