@@ -31,3 +31,9 @@ void APolyHUD::ProcessRequests()
 	}
 }
 
+void APolyHUD::DrawHUD()
+{
+	if (bProcessRequestsOnDraw)
+		this->ProcessRequests();
+}
+
