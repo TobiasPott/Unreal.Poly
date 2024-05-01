@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType)
 class POLY_API APolyMeshActor : public ADynamicMeshActor
 {
 	GENERATED_BODY()

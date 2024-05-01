@@ -19,7 +19,10 @@ class POLY_API APolyHUD : public AHUD
 public:
 	APolyHUD();
 
-	/** Please add a variable description */
+	/** Please add a variable description */	
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Default")
+	bool bProcessRequestsOnDraw =  true;
+
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Default")
 	TArray<UActorSelectionRequest*> MarqueeRequests;
 
@@ -34,4 +37,5 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Default")
 	void ProcessRequests();
 
+	virtual void DrawHUD() override;
 };
