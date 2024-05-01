@@ -197,10 +197,6 @@
 			"Enabled": false
 		},
 		{
-			"Name": "IKRig",
-			"Enabled": false
-		},
-		{
 			"Name": "GameplayCameras",
 			"Enabled": false
 		},
