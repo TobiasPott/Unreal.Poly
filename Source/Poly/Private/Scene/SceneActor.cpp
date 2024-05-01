@@ -25,7 +25,11 @@ void ASceneActor::Add(AActor* InActor, bool bAttach)
 		{
 			FAttachmentTransformRules Rules = FAttachmentTransformRules(EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, true);
 			InActor->AttachToActor(this, Rules);
+			InActor->OnDestroyed.AddDynamic(this, &ASceneActor::OnActorDestroyed);
 		}
+
+		// fire changed event
+		this->OnSceneChanged();
 	}
 }
 
@@ -33,11 +37,26 @@ void ASceneActor::Remove(AActor* InActor, bool bDetach)
 {
 	if (AssociatedActors.Contains(InActor))
 	{
+		InActor->OnDestroyed.RemoveDynamic(this, &ASceneActor::OnActorDestroyed);
 		AssociatedActors.Remove(InActor);
 		if (bDetach)
 		{
 			if (InActor->GetAttachParentActor() == this)
 				InActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		}
+		// fire changed event
+		this->OnSceneChanged();
+	}
+}
+
+void ASceneActor::OnActorDestroyed(AActor* DestroyedActor)
+{
+	if (AssociatedActors.Contains(DestroyedActor))
+	{
+		DestroyedActor->OnDestroyed.RemoveDynamic(this, &ASceneActor::OnActorDestroyed);
+		AssociatedActors.Remove(DestroyedActor);
+
+		// fire changed event
+		this->OnSceneChanged();
 	}
 }

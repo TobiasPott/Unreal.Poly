@@ -7,6 +7,9 @@
 #include "SceneActor.generated.h"
 
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSceneChangedSignature, ASceneActor*, Scene);
+
+
 UCLASS(BlueprintType)
 class POLY_API ASceneActor : public AActor
 {
@@ -36,5 +39,18 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Scene")
 	void Remove(AActor* InActor, bool bDetach = true);
+
+
+
+	UFUNCTION()
+	void OnActorDestroyed(AActor* DestroyedActor);
+	UFUNCTION()
+	void OnSceneChanged() { if (SceneChanged.IsBound()) SceneChanged.Broadcast(this); }
+
+
+
+
+	UPROPERTY(BlueprintAssignable, EditDefaultsOnly, Category = "Scene")
+	FSceneChangedSignature SceneChanged;
 
 };
