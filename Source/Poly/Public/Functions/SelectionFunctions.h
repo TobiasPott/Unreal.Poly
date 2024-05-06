@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
-#include "PolyMesh_SelectionFunctions.generated.h"
+#include "SelectionFunctions.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class POLY_API UPolyMesh_SelectionFunctions : public UBlueprintFunctionLibrary
+class POLY_API UPoly_SelectionFunctions : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 	

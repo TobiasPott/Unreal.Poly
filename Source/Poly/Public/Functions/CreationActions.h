@@ -24,9 +24,8 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Actions|Creation", meta = (ExposeOnSpawn = "true"))
 	FVector Offset = FVector::ZeroVector;
-
-
 };
+
 /**
  *
  */
@@ -76,7 +75,6 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Actions|Creation", meta = (ExposeOnSpawn = "true"))
 	int32 StepZ = 6;
 
-
 public:
 	bool Execute_Implementation(bool bEmitRecord) override;
 };
@@ -106,7 +104,6 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Actions|Creation", meta = (ExposeOnSpawn = "true"))
 	int32 HeightSteps = 0;
-
 
 public:
 	bool Execute_Implementation(bool bEmitRecord) override;
@@ -141,7 +138,67 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Actions|Creation", meta = (ExposeOnSpawn = "true"))
 	int32 HeightSteps = 4;
 
+public:
+	bool Execute_Implementation(bool bEmitRecord) override;
+};
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+UCLASS(Blueprintable)
+class POLY_API UCreateDirectionalLightAction : public UActionBase
+{
+	GENERATED_BODY()
+
+public:
+	// Sets default values for this actor's properties
+	UCreateDirectionalLightAction()
+	{
+		Description = "poly.CreateDirectionalLight";
+		ShortName = "Create Directional Light";
+	}
+public:
+	bool Execute_Implementation(bool bEmitRecord) override;
+};
+
+UCLASS(Blueprintable)
+class POLY_API UCreateSpotLightAction : public UActionBase
+{
+	GENERATED_BODY()
+
+public:
+	// Sets default values for this actor's properties
+	UCreateSpotLightAction()
+	{
+		Description = "poly.CreateSpotLight";
+		ShortName = "Create Spot Light";
+	}
+public:
+	bool Execute_Implementation(bool bEmitRecord) override;
+};
+
+UCLASS(Blueprintable)
+class POLY_API UCreatePointLightAction : public UActionBase
+{
+	GENERATED_BODY()
+
+public:
+	// Sets default values for this actor's properties
+	UCreatePointLightAction()
+	{
+		Description = "poly.CreatePointLight";
+		ShortName = "Create Point Light";
+	}
 public:
 	bool Execute_Implementation(bool bEmitRecord) override;
 };

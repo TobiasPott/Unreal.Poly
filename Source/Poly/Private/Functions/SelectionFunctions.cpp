@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "PolyMeshFunctions/PolyMesh_SelectionFunctions.h"
+#include "Functions/SelectionFunctions.h"
 #include "Components/BaseDynamicMeshComponent.h"
 
-void UPolyMesh_SelectionFunctions::SetMaterialForState(AActor* Actor, const bool IsSelected, UMaterialInterface* SelectedMaterial, const uint8 StencilValue)
+void UPoly_SelectionFunctions::SetMaterialForState(AActor* Actor, const bool IsSelected, UMaterialInterface* SelectedMaterial, const uint8 StencilValue)
 {
 	if (!IsValid(Actor))
 		return;

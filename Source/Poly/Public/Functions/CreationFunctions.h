@@ -5,13 +5,16 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "PolyMeshActor.h"
-#include "PolyMesh_CreationFunctions.generated.h"
+#include "Engine/DirectionalLight.h"
+#include "Engine/SpotLight.h"
+#include "Engine/PointLight.h"
+#include "CreationFunctions.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class POLY_API UPolyMesh_CreationFunctions : public UBlueprintFunctionLibrary
+class POLY_API UPoly_CreationFunctions : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 	
@@ -32,5 +35,21 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Poly|Create", meta = (WorldContext = "WorldContext"))
 	static void CreateConeActor(const UObject* WorldContext, APolyMeshActor*& OutPolyActor, const FVector InOffset = FVector::ZeroVector,
 		const float BaseRadius = 50, const float TopRadius = 5, const float Height = 100, const int32 RadialSteps = 12, const int32 HeightSteps = 4);
+
+
+	// ToDo: @tpott: Rename PolyMesh_ files and types to Poly
+	//				 Rename folder to 'PolyFunctionLibraries'
+	//				Add list of 'default' actors which need their respective function and actions
+	//				* DirectionalLight
+
+	UFUNCTION(BlueprintCallable, Category = "Poly|Create", meta = (WorldContext = "WorldContext"))
+	static void CreateDirectioalLight(const UObject* WorldContext, ADirectionalLight*& OutLight);
+
+	UFUNCTION(BlueprintCallable, Category = "Poly|Create", meta = (WorldContext = "WorldContext"))
+	static void CreatePointLight(const UObject* WorldContext, APointLight*& OutLight);
+
+	UFUNCTION(BlueprintCallable, Category = "Poly|Create", meta = (WorldContext = "WorldContext"))
+	static void CreateSpotLight(const UObject* WorldContext, ASpotLight*& OutLight);
+
 
 };

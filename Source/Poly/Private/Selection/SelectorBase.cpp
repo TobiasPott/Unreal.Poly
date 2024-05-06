@@ -4,7 +4,7 @@
 #include "Selection/SelectorBase.h"
 #include "Selection/SelectableBase.h"
 #include "Selection/SelectorVisualiserBase.h"
-#include "PolyMeshFunctions/PolyMesh_SelectionFunctions.h"
+#include "Functions/SelectionFunctions.h"
 #include "Engine/World.h"
 
 // Sets default values
@@ -46,7 +46,7 @@ void ASelectorBase::Select_Implementation(AActor* InSelectable, bool& IsSelected
 	Selection.AddUnique(InSelectable);
 	IsSelected = Selection.Contains(InSelectable);
 
-	UPolyMesh_SelectionFunctions::SetMaterialForState(InSelectable, IsSelected, nullptr, 1);
+	UPoly_SelectionFunctions::SetMaterialForState(InSelectable, IsSelected, nullptr, 1);
 
 
 	if (IsSelected)
@@ -65,7 +65,7 @@ void ASelectorBase::Deselect_Implementation(AActor* InSelectable, bool& IsSelect
 	Selection.Remove(InSelectable);
 	IsSelected = Selection.Contains(InSelectable);
 
-	UPolyMesh_SelectionFunctions::SetMaterialForState(InSelectable, IsSelected, nullptr, 1);
+	UPoly_SelectionFunctions::SetMaterialForState(InSelectable, IsSelected, nullptr, 1);
 
 	if (!IsSelected)
 		if (this->SelectableDeselected.IsBound())
