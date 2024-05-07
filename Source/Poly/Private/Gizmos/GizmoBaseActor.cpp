@@ -60,6 +60,8 @@ void AGizmoBaseActor::CreateSelectCore_Implementation(ASelectGizmo*& OutSelectCo
 	this->SelectCore = this->GetWorld()->SpawnActor<ASelectGizmo>(this->SelectCoreClass.Get(), FTransform::Identity, SpawnParams);
 	this->SelectCore->AttachToActor(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
 	OutSelectCore = this->SelectCore;
+	// setup core with class (should be called again to change mode or class)
+	this->SelectCore->Setup(EActorSelectionRequestMode::Marquee, this->SelectClass.Get(), true, false, false);
 
 	OutSelectCore->Finished.AddDynamic(this, &AGizmoBaseActor::Select_Finished);
 

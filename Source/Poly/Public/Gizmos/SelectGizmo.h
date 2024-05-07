@@ -60,6 +60,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+public:
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void Setup(EActorSelectionRequestMode InMarqueeMode, UClass* InFilterClass, bool bInIncludeNonCollider = false, bool bInIncludeOnlyEnclosed = false, 
 		bool bInDisableOnFinish = false);
@@ -67,6 +68,8 @@ protected:
 	void SetEnabled(const bool bInEnable);
 
 	virtual void SetGizmoHidden(const bool bHiddenInGame = false) override;
+
+protected:
 
 	UFUNCTION()
 	virtual void OnInputKey_Pressed(FKey InKey);

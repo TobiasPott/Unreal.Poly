@@ -29,6 +29,10 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Default")
 	FName SelectorName = "Default";
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Default")
+	TObjectPtr<UClass> SelectClass = AActor::StaticClass();
+
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Default")
 	TArray<AActor*> Selection;
 
