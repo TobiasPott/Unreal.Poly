@@ -21,6 +21,23 @@ public:
 	// Sets default values for this actor's properties
 	AGizmoBaseActor();
 
+
+	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Default")
+	EGizmoExtType Type;
+
+	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Default")
+	ETransformSpace Space;
+
+
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Default")
+	inline ETransformSpace InverseSpace() { return Space == ETransformSpace::TS_Local ? ETransformSpace::TS_World : ETransformSpace::TS_Local; };
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Default")
+	inline bool IsLocalSpace() { return Space == ETransformSpace::TS_Local; };
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Default")
+	inline bool IsWorldSpace() { return Space == ETransformSpace::TS_World; };
+
+
 protected:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Setup")
@@ -87,4 +104,7 @@ public:
 	TObjectPtr<ASelectGizmo> SelectCore;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Cores")
 	TSubclassOf<ASelectGizmo> SelectCoreClass;
+
+
+
 };
