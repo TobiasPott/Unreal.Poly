@@ -113,6 +113,9 @@ void AElementsGizmo::OnInputKey_Released(FKey InKey)
 		bIsMousePressed = false;
 		UPoly_UIFunctions::GetMousePosition(this, PlayerIndex, SecondPoint);
 		Request->SecondPoint = SecondPoint;
+
+
+		Request->Submit();
 		this->OnFinished();
 	}
 }
@@ -127,7 +130,6 @@ void AElementsGizmo::OnMouseY(float AxisValue)
 
 void AElementsGizmo::OnMouse2D(FVector AxisValue)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Axis 2D %s"), *AxisValue.ToString());
 	if (bIsMousePressed)
 	{
 		UPoly_UIFunctions::GetMousePosition(this, PlayerIndex, SecondPoint);

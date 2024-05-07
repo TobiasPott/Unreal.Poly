@@ -37,6 +37,5 @@ public:
 	static void SelectWithSelectionRequest(UActorSelectionRequest* Request, AHUD* HUD);
 
 	UFUNCTION(BlueprintCallable, Category = "Poly|UI")
-	static void DrawRequest(USelectionRequestBase* Request, AHUD* HUD);
-
+	static void DrawRequest(USelectionRequestBase* Request, AHUD* HUD, const FLinearColor& RectColor = FLinearColor(1, 1, 1, 0.25));
 };

@@ -27,6 +27,10 @@ class POLY_API USelectionRequestBase : public UObject
 	GENERATED_BODY()
 
 public:
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
+	bool bSubmitted = false;
+
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
 	EActorSelectionRequestMode Mode = EActorSelectionRequestMode::Click;
 
@@ -35,4 +39,7 @@ public:
 	UPROPERTY()
 	FVector2D SecondPoint = FVector2D(0, 0);
 
+
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void Submit() { this->bSubmitted = true; }
 };

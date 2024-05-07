@@ -28,9 +28,6 @@ class POLY_API UActorSelectionRequest : public USelectionRequestBase
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
-	bool bSubmitted = false;
-
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
 	bool bIncludeNonCollider = false;
@@ -59,8 +56,6 @@ public:
 	void Init(const EActorSelectionRequestMode InMode, const FVector2D& InFirstPoint, const FVector2D& InSecondPoint, TSubclassOf<AActor> InFilterClass, bool bInIncludeNonCollider = false, bool bInOnlyEnclosed = false);
 
 
-	UFUNCTION(BlueprintCallable, Category = "Selection")
-	void Submit() { this->bSubmitted = true; }
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void UpdateSecondPoint(const FVector2D InSecondPoint) { this->SecondPoint = InSecondPoint; }
 	UFUNCTION(BlueprintCallable, Category = "Selection")

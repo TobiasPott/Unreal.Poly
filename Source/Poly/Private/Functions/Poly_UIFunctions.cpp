@@ -75,7 +75,7 @@ void UPoly_UIFunctions::SelectWithSelectionRequest(UActorSelectionRequest* Reque
 	Request->OnFinished();
 }
 
-void UPoly_UIFunctions::DrawRequest(USelectionRequestBase* Request, AHUD* HUD)
+void UPoly_UIFunctions::DrawRequest(USelectionRequestBase* Request, AHUD* HUD, const FLinearColor& RectColor)
 {
 	FVector2D Origin;
 	FVector2D Size;
@@ -83,7 +83,7 @@ void UPoly_UIFunctions::DrawRequest(USelectionRequestBase* Request, AHUD* HUD)
 	{
 	case EActorSelectionRequestMode::Marquee:
 		GetRectOriginAndSize(Request->FirstPoint, Request->SecondPoint, Origin, Size);
-		HUD->DrawRect(FLinearColor(1, 1, 1, 0.25), Origin.X, Origin.Y, Size.X, Size.Y);
+		HUD->DrawRect(RectColor, Origin.X, Origin.Y, Size.X, Size.Y);
 		break;
 
 	case EActorSelectionRequestMode::Click:

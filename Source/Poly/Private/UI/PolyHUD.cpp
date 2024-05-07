@@ -26,7 +26,7 @@ void APolyHUD::ProcessRequests()
 	for (int i = this->MarqueeRequests.Num() - 1; i >= 0; i--)
 	{
 		UActorSelectionRequest* Request = this->MarqueeRequests[i];
-		UPoly_UIFunctions::DrawRequest(Request, this);
+		UPoly_UIFunctions::DrawRequest(Request, this, FLinearColor(0.15, 0.15, 0.3, 0.25));
 
 		if (Request->bSubmitted)
 		{
@@ -39,7 +39,10 @@ void APolyHUD::ProcessRequests()
 	{
 		USelectionRequestBase* Request = this->BaseRequests[i];
 		UPoly_UIFunctions::DrawRequest(Request, this);
-		this->BaseRequests.Remove(Request);
+		if (Request->bSubmitted)
+		{
+			this->BaseRequests.Remove(Request);
+		}
 	}
 }
 
