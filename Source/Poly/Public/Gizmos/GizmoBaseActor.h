@@ -10,6 +10,7 @@
 #include "Gizmos/RotateGizmo.h"
 #include "Gizmos/ScaleGizmo.h"
 #include "Gizmos/SelectGizmo.h"
+#include "Gizmos/ElementsGizmo.h"
 #include "GizmoBaseActor.generated.h"
 
 UCLASS()
@@ -59,6 +60,9 @@ protected:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Setup")
 	void CreateSelectCore(ASelectGizmo*& OutSelectCore);
 	virtual void CreateSelectCore_Implementation(ASelectGizmo*& OutSelectCore);
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Setup")
+	void CreateElementsCore(AElementsGizmo*& OutSelectCore);
+	virtual void CreateElementsCore_Implementation(AElementsGizmo*& OutElementsCore);
 
 
 	/** Please add a function description */
@@ -90,6 +94,9 @@ protected:
 	void Select_Finished_Implementation(UActorSelectionRequest* Request, bool bSuccess);
 
 
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Protected|Core Events")
+	void Elements_Finished(AElementsGizmo* Core);
+	void Elements_Finished_Implementation(AElementsGizmo* Core);
 
 
 
@@ -118,26 +125,31 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default|Cores")
 	TObjectPtr<ATranslateGizmo> TranslateCore;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default|Cores")
-	TSubclassOf<ATranslateGizmo> TranslateCoreClass;
+	TSubclassOf<ATranslateGizmo> TranslateCoreClass = ATranslateGizmo::StaticClass();
 
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default|Cores")
 	TObjectPtr<ARotateGizmo> RotateCore;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default|Cores")
-	TSubclassOf<ARotateGizmo> RotateCoreClass;
+	TSubclassOf<ARotateGizmo> RotateCoreClass = ARotateGizmo::StaticClass();
 
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default|Cores")
 	TObjectPtr<AScaleGizmo> ScaleCore;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default|Cores")
-	TSubclassOf<AScaleGizmo> ScaleCoreClass;
+	TSubclassOf<AScaleGizmo> ScaleCoreClass = AScaleGizmo::StaticClass();
 
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Cores")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default|Cores")
 	TObjectPtr<ASelectGizmo> SelectCore;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Cores")
-	TSubclassOf<ASelectGizmo> SelectCoreClass;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default|Cores")
+	TSubclassOf<ASelectGizmo> SelectCoreClass = ASelectGizmo::StaticClass();
 
 
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default|Cores")
+	TObjectPtr<AElementsGizmo> ElementsCore;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default|Cores")
+	TSubclassOf<AElementsGizmo> ElementsCoreClass = AElementsGizmo::StaticClass();
 
 };

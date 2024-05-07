@@ -67,6 +67,20 @@ void AGizmoBaseActor::CreateSelectCore_Implementation(ASelectGizmo*& OutSelectCo
 
 }
 
+void AGizmoBaseActor::CreateElementsCore_Implementation(AElementsGizmo*& OutElementsCore)
+{
+	FActorSpawnParameters SpawnParams = FActorSpawnParameters();
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	this->ElementsCore = this->GetWorld()->SpawnActor<AElementsGizmo>(this->ElementsCoreClass.Get(), FTransform::Identity, SpawnParams);
+	this->ElementsCore->AttachToActor(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
+	OutElementsCore = this->ElementsCore;
+	// setup core with class (should be called again to change mode or class)
+	this->ElementsCore->Setup(EActorSelectionRequestMode::Marquee, true, false);
+
+	OutElementsCore->Finished.AddDynamic(this, &AGizmoBaseActor::Elements_Finished);
+
+}
+
 void AGizmoBaseActor::Translate_TranslationChanged_Implementation(bool bEnded, FVector DeltaTranslation)
 {
 	if (!bEnded)
@@ -144,6 +158,10 @@ void AGizmoBaseActor::Select_Finished_Implementation(UActorSelectionRequest* Req
 }
 
 
+void AGizmoBaseActor::Elements_Finished_Implementation(AElementsGizmo* Core)
+{
+}
+
 void AGizmoBaseActor::SetupCores()
 {
 	ATranslateGizmo* OutTranslateCore;
@@ -154,6 +172,8 @@ void AGizmoBaseActor::SetupCores()
 	this->CreateScaleCore(OutScaleCore);
 	ASelectGizmo* OutSelectCore;
 	this->CreateSelectCore(OutSelectCore);
+	AElementsGizmo* OutElementsCore;
+	this->CreateElementsCore(OutElementsCore);
 }
 
 void AGizmoBaseActor::TransformSelection(FTransform DeltaTransform, bool bInLocalSpace)
