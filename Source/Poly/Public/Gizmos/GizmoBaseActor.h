@@ -23,9 +23,9 @@ public:
 
 
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Default")
-	EGizmoExtType Type;
+	EGizmoExtType Type = EGizmoExtType::GET_NoTransform;
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Default")
-	ETransformSpace Space;
+	ETransformSpace Space = ETransformSpace::TS_World;
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Default")
 	TArray<AActor*> Selection;
 
@@ -80,7 +80,15 @@ protected:
 
 
 	UFUNCTION(BlueprintCallable, Category = "Intern")
+	void SetupCores();
+
+	UFUNCTION(BlueprintCallable, Category = "Intern")
 	void TransformSelection(FTransform DeltaTransform, bool bInLocalSpace);
+	UFUNCTION(BlueprintCallable, Category = "Intern")
+	void TransformCore(FTransform DeltaTransform, bool bInLocalSpace, AActor* InActor);
+
+	UFUNCTION(BlueprintCallable, Category = "Intern")
+	void UpdateGizmoSpace(ETransformSpace InSpace);
 
 
 public:

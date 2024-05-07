@@ -25,6 +25,7 @@ enum class EGizmoExtType : uint8
 	GET_Rotation			UMETA(DisplayName = "Rotation"),
 	GET_Scale				UMETA(DisplayName = "Scale"),
 	GET_Select				UMETA(DisplayName = "Select"),
+	GET_Elements			UMETA(DisplayName = "Elements"),
 	GET_TRS					UMETA(DisplayName = "TRS"), // declared for late use, as a combiend translate, rotate & scale gizmo
 };
 

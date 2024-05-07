@@ -7,7 +7,7 @@
 // Sets default values
 AGizmoBaseActor::AGizmoBaseActor()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
 	DefaultSceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
@@ -63,6 +63,18 @@ void AGizmoBaseActor::CreateSelectCore_Implementation(ASelectGizmo*& OutSelectCo
 
 }
 
+void AGizmoBaseActor::SetupCores()
+{
+	ATranslateGizmo* OutTranslateCore;
+	this->CreateTranslateCore(OutTranslateCore);
+	ARotateGizmo* OutRotateCore;
+	this->CreateRotateCore(OutRotateCore);
+	AScaleGizmo* OutScaleCore;
+	this->CreateScaleCore(OutScaleCore);
+	ASelectGizmo* OutSelectCore;
+	this->CreateSelectCore(OutSelectCore);
+}
+
 void AGizmoBaseActor::TransformSelection(FTransform DeltaTransform, bool bInLocalSpace)
 {
 	if (bInLocalSpace)
@@ -85,4 +97,30 @@ void AGizmoBaseActor::TransformSelection(FTransform DeltaTransform, bool bInLoca
 			Selected->SetActorScale3D(Selected->GetActorScale3D() + DeltaTransform.GetScale3D());
 		}
 	}
+}
+
+void AGizmoBaseActor::TransformCore(FTransform DeltaTransform, bool bInLocalSpace, AActor* InActor)
+{
+	if (bInLocalSpace)
+	{
+		AActor* Selected = InActor;
+		Selected->AddActorLocalOffset(DeltaTransform.GetLocation());
+		Selected->AddActorLocalRotation(DeltaTransform.GetRotation());
+		Selected->SetActorRelativeScale3D(Selected->GetActorRelativeScale3D() + DeltaTransform.GetScale3D());
+	}
+	else
+	{
+		AActor* Selected = InActor;
+		Selected->AddActorWorldOffset(DeltaTransform.GetLocation());
+		Selected->AddActorWorldRotation(DeltaTransform.GetRotation());
+		Selected->SetActorScale3D(Selected->GetActorScale3D() + DeltaTransform.GetScale3D());
+	}
+}
+
+void AGizmoBaseActor::UpdateGizmoSpace(ETransformSpace InSpace)
+{
+	this->Space = InSpace;
+	this->TranslateCore->UpdateGizmoSpace(Space);
+	this->RotateCore->UpdateGizmoSpace(Space);
+	this->ScaleCore->UpdateGizmoSpace(Space);
 }
