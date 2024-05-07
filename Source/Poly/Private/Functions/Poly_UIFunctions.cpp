@@ -28,11 +28,55 @@ bool UPoly_UIFunctions::GetMouseRaySegment(const UObject* WorldContext, const in
 	return bSuccess;
 }
 
+bool UPoly_UIFunctions::GetScreenRay(const UObject* WorldContext, const int32 PlayerIndex, const FVector2D& ScreenPosition, FVector& WorldPosition, FVector& WorldDirection)
+{
+	APlayerController* PC = UGameplayStatics::GetPlayerController(WorldContext, PlayerIndex);
+	return PC->DeprojectScreenPositionToWorld(ScreenPosition.X, ScreenPosition.Y, WorldPosition, WorldDirection);
+}
+
+bool UPoly_UIFunctions::GetScreenRaySegment(const UObject* WorldContext, const int32 PlayerIndex, const FVector2D& ScreenPosition, FVector& WorldStart, FVector& WorldEnd, const float Distance)
+{
+	APlayerController* PC = UGameplayStatics::GetPlayerController(WorldContext, PlayerIndex);
+	bool bSuccess = PC->DeprojectScreenPositionToWorld(ScreenPosition.X, ScreenPosition.Y, WorldStart, WorldEnd);
+	WorldEnd = WorldStart + (WorldEnd * Distance);
+	return bSuccess;
+}
+
+void UPoly_UIFunctions::GetScreenRectWorldCorners(const UObject* WorldContext, const int32 PlayerIndex, const FVector2D& BottomLeft, const FVector2D& BottomRight, const FVector2D& TopRight, const FVector2D& TopLeft, TArray<FVector>& OutNearCorners, TArray<FVector>& OutFarCorners, const float Distance)
+{
+	OutNearCorners.Reset(4);
+	OutFarCorners.Reset(4);
+	FVector BLS, BLE, BRS, BRE, TRS, TRE, TLS, TLE;
+
+	UPoly_UIFunctions::GetScreenRaySegment(WorldContext, PlayerIndex, BottomLeft, BLS, BLE, Distance);
+	UPoly_UIFunctions::GetScreenRaySegment(WorldContext, PlayerIndex, BottomRight, BRS, BRE, Distance);
+	UPoly_UIFunctions::GetScreenRaySegment(WorldContext, PlayerIndex, TopRight, TRS, TRE, Distance);
+	UPoly_UIFunctions::GetScreenRaySegment(WorldContext, PlayerIndex, TopLeft, TLS, TLE, Distance);
+
+	OutNearCorners.Add(BLS);
+	OutNearCorners.Add(BRS);
+	OutNearCorners.Add(TRS);
+	OutNearCorners.Add(TLS);
+
+	OutFarCorners.Add(BLE);
+	OutFarCorners.Add(BRE);
+	OutFarCorners.Add(TRE);
+	OutFarCorners.Add(TLE);
+}
+
 
 void UPoly_UIFunctions::GetRectOriginAndSize(const FVector2D FirstPoint, const FVector2D SecondPoint, FVector2D& OutOrigin, FVector2D& OutSize)
 {
 	OutOrigin = FVector2D(FMath::Min(FirstPoint.X, SecondPoint.X), FMath::Min(FirstPoint.Y, SecondPoint.Y));
 	OutSize = (SecondPoint - FirstPoint).GetAbs();
+}
+
+void UPoly_UIFunctions::GetRectCorners(const FVector2D Origin, const FVector2D Size, FVector2D& OutBottomLeft, FVector2D& OutBottomRight, FVector2D& OutTopRight, FVector2D& OutTopLeft)
+{
+	OutBottomLeft = Origin + FVector2D(0, Size.Y);
+	OutBottomRight = Origin + Size;
+	OutTopLeft = Origin;
+	OutTopRight = Origin + FVector2D(Size.X, 0);
 }
 
 void UPoly_UIFunctions::SelectWithSelectionRequest(UActorSelectionRequest* Request, AHUD* HUD)

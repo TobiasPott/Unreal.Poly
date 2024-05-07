@@ -21,7 +21,7 @@ protected:
 	bool bIsMousePressed = false;
 	bool bIsEnabled = false;
 
-	UPROPERTY()
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Default")
 	int32 PlayerIndex = 0;
 	UPROPERTY()
 	FName InputAction = EKeys::LeftMouseButton.GetFName();

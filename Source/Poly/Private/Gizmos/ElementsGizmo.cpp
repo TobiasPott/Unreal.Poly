@@ -88,7 +88,6 @@ void AElementsGizmo::SetGizmoHidden(const bool bHiddenInGame)
 
 void AElementsGizmo::OnInputKey_Pressed(FKey InKey)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("OnInputKey_Pressed"));
 	UPoly_UIFunctions::GetMousePosition(this, PlayerIndex, FirstPoint);
 	SecondPoint = FirstPoint;
 
@@ -107,7 +106,6 @@ void AElementsGizmo::OnInputKey_Pressed(FKey InKey)
 
 void AElementsGizmo::OnInputKey_Released(FKey InKey)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("OnInputKey_Released"));
 	if (bIsMousePressed && IsValid(Request))
 	{
 		bIsMousePressed = false;
