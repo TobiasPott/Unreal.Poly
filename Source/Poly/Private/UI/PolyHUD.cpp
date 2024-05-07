@@ -16,6 +16,11 @@ void APolyHUD::QueueRequest(UActorSelectionRequest* Request)
 	this->MarqueeRequests.AddUnique(Request);
 }
 
+void APolyHUD::QueueBaseRequest(USelectionRequestBase* Request)
+{
+	this->BaseRequests.AddUnique(Request);
+}
+
 void APolyHUD::ProcessRequests()
 {
 	for (int i = this->MarqueeRequests.Num() - 1; i >= 0; i--)
@@ -28,6 +33,13 @@ void APolyHUD::ProcessRequests()
 			UPoly_UIFunctions::SelectWithSelectionRequest(Request, this);
 			this->MarqueeRequests.Remove(Request);
 		}
+	}
+
+	for (int i = this->BaseRequests.Num() - 1; i >= 0; i--)
+	{
+		USelectionRequestBase* Request = this->BaseRequests[i];
+		UPoly_UIFunctions::DrawRequest(Request, this);
+		this->BaseRequests.Remove(Request);
 	}
 }
 

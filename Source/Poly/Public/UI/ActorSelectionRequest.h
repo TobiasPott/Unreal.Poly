@@ -16,26 +16,21 @@
 #include "Misc/UObjectToken.h"
 #include "UObject/UObjectIterator.h"
 #include "UI/UserWidgetTypes.h"
+#include "UI/SelectionRequestBase.h"
 #include "ActorSelectionRequest.generated.h"
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FActorSelectionRequestFinished, class UActorSelectionRequest*, Request, bool, bSuccess);
 
 UCLASS(Blueprintable)
-class POLY_API UActorSelectionRequest : public UObject
+class POLY_API UActorSelectionRequest : public USelectionRequestBase
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
-	EActorSelectionRequestMode Mode = EActorSelectionRequestMode::Click;
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
 	bool bSubmitted = false;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
-	FVector2D FirstPoint = FVector2D(0, 0);
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
-	FVector2D SecondPoint = FVector2D(0, 0);
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
 	bool bIncludeNonCollider = false;

@@ -25,7 +25,7 @@ protected:
 	int32 PlayerIndex = 0;
 	UPROPERTY()
 	FName InputAction = EKeys::LeftMouseButton.GetFName();
-	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Filter")
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Selection")
 	bool bDisableOnFinish = false;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
@@ -48,6 +48,11 @@ protected:
 	bool bIncludeNonCollider = false;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Filter")
 	bool bIncludeOnlyEnclosed = false;
+
+protected:
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Selection")
+	TArray<AActor*> Selection;
+
 
 
 protected:
@@ -81,6 +86,10 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	virtual void OnFinished();
+
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	virtual void Clear();
+
 
 public:
 

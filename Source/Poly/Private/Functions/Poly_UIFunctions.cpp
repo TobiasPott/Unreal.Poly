@@ -75,7 +75,7 @@ void UPoly_UIFunctions::SelectWithSelectionRequest(UActorSelectionRequest* Reque
 	Request->OnFinished();
 }
 
-void UPoly_UIFunctions::DrawRequest(UActorSelectionRequest* Request, AHUD* HUD)
+void UPoly_UIFunctions::DrawRequest(USelectionRequestBase* Request, AHUD* HUD)
 {
 	FVector2D Origin;
 	FVector2D Size;

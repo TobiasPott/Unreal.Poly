@@ -142,8 +142,12 @@ void ASelectGizmo::OnMouse2D(FVector AxisValue)
 
 void ASelectGizmo::OnRequestFinished(UActorSelectionRequest* InRequest, bool bSuccess)
 {
-	//Request = InRequest;
 	Request->Finished.RemoveDynamic(this, &ASelectGizmo::OnRequestFinished);
+	if (bSuccess)
+	{
+		this->Selection.Reset(this->Request->Count());
+		this->Selection.Append(this->Request->Actors);
+	}
 	//this->Request = InRequest;
 	this->OnFinished();
 }
@@ -155,5 +159,11 @@ void ASelectGizmo::OnFinished()
 
 	if (bDisableOnFinish)
 		this->SetEnabled(false);
+	this->Request = nullptr;
+}
+
+void ASelectGizmo::Clear()
+{
+	this->Selection.Reset(this->Request->Count());
 	this->Request = nullptr;
 }
