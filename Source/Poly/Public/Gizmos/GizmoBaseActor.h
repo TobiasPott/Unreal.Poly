@@ -24,10 +24,10 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Default")
 	EGizmoExtType Type;
-
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Default")
 	ETransformSpace Space;
-
+	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Default")
+	TArray<AActor*> Selection;
 
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Default")
@@ -74,6 +74,13 @@ protected:
 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Protected|Core Events")
 	void Select_Finished(UActorSelectionRequest* Request, bool bSuccess);
+
+
+
+
+
+	UFUNCTION(BlueprintCallable, Category = "Intern")
+	void TransformSelection(FTransform DeltaTransform, bool bInLocalSpace);
 
 
 public:

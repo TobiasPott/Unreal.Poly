@@ -62,3 +62,27 @@ void AGizmoBaseActor::CreateSelectCore_Implementation(ASelectGizmo*& OutSelectCo
 	OutSelectCore->Finished.AddDynamic(this, &AGizmoBaseActor::Select_Finished);
 
 }
+
+void AGizmoBaseActor::TransformSelection(FTransform DeltaTransform, bool bInLocalSpace)
+{
+	if (bInLocalSpace)
+	{
+		for (int i = 0; i < this->Selection.Num(); i++)
+		{
+			AActor* Selected = this->Selection[i];
+			Selected->AddActorLocalOffset(DeltaTransform.GetLocation());
+			Selected->AddActorLocalRotation(DeltaTransform.GetRotation());
+			Selected->SetActorRelativeScale3D(Selected->GetActorRelativeScale3D() + DeltaTransform.GetScale3D());
+		}
+	}
+	else
+	{
+		for (int i = 0; i < this->Selection.Num(); i++)
+		{
+			AActor* Selected = this->Selection[i];
+			Selected->AddActorWorldOffset(DeltaTransform.GetLocation());
+			Selected->AddActorWorldRotation(DeltaTransform.GetRotation());
+			Selected->SetActorScale3D(Selected->GetActorScale3D() + DeltaTransform.GetScale3D());
+		}
+	}
+}
