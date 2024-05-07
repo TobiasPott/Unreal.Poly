@@ -26,6 +26,9 @@ public:
 	EGizmoExtType Type = EGizmoExtType::GET_NoTransform;
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Default")
 	ETransformSpace Space = ETransformSpace::TS_World;
+
+	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Default")
+	FName SelectorName = "Default";
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Default")
 	TArray<AActor*> Selection;
 
@@ -55,25 +58,32 @@ protected:
 
 
 	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Protected|Core Events")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Protected|Core Events")
 	void Translate_TranslationChanged(bool bEnded, FVector DeltaTranslation);
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Protected|Core Events")
+	void Translate_TranslationChanged_Implementation(bool bEnded, FVector DeltaTranslation);
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Protected|Core Events")
 	void Translate_TransformEnded(bool bEnded, FTransform DeltaTransform);
+	void Translate_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform);
 
 	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Protected|Core Events")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Protected|Core Events")
 	void Rotate_RotationChanged(bool bEnded, FRotator DeltaRotation);
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Protected|Core Events")
+	void Rotate_RotationChanged_Implementation(bool bEnded, FRotator DeltaRotation);
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Protected|Core Events")
 	void Rotate_TransformEnded(bool bEnded, FTransform DeltaTransform);
+	void Rotate_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform);
 
 	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Protected|Core Events")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Protected|Core Events")
 	void Scale_ScaleChanged(bool bEnded, FVector DeltaScale);
+	void Scale_ScaleChanged_Implementation(bool bEnded, FVector DeltaScale);
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Protected|Core Events")
 	void Scale_TransformEnded(bool bEnded, FTransform DeltaTransform);
+	void Scale_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform);
 
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Protected|Core Events")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Protected|Core Events")
 	void Select_Finished(UActorSelectionRequest* Request, bool bSuccess);
+	void Select_Finished_Implementation(UActorSelectionRequest* Request, bool bSuccess);
 
 
 
@@ -89,6 +99,10 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category = "Intern")
 	void UpdateGizmoSpace(ETransformSpace InSpace);
+
+
+	UFUNCTION(BlueprintCallable, Category = "Intern")
+	FRotator GetRotationFromSelection();
 
 
 public:

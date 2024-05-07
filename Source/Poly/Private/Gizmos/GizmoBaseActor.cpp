@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Gizmos/GizmoBaseActor.h"
+#include "Functions/Poly_BaseFunctions.h"
+#include "Selection/SelectorSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -63,6 +65,83 @@ void AGizmoBaseActor::CreateSelectCore_Implementation(ASelectGizmo*& OutSelectCo
 
 }
 
+void AGizmoBaseActor::Translate_TranslationChanged_Implementation(bool bEnded, FVector DeltaTranslation)
+{
+	if (!bEnded)
+	{
+		const FTransform Transform = UPoly_BaseFunctions::Transform_TranslationOnly(DeltaTranslation);
+		this->TransformCore(Transform, false, this->TranslateCore);
+		this->TransformSelection(Transform, false);
+	}
+}
+
+void AGizmoBaseActor::Translate_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform)
+{
+	if (bEnded)
+	{
+		TranslateCore->SetActorRelativeLocation(FVector::ZeroVector);
+		this->AddActorWorldOffset(DeltaTransform.GetLocation());
+	}
+}
+
+void AGizmoBaseActor::Rotate_RotationChanged_Implementation(bool bEnded, FRotator DeltaRotation)
+{
+	if (!bEnded)
+	{
+		const FTransform Transform = UPoly_BaseFunctions::Transform_RotationOnly(DeltaRotation);
+		this->TransformCore(Transform, false, this->RotateCore);
+		this->TransformSelection(Transform, false);
+	}
+}
+
+void AGizmoBaseActor::Rotate_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform)
+{
+	if (bEnded)
+	{
+		RotateCore->SetActorRelativeRotation(FRotator::ZeroRotator);
+		this->SetActorRotation(this->GetRotationFromSelection());
+	}
+}
+
+void AGizmoBaseActor::Scale_ScaleChanged_Implementation(bool bEnded, FVector DeltaScale)
+{
+	if (!bEnded)
+	{
+		const FTransform Transform = UPoly_BaseFunctions::Transform_ScaleOnly(DeltaScale);
+		this->TransformSelection(Transform, false);
+	}
+}
+
+void AGizmoBaseActor::Scale_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform)
+{
+}
+
+void AGizmoBaseActor::Select_Finished_Implementation(UActorSelectionRequest* Request, bool bSuccess)
+{
+	USelectorSubsystem* SelectorSubsystem = UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>();
+	ASelectorBase* Selector;
+	SelectorSubsystem->GetSelector(this, this->SelectorName, Selector);
+
+	if (bSuccess)
+	{
+		TArray<AActor*> Actors = Request->GetActors();
+		this->Selection.Reset();
+		this->Selection.Append(Actors);
+		Selector->ReplaceAll(Actors);
+
+		FVector ArrCenter;
+		FVector ArrExtents;
+		UGameplayStatics::GetActorArrayBounds(Actors, false, ArrCenter, ArrExtents);
+		this->SetActorLocation(ArrCenter);
+	}
+	else
+	{
+		this->Selection.Reset();
+		Selector->ClearSelection();
+	}
+}
+
+
 void AGizmoBaseActor::SetupCores()
 {
 	ATranslateGizmo* OutTranslateCore;
@@ -123,4 +202,13 @@ void AGizmoBaseActor::UpdateGizmoSpace(ETransformSpace InSpace)
 	this->TranslateCore->UpdateGizmoSpace(Space);
 	this->RotateCore->UpdateGizmoSpace(Space);
 	this->ScaleCore->UpdateGizmoSpace(Space);
+}
+
+FRotator AGizmoBaseActor::GetRotationFromSelection()
+{
+	if (this->IsWorldSpace() || Selection.IsEmpty())
+		return FRotator::ZeroRotator;
+
+	AActor* FirstSelected = Selection[0];
+	return FirstSelected->GetActorRotation();
 }
