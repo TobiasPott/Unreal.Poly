@@ -68,6 +68,9 @@ public:
 
 	virtual void SetGizmoHidden(const bool bHiddenInGame = false) override;
 
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void SetTargets(const TArray<AActor*>& Targets);
+
 protected:
 
 	UFUNCTION()

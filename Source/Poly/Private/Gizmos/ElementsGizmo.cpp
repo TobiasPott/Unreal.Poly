@@ -5,6 +5,7 @@
 #include "Functions/Poly_UIFunctions.h"
 #include "UI/PolyHUD.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/BaseDynamicMeshComponent.h"
 
 // Sets default values
 AElementsGizmo::AElementsGizmo()
@@ -83,6 +84,18 @@ void AElementsGizmo::SetGizmoHidden(const bool bHiddenInGame)
 {
 	Super::SetGizmoHidden(bHiddenInGame);
 	this->SetEnabled(!bHiddenInGame);
+}
+
+void AElementsGizmo::SetTargets(const TArray<AActor*>& Targets)
+{
+	this->Selection.Reset();
+	for (int i = 0; i < Targets.Num(); i++)
+	{
+		AActor* Target = Targets[i];
+		UBaseDynamicMeshComponent* BaseDMC = Target->GetComponentByClass<UBaseDynamicMeshComponent>();
+		if (IsValid(BaseDMC))
+			this->Selection.Add(Target, FGeometryScriptMeshSelection());
+	}
 }
 
 
