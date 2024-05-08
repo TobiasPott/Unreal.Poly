@@ -184,44 +184,48 @@ void AElementsGizmo::UpdateSelection()
 	SelectionMesh->Reset();
 	this->SelectionDynamicMeshComponent->SetWorldTransform(FTransform::Identity);
 
-	UDynamicMesh* TempMesh = Pool->RequestMesh();
-
-	//for (auto& KvPair : Selections)
-	for (int i = 0; i < Keys.Num(); i++)
+	// check selection type (only triangles and poly groups use mesh to display)
+	// ToDo: @tpott: Add Niagara particles emitter to visualise vertices selection (needs reading into Niagara)
+	if (this->SelectionType != EGeometryScriptMeshSelectionType::Vertices)
 	{
-		AActor* Target = Keys[i];
-		if (!IsValid(Target))
-			continue;
-		// get dynamic mesh component
-		UBaseDynamicMeshComponent* DMC = Target->GetComponentByClass<UBaseDynamicMeshComponent>();
-		if (!IsValid(DMC))
-			continue;
-
-		const FTransform TargetTransform = Target->GetActorTransform();
-		const FTransform InvTargetTransform = TargetTransform.Inverse();
-		UDynamicMesh* TargetMesh = DMC->GetDynamicMesh();
-
-		FGeometryScriptMeshSelection Selection;
-		UGeometryScriptLibrary_MeshSelectionFunctions::SelectMeshElementsInsideMesh(TargetMesh, SelectByMesh, Selection, InvTargetTransform, this->SelectionType);
-		Selections.Emplace(Target, Selection);
-
-		// ! ! ! !
-		// DEBUG Output
-		int NumSelected = 0;
-		EGeometryScriptMeshSelectionType SelType;
-		UGeometryScriptLibrary_MeshSelectionFunctions::GetMeshSelectionInfo(Selection, SelType, NumSelected);
-		UE_LOG(LogTemp, Warning, TEXT("Selected: %d (in %d)"), NumSelected, i);
-
-		if (Selection.GetNumSelected() > 0)
+		UDynamicMesh* TempMesh = Pool->RequestMesh();
+		//for (auto& KvPair : Selections)
+		for (int i = 0; i < Keys.Num(); i++)
 		{
-			// get selection of all before append
-			UGeometryScriptLibrary_MeshDecompositionFunctions::CopyMeshSelectionToMesh(TargetMesh, TempMesh, Selection, TempMesh, false);
-			UGeometryScriptLibrary_MeshBasicEditFunctions::AppendMesh(SelectionMesh, TempMesh, TargetTransform, false, AppendOptions);
-		}
-	}
+			AActor* Target = Keys[i];
+			if (!IsValid(Target))
+				continue;
+			// get dynamic mesh component
+			UBaseDynamicMeshComponent* DMC = Target->GetComponentByClass<UBaseDynamicMeshComponent>();
+			if (!IsValid(DMC))
+				continue;
 
-	// return temp mesh
-	Pool->ReturnMesh(TempMesh);
+			const FTransform TargetTransform = Target->GetActorTransform();
+			const FTransform InvTargetTransform = TargetTransform.Inverse();
+			UDynamicMesh* TargetMesh = DMC->GetDynamicMesh();
+
+			FGeometryScriptMeshSelection Selection;
+			UGeometryScriptLibrary_MeshSelectionFunctions::SelectMeshElementsInsideMesh(TargetMesh, SelectByMesh, Selection, InvTargetTransform, this->SelectionType);
+			Selections.Emplace(Target, Selection);
+
+			if (Selection.GetNumSelected() > 0)
+			{
+				// get selection of all before append
+				UGeometryScriptLibrary_MeshDecompositionFunctions::CopyMeshSelectionToMesh(TargetMesh, TempMesh, Selection, TempMesh, false);
+				UGeometryScriptLibrary_MeshBasicEditFunctions::AppendMesh(SelectionMesh, TempMesh, TargetTransform, false, AppendOptions);
+			}
+
+			// ! ! ! !
+			// DEBUG Output
+			int NumSelected = 0;
+			EGeometryScriptMeshSelectionType SelType;
+			UGeometryScriptLibrary_MeshSelectionFunctions::GetMeshSelectionInfo(Selection, SelType, NumSelected);
+			UE_LOG(LogTemp, Warning, TEXT("Selected: %d (in %d)"), NumSelected, i);
+
+		}
+		// return temp mesh
+		Pool->ReturnMesh(TempMesh);
+	}
 }
 
 
