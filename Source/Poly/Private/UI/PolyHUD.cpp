@@ -38,7 +38,7 @@ void APolyHUD::ProcessRequests()
 	for (int i = this->BaseRequests.Num() - 1; i >= 0; i--)
 	{
 		USelectionRequestBase* Request = this->BaseRequests[i];
-		UPoly_UIFunctions::DrawRequest(Request, this);
+		UPoly_UIFunctions::DrawRequest(Request, this, FLinearColor(0.3, 0.3, 0.3, 0.25));
 		if (Request->bSubmitted)
 		{
 			this->BaseRequests.Remove(Request);
