@@ -5,6 +5,7 @@
 #include "Selection/SelectorSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/BaseDynamicMeshComponent.h"
+#include "GeometryScript/MeshBasicEditFunctions.h"
 
 
 bool UDestroySelectedAction::Execute_Implementation(bool bEmitRecord)
@@ -21,6 +22,24 @@ bool UDestroySelectedAction::Execute_Implementation(bool bEmitRecord)
 			Selector->Deselect(Selected, IsSelected);
 			Selected->Destroy();
 		}
+		this->Submit();
+		return true;
+	}
+
+	this->Discard();
+	return false;
+}
+
+bool UDeleteSelectedElementsAction::Execute_Implementation(bool bEmitRecord)
+{
+	if (this->Selection.GetNumSelected() > 0
+		&& this->Selection.GetSelectionType() == EGeometryScriptMeshSelectionType::Triangles)
+	{
+		// ToDo: @tpott: add deletion of selection using the respective GeometryScript function library
+		UDynamicMesh* TargetMesh = Target->GetComponentByClass<UBaseDynamicMeshComponent>()->GetDynamicMesh();
+		int NumDeleted;
+		UGeometryScriptLibrary_MeshBasicEditFunctions::DeleteSelectedTrianglesFromMesh(TargetMesh, this->Selection, NumDeleted);
+
 		this->Submit();
 		return true;
 	}
