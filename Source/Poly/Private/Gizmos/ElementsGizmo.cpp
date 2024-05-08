@@ -6,6 +6,9 @@
 #include "UI/PolyHUD.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/BaseDynamicMeshComponent.h"
+#include "GeometryScript/MeshPrimitiveFunctions.h"
+#include "GeometryScript/MeshSelectionFunctions.h"
+#include "GeometryScript/MeshNormalsFunctions.h"
 
 // Sets default values
 AElementsGizmo::AElementsGizmo()
@@ -13,6 +16,15 @@ AElementsGizmo::AElementsGizmo()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
+	// create new scene component and make it root component others attach to
+	DefaultSceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
+	DefaultSceneRoot->SetMobility(EComponentMobility::Movable);
+	SetRootComponent(DefaultSceneRoot);
+
+	// create subcomponents and attach them to default scene root
+	DynamicMeshComponent = CreateDefaultSubobject<UDynamicMeshComponent>(TEXT("DynamicMeshComponent"));
+	DynamicMeshComponent->SetupAttachment(DefaultSceneRoot);
+	DynamicMeshComponent->SetVisibility(false); // make visible to display selection mesh
 }
 
 // Called when the game starts or when spawned
@@ -88,14 +100,60 @@ void AElementsGizmo::SetGizmoHidden(const bool bHiddenInGame)
 
 void AElementsGizmo::SetTargets(const TArray<AActor*>& Targets)
 {
-	this->Selection.Reset();
+	this->Selections.Reset();
 	for (int i = 0; i < Targets.Num(); i++)
 	{
 		AActor* Target = Targets[i];
 		UBaseDynamicMeshComponent* BaseDMC = Target->GetComponentByClass<UBaseDynamicMeshComponent>();
 		if (IsValid(BaseDMC))
-			this->Selection.Add(Target, FGeometryScriptMeshSelection());
+			this->Selections.Add(Target, FGeometryScriptMeshSelection());
 	}
+}
+
+void AElementsGizmo::UpdateSelectionMesh(const FVector2D FirstScreenPoint, const FVector2D SecondScreenPoint)
+{
+	// get screen space origin and size
+	FVector2D Origin;
+	FVector2D Size;
+	UPoly_UIFunctions::GetRectOriginAndSize(FirstScreenPoint, SecondScreenPoint, Origin, Size);
+	// get rect corners in screen space
+	FVector2D BL, BR, TR, TL;
+	UPoly_UIFunctions::GetRectCorners(Origin, Size, BL, BR, TR, TL);
+	// get near and far plane world corners
+	TArray<FVector> NearPlaneCorners;
+	TArray<FVector> FarPlaneCorners;
+	UPoly_UIFunctions::GetScreenRectWorldCorners(this, this->PlayerIndex, BL, BR, TR, TL, NearPlaneCorners, FarPlaneCorners, Distance);
+
+	// get selection mesh instance
+	UDynamicMesh* TargetMesh = this->DynamicMeshComponent->GetDynamicMesh();
+	TargetMesh->Reset();
+	// append primitive options
+	FGeometryScriptPrimitiveOptions Options;
+	Options.PolygroupMode = EGeometryScriptPrimitivePolygroupMode::PerFace;
+	Options.bFlipOrientation = false;
+	Options.UVMode = EGeometryScriptPrimitiveUVMode::Uniform;
+
+	const FTransform InvTransform = this->GetActorTransform().Inverse();
+
+	UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendTriangulatedPolygon3D(TargetMesh, Options, InvTransform, FarPlaneCorners);
+	UGeometryScriptLibrary_MeshNormalsFunctions::FlipNormals(TargetMesh);
+
+	UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendTriangulatedPolygon3D(TargetMesh, Options, InvTransform, NearPlaneCorners);
+
+	// Top & Bottom Faces
+	TArray<FVector> TempCorners;
+	TempCorners = { NearPlaneCorners[1], NearPlaneCorners[0], FarPlaneCorners[0], FarPlaneCorners[1] };
+	UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendTriangulatedPolygon3D(TargetMesh, Options, InvTransform, TempCorners);
+
+	TempCorners = { NearPlaneCorners[3], NearPlaneCorners[2], FarPlaneCorners[2], FarPlaneCorners[3] };
+	UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendTriangulatedPolygon3D(TargetMesh, Options, InvTransform, TempCorners);
+
+	// Left & Right Faces
+	TempCorners = { NearPlaneCorners[0], NearPlaneCorners[3], FarPlaneCorners[3], FarPlaneCorners[0] };
+	UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendTriangulatedPolygon3D(TargetMesh, Options, InvTransform, TempCorners);
+
+	TempCorners = { NearPlaneCorners[2], NearPlaneCorners[1], FarPlaneCorners[1], FarPlaneCorners[2] };
+	UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendTriangulatedPolygon3D(TargetMesh, Options, InvTransform, TempCorners);
 }
 
 
@@ -125,6 +183,42 @@ void AElementsGizmo::OnInputKey_Released(FKey InKey)
 		UPoly_UIFunctions::GetMousePosition(this, PlayerIndex, SecondPoint);
 		Request->SecondPoint = SecondPoint;
 
+		// update mesh used or elements selection
+		this->UpdateSelectionMesh(this->FirstPoint, this->SecondPoint);
+
+		UDynamicMesh* SelectionMesh = this->DynamicMeshComponent->GetDynamicMesh();
+		const FTransform InvActorTransform = this->DynamicMeshComponent->GetComponentTransform().Inverse();
+		// iterate over targets (in keys of Selections)
+		TArray<AActor*> Keys;
+		Selections.GetKeys(Keys);
+
+		//for (auto& KvPair : Selections)
+		for (int i = 0; i < Keys.Num(); i++)
+		{
+			AActor* Target = Keys[i];
+			if (!IsValid(Target))
+				continue;
+			// get dynamic mesh component
+			UBaseDynamicMeshComponent* DMC = Target->GetComponentByClass<UBaseDynamicMeshComponent>();
+			if (!IsValid(DMC))
+				continue;
+
+			FTransform ToTargetTransform = InvActorTransform * Target->GetActorTransform();
+			UDynamicMesh* TargetMesh = DMC->GetDynamicMesh();
+
+			FGeometryScriptMeshSelection Selection;
+			UGeometryScriptLibrary_MeshSelectionFunctions::SelectMeshElementsInsideMesh(TargetMesh, SelectionMesh, Selection, ToTargetTransform, this->SelectionType);
+			Selections.Emplace(Target, Selection);
+
+			// ! ! ! !
+			// DEBUG Output
+			//KvPair.Value = Selection;
+			int NumSelected = 0;
+			EGeometryScriptMeshSelectionType SelType;
+			UGeometryScriptLibrary_MeshSelectionFunctions::GetMeshSelectionInfo(Selection, SelType, NumSelected);
+			UE_LOG(LogTemp, Warning, TEXT("Selected: %d (in %d)"), NumSelected, i);
+
+		}
 
 		Request->Submit();
 		this->OnFinished();
@@ -160,6 +254,6 @@ void AElementsGizmo::OnFinished()
 
 void AElementsGizmo::Clear()
 {
-	this->Selection.Reset();
+	this->Selections.Reset();
 	this->Request = nullptr;
 }

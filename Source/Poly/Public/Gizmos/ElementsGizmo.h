@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/DynamicMeshComponent.h"
 #include "GeometryScript/GeometryScriptTypes.h"
 #include "GeometryScript/GeometryScriptSelectionTypes.h"
 #include "UI/SelectionRequestBase.h"
@@ -18,6 +19,12 @@ UCLASS(Blueprintable, BlueprintType)
 class POLY_API AElementsGizmo : public AGizmoCore
 {
 	GENERATED_BODY()
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	class USceneComponent* DefaultSceneRoot;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	class UDynamicMeshComponent* DynamicMeshComponent;
 
 public:
 	// Sets default values for this actor's properties
@@ -42,6 +49,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
 	USelectionRequestBase* Request = nullptr;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Selection")
+	float Distance = 10000.0;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Selection")
+	EGeometryScriptMeshSelectionType SelectionType = EGeometryScriptMeshSelectionType::Triangles;
 
 	// Filter values
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Filter")
@@ -51,7 +62,7 @@ protected:
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Selection")
-	TMap<AActor*, FGeometryScriptMeshSelection> Selection;
+	TMap<AActor*, FGeometryScriptMeshSelection> Selections;
 
 
 
@@ -70,6 +81,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SetTargets(const TArray<AActor*>& Targets);
+
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category = "Intern")
+	void UpdateSelectionMesh(const FVector2D FirstScreenPoint, const FVector2D SecondScreenPoint);
 
 protected:
 
