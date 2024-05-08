@@ -8,7 +8,10 @@
 #include "Components/BaseDynamicMeshComponent.h"
 #include "GeometryScript/MeshPrimitiveFunctions.h"
 #include "GeometryScript/MeshSelectionFunctions.h"
+#include "GeometryScript/MeshDecompositionFunctions.h"
 #include "GeometryScript/MeshNormalsFunctions.h"
+#include "GeometryScript/MeshTransformFunctions.h"
+#include "GeometryScript/MeshBasicEditFunctions.h"
 
 // Sets default values
 AElementsGizmo::AElementsGizmo()
@@ -43,7 +46,7 @@ void AElementsGizmo::BeginPlay()
 
 	// create new request if none is available yet
 	Request = NewObject<USelectionRequestBase>(this);
-
+	Pool = NewObject<UDynamicMeshPool>(UDynamicMeshPool::StaticClass());
 
 }
 
@@ -142,27 +145,83 @@ void AElementsGizmo::UpdateSelectionMesh(const FVector2D FirstScreenPoint, const
 	Options.bFlipOrientation = false;
 	Options.UVMode = EGeometryScriptPrimitiveUVMode::Uniform;
 
-	const FTransform InvTransform = this->GetActorTransform().Inverse();
+	this->DynamicMeshComponent->SetWorldTransform(FTransform::Identity);
+	const FTransform AppendTransform = FTransform::Identity;
 
-	UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendTriangulatedPolygon3D(TargetMesh, Options, InvTransform, FarPlaneCorners);
+	UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendTriangulatedPolygon3D(TargetMesh, Options, AppendTransform, FarPlaneCorners);
 	UGeometryScriptLibrary_MeshNormalsFunctions::FlipNormals(TargetMesh);
 
-	UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendTriangulatedPolygon3D(TargetMesh, Options, InvTransform, NearPlaneCorners);
+	UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendTriangulatedPolygon3D(TargetMesh, Options, AppendTransform, NearPlaneCorners);
 
 	// Top & Bottom Faces
 	TArray<FVector> TempCorners;
 	TempCorners = { NearPlaneCorners[1], NearPlaneCorners[0], FarPlaneCorners[0], FarPlaneCorners[1] };
-	UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendTriangulatedPolygon3D(TargetMesh, Options, InvTransform, TempCorners);
+	UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendTriangulatedPolygon3D(TargetMesh, Options, AppendTransform, TempCorners);
 
 	TempCorners = { NearPlaneCorners[3], NearPlaneCorners[2], FarPlaneCorners[2], FarPlaneCorners[3] };
-	UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendTriangulatedPolygon3D(TargetMesh, Options, InvTransform, TempCorners);
+	UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendTriangulatedPolygon3D(TargetMesh, Options, AppendTransform, TempCorners);
 
 	// Left & Right Faces
 	TempCorners = { NearPlaneCorners[0], NearPlaneCorners[3], FarPlaneCorners[3], FarPlaneCorners[0] };
-	UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendTriangulatedPolygon3D(TargetMesh, Options, InvTransform, TempCorners);
+	UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendTriangulatedPolygon3D(TargetMesh, Options, AppendTransform, TempCorners);
 
 	TempCorners = { NearPlaneCorners[2], NearPlaneCorners[1], FarPlaneCorners[1], FarPlaneCorners[2] };
-	UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendTriangulatedPolygon3D(TargetMesh, Options, InvTransform, TempCorners);
+	UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendTriangulatedPolygon3D(TargetMesh, Options, AppendTransform, TempCorners);
+}
+
+void AElementsGizmo::UpdateSelection()
+{
+	const FGeometryScriptAppendMeshOptions AppendOptions = { EGeometryScriptCombineAttributesMode::EnableAllMatching };
+
+
+	UDynamicMesh* SelectByMesh = this->DynamicMeshComponent->GetDynamicMesh();
+	// iterate over targets (in keys of Selections)
+	TArray<AActor*> Keys;
+	Selections.GetKeys(Keys);
+
+	// reset selection mesh
+	UDynamicMesh* SelectionMesh = this->SelectionDynamicMeshComponent->GetDynamicMesh();
+	SelectionMesh->Reset();
+	this->SelectionDynamicMeshComponent->SetWorldTransform(FTransform::Identity);
+
+	UDynamicMesh* TempMesh = Pool->RequestMesh();
+
+	//for (auto& KvPair : Selections)
+	for (int i = 0; i < Keys.Num(); i++)
+	{
+		AActor* Target = Keys[i];
+		if (!IsValid(Target))
+			continue;
+		// get dynamic mesh component
+		UBaseDynamicMeshComponent* DMC = Target->GetComponentByClass<UBaseDynamicMeshComponent>();
+		if (!IsValid(DMC))
+			continue;
+
+		const FTransform TargetTransform = Target->GetActorTransform();
+		const FTransform InvTargetTransform = TargetTransform.Inverse();
+		UDynamicMesh* TargetMesh = DMC->GetDynamicMesh();
+
+		FGeometryScriptMeshSelection Selection;
+		UGeometryScriptLibrary_MeshSelectionFunctions::SelectMeshElementsInsideMesh(TargetMesh, SelectByMesh, Selection, InvTargetTransform, this->SelectionType);
+		Selections.Emplace(Target, Selection);
+
+		// ! ! ! !
+		// DEBUG Output
+		int NumSelected = 0;
+		EGeometryScriptMeshSelectionType SelType;
+		UGeometryScriptLibrary_MeshSelectionFunctions::GetMeshSelectionInfo(Selection, SelType, NumSelected);
+		UE_LOG(LogTemp, Warning, TEXT("Selected: %d (in %d)"), NumSelected, i);
+
+		if (Selection.GetNumSelected() > 0)
+		{
+			// get selection of all before append
+			UGeometryScriptLibrary_MeshDecompositionFunctions::CopyMeshSelectionToMesh(TargetMesh, TempMesh, Selection, TempMesh, false);
+			UGeometryScriptLibrary_MeshBasicEditFunctions::AppendMesh(SelectionMesh, TempMesh, TargetTransform, false, AppendOptions);
+		}
+	}
+
+	// return temp mesh
+	Pool->ReturnMesh(TempMesh);
 }
 
 
@@ -194,40 +253,9 @@ void AElementsGizmo::OnInputKey_Released(FKey InKey)
 
 		// update mesh used or elements selection
 		this->UpdateSelectionMesh(this->FirstPoint, this->SecondPoint);
+		// update actual selection from targets and selection mesh
+		this->UpdateSelection();
 
-		UDynamicMesh* SelectionMesh = this->DynamicMeshComponent->GetDynamicMesh();
-		const FTransform InvActorTransform = this->DynamicMeshComponent->GetComponentTransform().Inverse();
-		// iterate over targets (in keys of Selections)
-		TArray<AActor*> Keys;
-		Selections.GetKeys(Keys);
-
-		//for (auto& KvPair : Selections)
-		for (int i = 0; i < Keys.Num(); i++)
-		{
-			AActor* Target = Keys[i];
-			if (!IsValid(Target))
-				continue;
-			// get dynamic mesh component
-			UBaseDynamicMeshComponent* DMC = Target->GetComponentByClass<UBaseDynamicMeshComponent>();
-			if (!IsValid(DMC))
-				continue;
-
-			FTransform ToTargetTransform = InvActorTransform * Target->GetActorTransform();
-			UDynamicMesh* TargetMesh = DMC->GetDynamicMesh();
-
-			FGeometryScriptMeshSelection Selection;
-			UGeometryScriptLibrary_MeshSelectionFunctions::SelectMeshElementsInsideMesh(TargetMesh, SelectionMesh, Selection, ToTargetTransform, this->SelectionType);
-			Selections.Emplace(Target, Selection);
-
-			// ! ! ! !
-			// DEBUG Output
-			//KvPair.Value = Selection;
-			int NumSelected = 0;
-			EGeometryScriptMeshSelectionType SelType;
-			UGeometryScriptLibrary_MeshSelectionFunctions::GetMeshSelectionInfo(Selection, SelType, NumSelected);
-			UE_LOG(LogTemp, Warning, TEXT("Selected: %d (in %d)"), NumSelected, i);
-
-		}
 
 		Request->Submit();
 		this->OnFinished();

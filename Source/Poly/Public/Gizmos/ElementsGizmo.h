@@ -66,7 +66,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Selection")
 	TMap<AActor*, FGeometryScriptMeshSelection> Selections;
 
-
+	UPROPERTY()
+	TObjectPtr<UDynamicMeshPool> Pool;
 
 protected:
 
@@ -87,6 +88,9 @@ public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category = "Intern")
 	void UpdateSelectionMesh(const FVector2D FirstScreenPoint, const FVector2D SecondScreenPoint);
+
+	void UpdateSelection();
+
 
 protected:
 
