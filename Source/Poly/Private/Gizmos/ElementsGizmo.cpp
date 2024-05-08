@@ -50,10 +50,11 @@ void AElementsGizmo::BeginPlay()
 
 }
 
-void AElementsGizmo::Setup(ESelectionRequestMode InMarqueeMode, bool bInIncludeOnlyEnclosed, bool bInDisableOnFinish)
+void AElementsGizmo::Setup(ESelectionRequestMode InMarqueeMode, const float InDistance, const EGeometryScriptMeshSelectionType InSelectionType, const bool bInDisableOnFinish)
 {
 	MarqueeMode = InMarqueeMode;
-	bIncludeOnlyEnclosed = bInIncludeOnlyEnclosed;
+	Distance = InDistance;
+	SelectionType = InSelectionType;
 	bDisableOnFinish = bInDisableOnFinish;
 }
 

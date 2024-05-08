@@ -51,16 +51,15 @@ protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
 	USelectionRequestBase* Request = nullptr;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Selection")
-	float Distance = 10000.0;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Selection")
-	EGeometryScriptMeshSelectionType SelectionType = EGeometryScriptMeshSelectionType::Triangles;
 
 	// Filter values
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Filter")
 	ESelectionRequestMode MarqueeMode = ESelectionRequestMode::Click;
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Filter")
-	bool bIncludeOnlyEnclosed = false;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Filter")
+	float Distance = 10000.0;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Filter")
+	EGeometryScriptMeshSelectionType SelectionType = EGeometryScriptMeshSelectionType::Triangles;
+
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Selection")
@@ -76,7 +75,7 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Selection")
-	void Setup(ESelectionRequestMode InMarqueeMode, bool bInIncludeOnlyEnclosed = false, bool bInDisableOnFinish = false);
+	void Setup(ESelectionRequestMode InMarqueeMode, const float InDistance = 10000.0, const EGeometryScriptMeshSelectionType InSelectionType = EGeometryScriptMeshSelectionType::Triangles, const bool bInDisableOnFinish = false);
 
 	void SetEnabled(const bool bInEnable);
 

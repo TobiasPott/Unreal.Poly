@@ -75,7 +75,7 @@ void AGizmoBaseActor::CreateElementsCore_Implementation(AElementsGizmo*& OutElem
 	this->ElementsCore->AttachToActor(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
 	OutElementsCore = this->ElementsCore;
 	// setup core with class (should be called again to change mode or class)
-	this->ElementsCore->Setup(ESelectionRequestMode::Marquee, true, false);
+	this->ElementsCore->Setup(ESelectionRequestMode::Marquee, 10000.0, EGeometryScriptMeshSelectionType::Triangles, false);
 
 	OutElementsCore->Finished.AddDynamic(this, &AGizmoBaseActor::Elements_Finished);
 
