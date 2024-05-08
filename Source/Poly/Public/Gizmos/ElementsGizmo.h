@@ -25,6 +25,8 @@ protected:
 	class USceneComponent* DefaultSceneRoot;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	class UDynamicMeshComponent* DynamicMeshComponent;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	class UDynamicMeshComponent* SelectionDynamicMeshComponent;
 
 public:
 	// Sets default values for this actor's properties

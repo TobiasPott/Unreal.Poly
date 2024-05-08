@@ -25,6 +25,15 @@ AElementsGizmo::AElementsGizmo()
 	DynamicMeshComponent = CreateDefaultSubobject<UDynamicMeshComponent>(TEXT("DynamicMeshComponent"));
 	DynamicMeshComponent->SetupAttachment(DefaultSceneRoot);
 	DynamicMeshComponent->SetVisibility(false); // make visible to display selection mesh
+	DynamicMeshComponent->SetComponentTickEnabled(false);
+
+	SelectionDynamicMeshComponent = CreateDefaultSubobject<UDynamicMeshComponent>(TEXT("SelectionDynamicMeshComponent"));
+	SelectionDynamicMeshComponent->SetupAttachment(DefaultSceneRoot);
+	SelectionDynamicMeshComponent->SetComponentTickEnabled(false);
+	SelectionDynamicMeshComponent->SetGenerateOverlapEvents(false);
+	SelectionDynamicMeshComponent->SetCastShadow(false);
+	SelectionDynamicMeshComponent->SetAffectDistanceFieldLighting(false);
+	SelectionDynamicMeshComponent->SetAffectDynamicIndirectLighting(false);
 }
 
 // Called when the game starts or when spawned
