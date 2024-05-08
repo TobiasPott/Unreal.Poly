@@ -41,7 +41,7 @@ protected:
 
 	// Filter values
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Filter")
-	EActorSelectionRequestMode MarqueeMode = EActorSelectionRequestMode::Click;
+	ESelectionRequestMode MarqueeMode = ESelectionRequestMode::Click;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Filter")
 	TSubclassOf<AActor> FilterClass;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Filter")
@@ -62,7 +62,7 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Selection")
-	void Setup(EActorSelectionRequestMode InMarqueeMode, UClass* InFilterClass, bool bInIncludeNonCollider = false, bool bInIncludeOnlyEnclosed = false, 
+	void Setup(ESelectionRequestMode InMarqueeMode, UClass* InFilterClass, bool bInIncludeNonCollider = false, bool bInIncludeOnlyEnclosed = false, 
 		bool bInDisableOnFinish = false);
 
 	void SetEnabled(const bool bInEnable);

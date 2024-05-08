@@ -32,7 +32,7 @@ public:
 	bool bSubmitted = false;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
-	EActorSelectionRequestMode Mode = EActorSelectionRequestMode::Click;
+	ESelectionRequestMode Mode = ESelectionRequestMode::Click;
 
 	UPROPERTY()
 	FVector2D FirstPoint = FVector2D(0, 0);

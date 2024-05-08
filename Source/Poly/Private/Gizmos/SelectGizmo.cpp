@@ -25,7 +25,7 @@ void ASelectGizmo::BeginPlay()
 
 }
 
-void ASelectGizmo::Setup(EActorSelectionRequestMode InMarqueeMode, UClass* InFilterClass, bool bInIncludeNonCollider, bool bInIncludeOnlyEnclosed,
+void ASelectGizmo::Setup(ESelectionRequestMode InMarqueeMode, UClass* InFilterClass, bool bInIncludeNonCollider, bool bInIncludeOnlyEnclosed,
 	bool bInDisableOnFinish)
 {
 	MarqueeMode = InMarqueeMode;

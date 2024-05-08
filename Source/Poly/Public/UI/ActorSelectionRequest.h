@@ -53,7 +53,7 @@ public:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Selection")
-	void Init(const EActorSelectionRequestMode InMode, const FVector2D& InFirstPoint, const FVector2D& InSecondPoint, TSubclassOf<AActor> InFilterClass, bool bInIncludeNonCollider = false, bool bInOnlyEnclosed = false);
+	void Init(const ESelectionRequestMode InMode, const FVector2D& InFirstPoint, const FVector2D& InSecondPoint, TSubclassOf<AActor> InFilterClass, bool bInIncludeNonCollider = false, bool bInOnlyEnclosed = false);
 
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")

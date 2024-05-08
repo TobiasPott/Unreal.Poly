@@ -38,7 +38,7 @@ void AElementsGizmo::BeginPlay()
 
 }
 
-void AElementsGizmo::Setup(EActorSelectionRequestMode InMarqueeMode, bool bInIncludeOnlyEnclosed, bool bInDisableOnFinish)
+void AElementsGizmo::Setup(ESelectionRequestMode InMarqueeMode, bool bInIncludeOnlyEnclosed, bool bInDisableOnFinish)
 {
 	MarqueeMode = InMarqueeMode;
 	bIncludeOnlyEnclosed = bInIncludeOnlyEnclosed;

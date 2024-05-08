@@ -83,7 +83,7 @@ void UPoly_UIFunctions::SelectWithSelectionRequest(UActorSelectionRequest* Reque
 {
 	switch (Request->Mode)
 	{
-	case EActorSelectionRequestMode::Trace:
+	case ESelectionRequestMode::Trace:
 	{
 		FVector Location;
 		FVector Dir;
@@ -105,8 +105,8 @@ void UPoly_UIFunctions::SelectWithSelectionRequest(UActorSelectionRequest* Reque
 		}
 	}
 	break;
-	case EActorSelectionRequestMode::Click:
-	case EActorSelectionRequestMode::Marquee:
+	case ESelectionRequestMode::Click:
+	case ESelectionRequestMode::Marquee:
 	{
 		TArray<AActor*> OutActors;
 		HUD->GetActorsInSelectionRectangle(Request->FilterClass, Request->FirstPoint, Request->SecondPoint, OutActors,
@@ -125,13 +125,13 @@ void UPoly_UIFunctions::DrawRequest(USelectionRequestBase* Request, AHUD* HUD, c
 	FVector2D Size;
 	switch (Request->Mode)
 	{
-	case EActorSelectionRequestMode::Marquee:
+	case ESelectionRequestMode::Marquee:
 		GetRectOriginAndSize(Request->FirstPoint, Request->SecondPoint, Origin, Size);
 		HUD->DrawRect(RectColor, Origin.X, Origin.Y, Size.X, Size.Y);
 		break;
 
-	case EActorSelectionRequestMode::Click:
-	case EActorSelectionRequestMode::Trace:
+	case ESelectionRequestMode::Click:
+	case ESelectionRequestMode::Trace:
 		break;
 	}
 }

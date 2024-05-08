@@ -37,10 +37,6 @@ public:
 		const float BaseRadius = 50, const float TopRadius = 5, const float Height = 100, const int32 RadialSteps = 12, const int32 HeightSteps = 4);
 
 
-	// ToDo: @tpott: Rename PolyMesh_ files and types to Poly
-	//				 Rename folder to 'PolyFunctionLibraries'
-	//				Add list of 'default' actors which need their respective function and actions
-	//				* DirectionalLight
 
 	UFUNCTION(BlueprintCallable, Category = "Poly|Create", meta = (WorldContext = "WorldContext"))
 	static void CreateDirectioalLight(const UObject* WorldContext, ADirectionalLight*& OutLight);
