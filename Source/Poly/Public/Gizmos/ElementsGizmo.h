@@ -55,10 +55,17 @@ protected:
 	// Filter values
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Filter")
 	ESelectionRequestMode MarqueeMode = ESelectionRequestMode::Click;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Filter")
-	float Distance = 10000.0;
 	UPROPERTY(BlueprintReadOnly, EditInstanceOnly, Category = "Filter")
 	EGeometryScriptMeshSelectionType SelectionType = EGeometryScriptMeshSelectionType::Triangles;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Filter")
+	float Distance = 10000.0;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Filter")
+	bool bInvert = false;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Filter")
+	float WindingThreshold = 0.5;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Filter")
+	int MinTrianglePoints = 3;
 
 
 protected:

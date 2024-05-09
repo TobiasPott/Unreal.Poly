@@ -24,6 +24,6 @@ public:
 
 
 	UFUNCTION(BlueprintCallable, Category = "Log|Selection")
-	static void LogSelectionInfo(const FGeometryScriptMeshSelection Selection);
+	static void LogSelectionInfo(const FString LogText, const FGeometryScriptMeshSelection Selection);
 
 };

@@ -14,6 +14,7 @@
 #include "GeometryScript/MeshNormalsFunctions.h"
 #include "GeometryScript/MeshTransformFunctions.h"
 #include "GeometryScript/MeshBasicEditFunctions.h"
+#include "GeometryScript/MeshSpatialFunctions.h"
 
 // Sets default values
 AElementsGizmo::AElementsGizmo()
@@ -23,7 +24,7 @@ AElementsGizmo::AElementsGizmo()
 
 	// create new scene component and make it root component others attach to
 	DefaultSceneRoot = UPoly_ActorFunctions::CreateDefaultSceneComponent<USceneComponent>(this, "DefaultSceneRoot", EComponentMobility::Movable);
-	
+
 
 	// create subcomponents and attach them to default scene root
 	DynamicMeshComponent = CreateDefaultSubobject<UDynamicMeshComponent>(TEXT("DynamicMeshComponent"));
@@ -195,6 +196,9 @@ void AElementsGizmo::UpdateSelection()
 	SelectionMesh->Reset();
 	this->SelectionDynamicMeshComponent->SetWorldTransform(FTransform::Identity);
 
+	FVector RayOrigin, RayDir;
+	UPoly_UIFunctions::GetScreenRay(this, this->PlayerIndex, this->SecondPoint, RayOrigin, RayDir);
+
 	// check selection type (only triangles and poly groups use mesh to display)
 	// ToDo: @tpott: Add Niagara particles emitter to visualise vertices selection (needs reading into Niagara)
 	if (this->SelectionType != EGeometryScriptMeshSelectionType::Vertices)
@@ -219,23 +223,54 @@ void AElementsGizmo::UpdateSelection()
 			if (this->SelectionType == EGeometryScriptMeshSelectionType::Triangles)
 			{
 				// select triangles
-				UGeometryScriptLibrary_MeshSelectionFunctions::SelectMeshElementsInsideMesh(TargetMesh, SelectByMesh, Selection, InvTargetTransform, this->SelectionType);
-
+				UGeometryScriptLibrary_MeshSelectionFunctions::SelectMeshElementsInsideMesh(TargetMesh, SelectByMesh, Selection, InvTargetTransform,
+					this->SelectionType, this->bInvert, 0.0, this->WindingThreshold, this->MinTrianglePoints);
 				// ! ! ! !
 				// DEBUG Output
-				UPoly_SelectionFunctions::LogSelectionInfo(Selection);
+				//UPoly_SelectionFunctions::LogSelectionInfo("", Selection);
 			}
 			else
 			{
 				// select polygroups and convert to triangles
 				FGeometryScriptMeshSelection PolyGroupSelection;
-				UGeometryScriptLibrary_MeshSelectionFunctions::SelectMeshElementsInsideMesh(TargetMesh, SelectByMesh, PolyGroupSelection, InvTargetTransform, this->SelectionType);
+				UGeometryScriptLibrary_MeshSelectionFunctions::SelectMeshElementsInsideMesh(TargetMesh, SelectByMesh, PolyGroupSelection, InvTargetTransform,
+					this->SelectionType, this->bInvert, 0.0, this->WindingThreshold, this->MinTrianglePoints);
 				UGeometryScriptLibrary_MeshSelectionFunctions::ConvertMeshSelection(TargetMesh, PolyGroupSelection, Selection, EGeometryScriptMeshSelectionType::Triangles, true);
-
 				// ! ! ! !
 				// DEBUG Output
-				UPoly_SelectionFunctions::LogSelectionInfo(PolyGroupSelection);
+				UPoly_SelectionFunctions::LogSelectionInfo("PolyGroups: ", PolyGroupSelection);
 			}
+
+			
+			// transform rays to target's 'world' space
+			const FVector TargetRayOrigin = TargetTransform.InverseTransformPosition(RayOrigin);
+			const FVector TargetRayDir = TargetTransform.InverseTransformVector(RayDir);
+
+			FGeometryScriptSpatialQueryOptions QueryOptions;
+			QueryOptions.WindingIsoThreshold = this->WindingThreshold;
+			FGeometryScriptRayHitResult QueryResult;
+			EGeometryScriptSearchOutcomePins QueryOutcome;
+			FGeometryScriptDynamicMeshBVH BVH;
+			UGeometryScriptLibrary_MeshSpatial::BuildBVHForMesh(TargetMesh, BVH);
+			UGeometryScriptLibrary_MeshSpatial::FindNearestRayIntersectionWithMesh(TargetMesh, BVH, TargetRayOrigin, TargetRayDir, QueryOptions, QueryResult, QueryOutcome);
+
+			if (QueryOutcome == EGeometryScriptSearchOutcomePins::Found)
+			{
+				FGeometryScriptIndexList IndexList = FGeometryScriptIndexList();
+				IndexList.Reset(EGeometryScriptIndexType::Triangle);
+				IndexList.List->Add(QueryResult.HitTriangleID);
+
+				// ToDo: @tpott: Add conversion to poly group from triangle index if mode is triangles
+				FGeometryScriptMeshSelection ClickSelection;
+				UGeometryScriptLibrary_MeshSelectionFunctions::ConvertIndexListToMeshSelection(TargetMesh, IndexList, EGeometryScriptMeshSelectionType::Triangles, ClickSelection);
+				// DEBUG Output
+				UPoly_SelectionFunctions::LogSelectionInfo("Click: ", ClickSelection);
+				Selection.CombineSelectionInPlace(ClickSelection, EGeometryScriptCombineSelectionMode::Add);
+			}
+
+
+
+
 			Selections.Emplace(Target, Selection);
 
 			if (Selection.GetNumSelected() > 0)

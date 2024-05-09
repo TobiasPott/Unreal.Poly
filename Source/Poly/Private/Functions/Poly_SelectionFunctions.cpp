@@ -32,10 +32,10 @@ void UPoly_SelectionFunctions::SetMaterialForState(AActor* Actor, const bool IsS
 	}
 }
 
-void UPoly_SelectionFunctions::LogSelectionInfo(const FGeometryScriptMeshSelection Selection)
+void UPoly_SelectionFunctions::LogSelectionInfo(const FString LogText, const FGeometryScriptMeshSelection Selection)
 {
 	int NumSelected = 0;
 	EGeometryScriptMeshSelectionType SelType;
 	UGeometryScriptLibrary_MeshSelectionFunctions::GetMeshSelectionInfo(Selection, SelType, NumSelected);
-	UE_LOG(LogTemp, Log, TEXT("Selection: %d (%s)"), NumSelected, *UEnum::GetValueAsString(SelType));
+	UE_LOG(LogTemp, Log, TEXT("%sSelection: %d (%s)"), *LogText, NumSelected, *UEnum::GetValueAsString(SelType));
 }
