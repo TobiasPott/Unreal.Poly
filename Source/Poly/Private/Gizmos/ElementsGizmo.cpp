@@ -40,6 +40,13 @@ AElementsGizmo::AElementsGizmo()
 	SelectionDynamicMeshComponent->SetAffectDistanceFieldLighting(false);
 	SelectionDynamicMeshComponent->SetAffectDynamicIndirectLighting(false);
 
+	InstancedStaticMeshComponent = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("InstancedStaticMeshComponent"));
+	InstancedStaticMeshComponent->SetupAttachment(DefaultSceneRoot);
+	InstancedStaticMeshComponent->SetComponentTickEnabled(false);
+	InstancedStaticMeshComponent->SetGenerateOverlapEvents(false);
+	InstancedStaticMeshComponent->SetCastShadow(false);
+	InstancedStaticMeshComponent->SetAffectDistanceFieldLighting(false);
+	InstancedStaticMeshComponent->SetAffectDynamicIndirectLighting(false);
 }
 
 // Called when the game starts or when spawned
@@ -207,47 +214,55 @@ void AElementsGizmo::UpdateSelection()
 
 	// check selection type (only triangles and poly groups use mesh to display)
 	// ToDo: @tpott: Add Niagara particles emitter to visualise vertices selection (needs reading into Niagara)
-	if (this->SelectionType != EGeometryScriptMeshSelectionType::Vertices)
+	UDynamicMesh* TempMesh = Pool->RequestMesh();
+	//for (auto& KvPair : Selections)
+	for (int i = 0; i < Keys.Num(); i++)
 	{
-		UDynamicMesh* TempMesh = Pool->RequestMesh();
-		//for (auto& KvPair : Selections)
-		for (int i = 0; i < Keys.Num(); i++)
+		AActor* Target = Keys[i];
+		if (!IsValid(Target))
+			continue;
+		// get dynamic mesh component
+		UBaseDynamicMeshComponent* DMC = Target->GetComponentByClass<UBaseDynamicMeshComponent>();
+		if (!IsValid(DMC))
+			continue;
+
+		const FTransform TargetTransform = Target->GetActorTransform();
+		const FTransform InvTargetTransform = TargetTransform.Inverse();
+		UDynamicMesh* TargetMesh = DMC->GetDynamicMesh();
+		FGeometryScriptMeshSelection Selection;
+
+		if (this->SelectionType == EGeometryScriptMeshSelectionType::Triangles)
 		{
-			AActor* Target = Keys[i];
-			if (!IsValid(Target))
-				continue;
-			// get dynamic mesh component
-			UBaseDynamicMeshComponent* DMC = Target->GetComponentByClass<UBaseDynamicMeshComponent>();
-			if (!IsValid(DMC))
-				continue;
+			// select triangles
+			UGeometryScriptLibrary_MeshSelectionFunctions::SelectMeshElementsInsideMesh(TargetMesh, SelectByMesh, Selection, InvTargetTransform,
+				this->SelectionType, this->bInvert, 0.0, this->WindingThreshold, this->MinTrianglePoints);
+			// ! ! ! !
+			// DEBUG Output
+			UPoly_SelectionFunctions::LogSelectionInfo("Triangles: ", Selection);
+		}
+		else if (this->SelectionType == EGeometryScriptMeshSelectionType::Polygroups)
+		{
+			// select polygroups and convert to triangles
+			FGeometryScriptMeshSelection PolyGroupSelection;
+			UGeometryScriptLibrary_MeshSelectionFunctions::SelectMeshElementsInsideMesh(TargetMesh, SelectByMesh, PolyGroupSelection, InvTargetTransform,
+				this->SelectionType, this->bInvert, 0.0, this->WindingThreshold, this->MinTrianglePoints);
+			UGeometryScriptLibrary_MeshSelectionFunctions::ConvertMeshSelection(TargetMesh, PolyGroupSelection, Selection, EGeometryScriptMeshSelectionType::Triangles, true);
+			// ! ! ! !
+			// DEBUG Output
+			UPoly_SelectionFunctions::LogSelectionInfo("PolyGroups: ", PolyGroupSelection);
+		}
+		else
+		{
+			// select vertices
+			UGeometryScriptLibrary_MeshSelectionFunctions::SelectMeshElementsInsideMesh(TargetMesh, SelectByMesh, Selection, InvTargetTransform,
+				this->SelectionType, this->bInvert, 0.0, this->WindingThreshold, this->MinTrianglePoints);
+			// ! ! ! !
+			// DEBUG Output
+			UPoly_SelectionFunctions::LogSelectionInfo("Vertices: ", Selection);
+		}
 
-			const FTransform TargetTransform = Target->GetActorTransform();
-			const FTransform InvTargetTransform = TargetTransform.Inverse();
-			UDynamicMesh* TargetMesh = DMC->GetDynamicMesh();
-
-			FGeometryScriptMeshSelection Selection;
-			if (this->SelectionType == EGeometryScriptMeshSelectionType::Triangles)
-			{
-				// select triangles
-				UGeometryScriptLibrary_MeshSelectionFunctions::SelectMeshElementsInsideMesh(TargetMesh, SelectByMesh, Selection, InvTargetTransform,
-					this->SelectionType, this->bInvert, 0.0, this->WindingThreshold, this->MinTrianglePoints);
-				// ! ! ! !
-				// DEBUG Output
-				UPoly_SelectionFunctions::LogSelectionInfo("Triangles: ", Selection);
-			}
-			else
-			{
-				// select polygroups and convert to triangles
-				FGeometryScriptMeshSelection PolyGroupSelection;
-				UGeometryScriptLibrary_MeshSelectionFunctions::SelectMeshElementsInsideMesh(TargetMesh, SelectByMesh, PolyGroupSelection, InvTargetTransform,
-					this->SelectionType, this->bInvert, 0.0, this->WindingThreshold, this->MinTrianglePoints);
-				UGeometryScriptLibrary_MeshSelectionFunctions::ConvertMeshSelection(TargetMesh, PolyGroupSelection, Selection, EGeometryScriptMeshSelectionType::Triangles, true);
-				// ! ! ! !
-				// DEBUG Output
-				UPoly_SelectionFunctions::LogSelectionInfo("PolyGroups: ", PolyGroupSelection);
-			}
-
-
+		if (this->SelectionType != EGeometryScriptMeshSelectionType::Vertices)
+		{
 			// transform rays to target's 'world' space
 			const FVector TargetRayOrigin = TargetTransform.InverseTransformPosition(RayOrigin);
 			const FVector TargetRayDir = TargetTransform.InverseTransformVector(RayDir);
@@ -275,43 +290,46 @@ void AElementsGizmo::UpdateSelection()
 				UPoly_SelectionFunctions::LogSelectionInfo("Click: ", ClickSelection);
 			}
 
-			switch (this->SelectionMode)
-			{
-			case EElementSelectionMode::Select:
-			{
-				FGeometryScriptMeshSelection OldSelection = Selections[Target];
-				OldSelection.CombineSelectionInPlace(Selection, EGeometryScriptCombineSelectionMode::Add);
-				Selection = OldSelection;
-				break;
-			}
-			case EElementSelectionMode::Deselect:
-			{
-				FGeometryScriptMeshSelection OldSelection = Selections[Target];
-				OldSelection.CombineSelectionInPlace(Selection, EGeometryScriptCombineSelectionMode::Subtract);
-				Selection = OldSelection;
-				break;
-			}
-			default:
-			case EElementSelectionMode::Replace:
-				break;
-			}
-
-			// place updated selection back into selection map
-			Selections.Emplace(Target, Selection);
-
-
-			if (Selection.GetNumSelected() > 0)
-			{
-				// get selection of all before append
-				UGeometryScriptLibrary_MeshDecompositionFunctions::CopyMeshSelectionToMesh(TargetMesh, TempMesh, Selection, TempMesh, false);
-				UGeometryScriptLibrary_MeshBasicEditFunctions::AppendMesh(SelectionMesh, TempMesh, TargetTransform, false, AppendOptions);
-			}
-
-
 		}
-		// return temp mesh
-		Pool->ReturnMesh(TempMesh);
+
+		// perform selection combine for select and deselct modes
+		switch (this->SelectionMode)
+		{
+		case EElementSelectionMode::Select:
+		{
+			FGeometryScriptMeshSelection OldSelection = Selections[Target];
+			OldSelection.CombineSelectionInPlace(Selection, EGeometryScriptCombineSelectionMode::Add);
+			Selection = OldSelection;
+			break;
+		}
+		case EElementSelectionMode::Deselect:
+		{
+			FGeometryScriptMeshSelection OldSelection = Selections[Target];
+			OldSelection.CombineSelectionInPlace(Selection, EGeometryScriptCombineSelectionMode::Subtract);
+			Selection = OldSelection;
+			break;
+		}
+		default:
+		case EElementSelectionMode::Replace:
+			break;
+		}
+
+		// place updated selection back into selection map
+		Selections.Emplace(Target, Selection);
+
+
+		if (Selection.GetSelectionType() != EGeometryScriptMeshSelectionType::Vertices && Selection.GetNumSelected() > 0)
+		{
+			// get selection of all before append
+			UGeometryScriptLibrary_MeshDecompositionFunctions::CopyMeshSelectionToMesh(TargetMesh, TempMesh, Selection, TempMesh, false);
+			UGeometryScriptLibrary_MeshBasicEditFunctions::AppendMesh(SelectionMesh, TempMesh, TargetTransform, false, AppendOptions);
+		}
+
+
 	}
+	// return temp mesh
+	Pool->ReturnMesh(TempMesh);
+
 }
 
 

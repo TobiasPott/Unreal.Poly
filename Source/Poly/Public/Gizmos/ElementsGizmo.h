@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/DynamicMeshComponent.h"
+#include "Components/InstancedStaticMeshComponent.h"
 #include "GeometryScript/GeometryScriptTypes.h"
 #include "GeometryScript/GeometryScriptSelectionTypes.h"
 #include "UI/SelectionRequestBase.h"
@@ -37,6 +38,10 @@ protected:
 	class UDynamicMeshComponent* DynamicMeshComponent;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	class UDynamicMeshComponent* SelectionDynamicMeshComponent;
+
+	/** Please add a variable description */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Default")
+	TObjectPtr<UInstancedStaticMeshComponent> InstancedStaticMeshComponent;
 
 public:
 	// Sets default values for this actor's properties
