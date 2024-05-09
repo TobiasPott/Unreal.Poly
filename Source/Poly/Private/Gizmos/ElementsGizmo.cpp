@@ -133,6 +133,10 @@ void AElementsGizmo::SetSelectionType(EGeometryScriptMeshSelectionType InSelecti
 {
 	this->SelectionType = InSelectionType;
 }
+void AElementsGizmo::SetSelectionMode(EElementSelectionMode InSelectionMode)
+{
+	this->SelectionMode = InSelectionMode;
+}
 
 void AElementsGizmo::UpdateSelectionMesh(const FVector2D FirstScreenPoint, const FVector2D SecondScreenPoint)
 {
@@ -229,7 +233,7 @@ void AElementsGizmo::UpdateSelection()
 					this->SelectionType, this->bInvert, 0.0, this->WindingThreshold, this->MinTrianglePoints);
 				// ! ! ! !
 				// DEBUG Output
-				//UPoly_SelectionFunctions::LogSelectionInfo("", Selection);
+				UPoly_SelectionFunctions::LogSelectionInfo("Triangles: ", Selection);
 			}
 			else
 			{
@@ -243,7 +247,7 @@ void AElementsGizmo::UpdateSelection()
 				UPoly_SelectionFunctions::LogSelectionInfo("PolyGroups: ", PolyGroupSelection);
 			}
 
-			
+
 			// transform rays to target's 'world' space
 			const FVector TargetRayOrigin = TargetTransform.InverseTransformPosition(RayOrigin);
 			const FVector TargetRayDir = TargetTransform.InverseTransformVector(RayDir);
@@ -262,20 +266,39 @@ void AElementsGizmo::UpdateSelection()
 				// ToDo: @tpott: Add conversion to poly group from triangle index if mode is triangles
 				FGeometryScriptMeshSelection ClickSelection;
 				UGeometryScriptLibrary_MeshSelectionFunctions::ConvertIndexListToMeshSelection(TargetMesh, IndexList, EGeometryScriptMeshSelectionType::Triangles, ClickSelection);
-
 				if (this->SelectionType == EGeometryScriptMeshSelectionType::Polygroups)
-				{
 					UGeometryScriptLibrary_MeshSelectionFunctions::ExpandMeshSelectionToConnected(TargetMesh, ClickSelection, ClickSelection, EGeometryScriptTopologyConnectionType::Polygroup);
-				}
+				// add click to existig selection
+				Selection.CombineSelectionInPlace(ClickSelection, EGeometryScriptCombineSelectionMode::Add);
+
 				// DEBUG Output
 				UPoly_SelectionFunctions::LogSelectionInfo("Click: ", ClickSelection);
-				Selection.CombineSelectionInPlace(ClickSelection, EGeometryScriptCombineSelectionMode::Add);
 			}
 
+			switch (this->SelectionMode)
+			{
+			case EElementSelectionMode::Select:
+			{
+				FGeometryScriptMeshSelection OldSelection = Selections[Target];
+				OldSelection.CombineSelectionInPlace(Selection, EGeometryScriptCombineSelectionMode::Add);
+				Selection = OldSelection;
+				break;
+			}
+			case EElementSelectionMode::Deselect:
+			{
+				FGeometryScriptMeshSelection OldSelection = Selections[Target];
+				OldSelection.CombineSelectionInPlace(Selection, EGeometryScriptCombineSelectionMode::Subtract);
+				Selection = OldSelection;
+				break;
+			}
+			default:
+			case EElementSelectionMode::Replace:
+				break;
+			}
 
-
-
+			// place updated selection back into selection map
 			Selections.Emplace(Target, Selection);
+
 
 			if (Selection.GetNumSelected() > 0)
 			{
