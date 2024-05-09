@@ -38,6 +38,7 @@ AElementsGizmo::AElementsGizmo()
 	SelectionDynamicMeshComponent->SetCastShadow(false);
 	SelectionDynamicMeshComponent->SetAffectDistanceFieldLighting(false);
 	SelectionDynamicMeshComponent->SetAffectDynamicIndirectLighting(false);
+
 }
 
 // Called when the game starts or when spawned
@@ -91,7 +92,6 @@ void AElementsGizmo::SetEnabled(const bool bInEnable)
 	}
 	else if (bIsEnabled && !bInEnable)
 	{
-
 		InputComponent->RemoveAxisBinding("Mouse2D");
 		InputComponent->RemoveAxisBinding("MouseX");
 		InputComponent->RemoveAxisBinding("MouseY");
@@ -101,6 +101,7 @@ void AElementsGizmo::SetEnabled(const bool bInEnable)
 
 		// bind primary input key pressed/released events
 		this->DisableInput(UGameplayStatics::GetPlayerController(this, PlayerIndex));
+
 	}
 
 	bIsEnabled = bInEnable;
@@ -122,6 +123,14 @@ void AElementsGizmo::SetTargets(const TArray<AActor*>& Targets)
 		if (IsValid(BaseDMC))
 			this->Selections.Add(Target, FGeometryScriptMeshSelection());
 	}
+
+	// Reset selection mesh
+	this->SelectionDynamicMeshComponent->GetDynamicMesh()->Reset();
+}
+
+void AElementsGizmo::SetSelectionType(EGeometryScriptMeshSelectionType InSelectionType)
+{
+	this->SelectionType = InSelectionType;
 }
 
 void AElementsGizmo::UpdateSelectionMesh(const FVector2D FirstScreenPoint, const FVector2D SecondScreenPoint)
@@ -143,7 +152,7 @@ void AElementsGizmo::UpdateSelectionMesh(const FVector2D FirstScreenPoint, const
 	TargetMesh->Reset();
 	// append primitive options
 	FGeometryScriptPrimitiveOptions Options;
-	Options.PolygroupMode = EGeometryScriptPrimitivePolygroupMode::PerFace;
+	Options.PolygroupMode = EGeometryScriptPrimitivePolygroupMode::SingleGroup;
 	Options.bFlipOrientation = false;
 	Options.UVMode = EGeometryScriptPrimitiveUVMode::Uniform;
 

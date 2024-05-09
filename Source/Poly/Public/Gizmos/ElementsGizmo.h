@@ -57,7 +57,7 @@ protected:
 	ESelectionRequestMode MarqueeMode = ESelectionRequestMode::Click;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Filter")
 	float Distance = 10000.0;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Filter")
+	UPROPERTY(BlueprintReadOnly, EditInstanceOnly, Category = "Filter")
 	EGeometryScriptMeshSelectionType SelectionType = EGeometryScriptMeshSelectionType::Triangles;
 
 
@@ -83,6 +83,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SetTargets(const TArray<AActor*>& Targets);
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void SetSelectionType(EGeometryScriptMeshSelectionType InSelectionType = EGeometryScriptMeshSelectionType::Triangles);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category = "Intern")
