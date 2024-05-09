@@ -184,7 +184,9 @@ void AElementsGizmo::UpdateSelectionMesh(const FVector2D FirstScreenPoint, const
 void AElementsGizmo::UpdateSelection()
 {
 	const FGeometryScriptAppendMeshOptions AppendOptions = { EGeometryScriptCombineAttributesMode::EnableAllMatching };
+	const FGeometryScriptSpatialQueryOptions QueryOptions = { 0, false, this->WindingThreshold };
 
+	FGeometryScriptDynamicMeshBVH TargetBVH;
 
 	UDynamicMesh* SelectByMesh = this->DynamicMeshComponent->GetDynamicMesh();
 	// iterate over targets (in keys of Selections)
@@ -246,13 +248,10 @@ void AElementsGizmo::UpdateSelection()
 			const FVector TargetRayOrigin = TargetTransform.InverseTransformPosition(RayOrigin);
 			const FVector TargetRayDir = TargetTransform.InverseTransformVector(RayDir);
 
-			FGeometryScriptSpatialQueryOptions QueryOptions;
-			QueryOptions.WindingIsoThreshold = this->WindingThreshold;
 			FGeometryScriptRayHitResult QueryResult;
 			EGeometryScriptSearchOutcomePins QueryOutcome;
-			FGeometryScriptDynamicMeshBVH BVH;
-			UGeometryScriptLibrary_MeshSpatial::BuildBVHForMesh(TargetMesh, BVH);
-			UGeometryScriptLibrary_MeshSpatial::FindNearestRayIntersectionWithMesh(TargetMesh, BVH, TargetRayOrigin, TargetRayDir, QueryOptions, QueryResult, QueryOutcome);
+			UGeometryScriptLibrary_MeshSpatial::BuildBVHForMesh(TargetMesh, TargetBVH);
+			UGeometryScriptLibrary_MeshSpatial::FindNearestRayIntersectionWithMesh(TargetMesh, TargetBVH, TargetRayOrigin, TargetRayDir, QueryOptions, QueryResult, QueryOutcome);
 
 			if (QueryOutcome == EGeometryScriptSearchOutcomePins::Found)
 			{
@@ -263,6 +262,11 @@ void AElementsGizmo::UpdateSelection()
 				// ToDo: @tpott: Add conversion to poly group from triangle index if mode is triangles
 				FGeometryScriptMeshSelection ClickSelection;
 				UGeometryScriptLibrary_MeshSelectionFunctions::ConvertIndexListToMeshSelection(TargetMesh, IndexList, EGeometryScriptMeshSelectionType::Triangles, ClickSelection);
+
+				if (this->SelectionType == EGeometryScriptMeshSelectionType::Polygroups)
+				{
+					UGeometryScriptLibrary_MeshSelectionFunctions::ExpandMeshSelectionToConnected(TargetMesh, ClickSelection, ClickSelection, EGeometryScriptTopologyConnectionType::Polygroup);
+				}
 				// DEBUG Output
 				UPoly_SelectionFunctions::LogSelectionInfo("Click: ", ClickSelection);
 				Selection.CombineSelectionInPlace(ClickSelection, EGeometryScriptCombineSelectionMode::Add);
