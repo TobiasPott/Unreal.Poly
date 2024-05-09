@@ -16,8 +16,8 @@ class POLY_API ASceneActor : public AActor
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	class USceneComponent* SceneComponent;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<USceneComponent> DefaultSceneRoot;
 
 
 public:	

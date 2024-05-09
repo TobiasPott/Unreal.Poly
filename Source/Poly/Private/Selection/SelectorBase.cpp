@@ -4,7 +4,8 @@
 #include "Selection/SelectorBase.h"
 #include "Selection/SelectableBase.h"
 #include "Selection/SelectorVisualiserBase.h"
-#include "Functions/SelectionFunctions.h"
+#include "Functions/Poly_SelectionFunctions.h"
+#include "Functions/Poly_ActorFunctions.h"
 #include "Engine/World.h"
 
 // Sets default values
@@ -14,9 +15,7 @@ ASelectorBase::ASelectorBase()
 	PrimaryActorTick.bCanEverTick = false;
 
 	// create new scene component and make it root component others attach to
-	SceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
-	SceneComponent->SetMobility(EComponentMobility::Static);
-	SetRootComponent(SceneComponent);
+	DefaultSceneRoot = UPoly_ActorFunctions::CreateDefaultSceneComponent<USceneComponent>(this, "DefaultSceneRoot", EComponentMobility::Static);
 }
 
 // Called when the game starts or when spawned

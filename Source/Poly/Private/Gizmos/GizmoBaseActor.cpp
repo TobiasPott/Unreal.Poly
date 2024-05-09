@@ -4,6 +4,7 @@
 #include "Functions/Poly_BaseFunctions.h"
 #include "Selection/SelectorSubsystem.h"
 #include "Kismet/GameplayStatics.h"
+#include "Functions/Poly_ActorFunctions.h"
 
 
 // Sets default values
@@ -12,8 +13,8 @@ AGizmoBaseActor::AGizmoBaseActor()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	DefaultSceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
-	this->SetRootComponent(DefaultSceneRoot);
+	// create new scene component and make it root component others attach to
+	DefaultSceneRoot = UPoly_ActorFunctions::CreateDefaultSceneComponent<USceneComponent>(this, "DefaultSceneRoot", EComponentMobility::Movable);
 
 }
 

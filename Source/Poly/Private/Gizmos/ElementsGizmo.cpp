@@ -3,6 +3,8 @@
 
 #include "Gizmos/ElementsGizmo.h"
 #include "Functions/Poly_UIFunctions.h"
+#include "Functions/Poly_SelectionFunctions.h"
+#include "Functions/Poly_ActorFunctions.h"
 #include "UI/PolyHUD.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/BaseDynamicMeshComponent.h"
@@ -20,9 +22,8 @@ AElementsGizmo::AElementsGizmo()
 	PrimaryActorTick.bCanEverTick = false;
 
 	// create new scene component and make it root component others attach to
-	DefaultSceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
-	DefaultSceneRoot->SetMobility(EComponentMobility::Movable);
-	SetRootComponent(DefaultSceneRoot);
+	DefaultSceneRoot = UPoly_ActorFunctions::CreateDefaultSceneComponent<USceneComponent>(this, "DefaultSceneRoot", EComponentMobility::Movable);
+	
 
 	// create subcomponents and attach them to default scene root
 	DynamicMeshComponent = CreateDefaultSubobject<UDynamicMeshComponent>(TEXT("DynamicMeshComponent"));
@@ -206,7 +207,26 @@ void AElementsGizmo::UpdateSelection()
 			UDynamicMesh* TargetMesh = DMC->GetDynamicMesh();
 
 			FGeometryScriptMeshSelection Selection;
-			UGeometryScriptLibrary_MeshSelectionFunctions::SelectMeshElementsInsideMesh(TargetMesh, SelectByMesh, Selection, InvTargetTransform, this->SelectionType);
+			if (this->SelectionType == EGeometryScriptMeshSelectionType::Triangles)
+			{
+				// select triangles
+				UGeometryScriptLibrary_MeshSelectionFunctions::SelectMeshElementsInsideMesh(TargetMesh, SelectByMesh, Selection, InvTargetTransform, this->SelectionType);
+
+				// ! ! ! !
+				// DEBUG Output
+				UPoly_SelectionFunctions::LogSelectionInfo(Selection);
+			}
+			else
+			{
+				// select polygroups and convert to triangles
+				FGeometryScriptMeshSelection PolyGroupSelection;
+				UGeometryScriptLibrary_MeshSelectionFunctions::SelectMeshElementsInsideMesh(TargetMesh, SelectByMesh, PolyGroupSelection, InvTargetTransform, this->SelectionType);
+				UGeometryScriptLibrary_MeshSelectionFunctions::ConvertMeshSelection(TargetMesh, PolyGroupSelection, Selection, EGeometryScriptMeshSelectionType::Triangles, true);
+
+				// ! ! ! !
+				// DEBUG Output
+				UPoly_SelectionFunctions::LogSelectionInfo(PolyGroupSelection);
+			}
 			Selections.Emplace(Target, Selection);
 
 			if (Selection.GetNumSelected() > 0)
@@ -216,12 +236,6 @@ void AElementsGizmo::UpdateSelection()
 				UGeometryScriptLibrary_MeshBasicEditFunctions::AppendMesh(SelectionMesh, TempMesh, TargetTransform, false, AppendOptions);
 			}
 
-			// ! ! ! !
-			// DEBUG Output
-			int NumSelected = 0;
-			EGeometryScriptMeshSelectionType SelType;
-			UGeometryScriptLibrary_MeshSelectionFunctions::GetMeshSelectionInfo(Selection, SelType, NumSelected);
-			UE_LOG(LogTemp, Warning, TEXT("Selected: %d (in %d)"), NumSelected, i);
 
 		}
 		// return temp mesh

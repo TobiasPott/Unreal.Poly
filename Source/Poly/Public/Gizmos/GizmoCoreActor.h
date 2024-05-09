@@ -111,7 +111,7 @@ public:
 protected:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Gizmo")
-	class USceneComponent* RootScene;
+	TObjectPtr<USceneComponent> DefaultSceneRoot;
 	/* Scene Component that will go Under the Root Scene
 	 * This is so that we can Scale all the things under it without Scaling the Actor itself (i.e. root component)
 	*/

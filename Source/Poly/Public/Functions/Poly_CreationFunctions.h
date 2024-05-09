@@ -8,7 +8,7 @@
 #include "Engine/DirectionalLight.h"
 #include "Engine/SpotLight.h"
 #include "Engine/PointLight.h"
-#include "CreationFunctions.generated.h"
+#include "Poly_CreationFunctions.generated.h"
 
 /**
  * 

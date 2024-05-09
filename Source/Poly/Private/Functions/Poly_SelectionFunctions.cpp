@@ -1,8 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Functions/SelectionFunctions.h"
+#include "Functions/Poly_SelectionFunctions.h"
 #include "Components/BaseDynamicMeshComponent.h"
+#include "GeometryScript/MeshSelectionFunctions.h"
 
 void UPoly_SelectionFunctions::SetMaterialForState(AActor* Actor, const bool IsSelected, UMaterialInterface* SelectedMaterial, const uint8 StencilValue)
 {
@@ -29,4 +30,12 @@ void UPoly_SelectionFunctions::SetMaterialForState(AActor* Actor, const bool IsS
 				DynMeshComp->SetOverrideRenderMaterial(Material);
 		}
 	}
+}
+
+void UPoly_SelectionFunctions::LogSelectionInfo(const FGeometryScriptMeshSelection Selection)
+{
+	int NumSelected = 0;
+	EGeometryScriptMeshSelectionType SelType;
+	UGeometryScriptLibrary_MeshSelectionFunctions::GetMeshSelectionInfo(Selection, SelType, NumSelected);
+	UE_LOG(LogTemp, Log, TEXT("Selection: %d (%s)"), NumSelected, *UEnum::GetValueAsString(SelType));
 }

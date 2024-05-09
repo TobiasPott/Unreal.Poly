@@ -22,7 +22,7 @@ class POLY_API AElementsGizmo : public AGizmoCore
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	class USceneComponent* DefaultSceneRoot;
+	TObjectPtr<USceneComponent> DefaultSceneRoot;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	class UDynamicMeshComponent* DynamicMeshComponent;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)

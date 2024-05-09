@@ -4,7 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
-#include "SelectionFunctions.generated.h"
+#include "GeometryScript/GeometryScriptSelectionTypes.h"
+#include "Poly_SelectionFunctions.generated.h"
 
 /**
  * 
@@ -19,5 +20,10 @@ public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category = "Visualise|Selection")
 	static void SetMaterialForState(AActor* Actor, const bool IsSelected, UMaterialInterface* SelectedMaterial = nullptr, const uint8 StencilValue = 1);
+
+
+
+	UFUNCTION(BlueprintCallable, Category = "Log|Selection")
+	static void LogSelectionInfo(const FGeometryScriptMeshSelection Selection);
 
 };
