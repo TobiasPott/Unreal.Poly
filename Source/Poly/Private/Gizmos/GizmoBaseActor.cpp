@@ -238,18 +238,58 @@ void AGizmoBaseActor::UpdatePivot(bool bRefreshLocation, bool bRefreshOrientatio
 
 FVector AGizmoBaseActor::GetPivotLocationFromSelection()
 {
-	FVector ArrCenter;
-	FVector ArrExtents;
-	UGameplayStatics::GetActorArrayBounds(this->Selection, false, ArrCenter, ArrExtents);
-	this->SetActorLocation(ArrCenter);
-	return ArrCenter;
+	ETransformSpace Space = this->Pivot.Space;
+	switch (this->PivotLocationSource)
+	{
+	case EGizmoPivotSource::PS_Custom:
+		return this->Pivot.Location;
+	case EGizmoPivotSource::PS_Self:
+		return UPoly_ActorFunctions::GetLocation(this, Space);
+	case EGizmoPivotSource::PS_First:
+		if (SelectCore->IsNotEmpty())
+			return UPoly_ActorFunctions::GetLocation(SelectCore->GetFirstSelected(), Space);
+		break;
+	case EGizmoPivotSource::PS_Last:
+		if (SelectCore->IsNotEmpty())
+			return UPoly_ActorFunctions::GetLocation(SelectCore->GetLastSelected(), Space);
+		break;
+	case EGizmoPivotSource::PS_Center:
+	{
+		FVector SelectionCenter,SelectionExtents;
+		UGameplayStatics::GetActorArrayBounds(this->Selection, false, SelectionCenter, SelectionExtents);
+		return SelectionCenter;
+	}
+
+	default:
+	case EGizmoPivotSource::PS_Identity:
+		break;
+	}
+	// return 'identity' rotator
+	return FVector::ZeroVector;
 }
 
 FRotator AGizmoBaseActor::GetPivotOrientationFromSelection()
 {
-	if (this->Pivot.IsWorldSpace() || SelectCore->IsEmpty())
-		return FRotator::ZeroRotator;
+	switch (this->PivotOrientationSource)
+	{
+	case EGizmoPivotSource::PS_Custom:
+		return this->Pivot.Orientation;
+	case EGizmoPivotSource::PS_Self:
+		return UPoly_ActorFunctions::GetRotation(this, this->Pivot.Space);
+	case EGizmoPivotSource::PS_First:
+		if (SelectCore->IsNotEmpty())
+			return UPoly_ActorFunctions::GetRotation(SelectCore->GetFirstSelected(), this->Pivot.Space);
+		break;
+	case EGizmoPivotSource::PS_Last:
+		if (SelectCore->IsNotEmpty())
+			return UPoly_ActorFunctions::GetRotation(SelectCore->GetLastSelected(), this->Pivot.Space);
+		break;
 
-	AActor* FirstSelected = SelectCore->GetFirstSelected();
-	return FirstSelected->GetActorRotation();
+	default:
+	case EGizmoPivotSource::PS_Center:
+	case EGizmoPivotSource::PS_Identity:
+		break;
+	}
+	// return 'identity' rotator
+	return FRotator::ZeroRotator;
 }

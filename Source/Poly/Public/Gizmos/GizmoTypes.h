@@ -57,11 +57,24 @@ enum class EGizmoDomain : uint8
 
 };
 
+UENUM(BlueprintType)
+enum class EGizmoPivotSource : uint8
+{
+	//PS_NONE = 0				UMETA(Hidden),
+	PS_Identity = 0			UMETA(DisplayName = "Identity"),
+	PS_Self = 1				UMETA(DisplayName = "Self"),  // ToDo: @tpott: Consider these covered by Pivot.Space and shouldn't be part of the enums
+	PS_First = 2			UMETA(DisplayName = "First (of selection)"), // defaults to identity of unsupported
+	PS_Last = 3				UMETA(DisplayName = "Last (of selection)"), // defaults to identity of unsupported
+	PS_Center = 4			UMETA(DisplayName = "Center (of selection)"), // defaults to identity of unsupported
+	PS_Custom = 5			UMETA(DisplayName = "Custom"), // defaults to set pivot of unsupported
+};
+//ENUM_CLASS_FLAGS(EGizmoPivotSource);
+
 
 UENUM(BlueprintType, meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true"))
 enum class EGizmoDomainMask : uint8
 {
-	GDM_NONE = 0 UMETA(Hidden),
+	GDM_NONE = 0			UMETA(Hidden),
 	GDM_X_Axis = 1			UMETA(DisplayName = "X Axis"),
 	GDM_Y_Axis = 2			UMETA(DisplayName = "Y Axis"),
 	GDM_Z_Axis = 4			UMETA(DisplayName = "Z Axis"),

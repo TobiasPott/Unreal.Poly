@@ -11,10 +11,11 @@
 #include "Gizmos/ScaleGizmo.h"
 #include "Gizmos/SelectGizmo.h"
 #include "Gizmos/ElementsGizmo.h"
+#include "GizmoBaseActor_Intern.h"
 #include "GizmoBaseActor.generated.h"
 
 UCLASS()
-class POLY_API AGizmoBaseActor : public AActor
+class POLY_API AGizmoBaseActor : public AGizmoBaseActor_Intern
 {
 	GENERATED_BODY()
 
@@ -29,6 +30,11 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, EditInstanceOnly, Category = "Default")
 	FGizmoPivot Pivot = FGizmoPivot();
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Default")
+	EGizmoPivotSource PivotLocationSource = EGizmoPivotSource::PS_Center;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Default")
+	EGizmoPivotSource PivotOrientationSource = EGizmoPivotSource::PS_Identity;
+
 
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Default")
 	FName SelectorName = "Default";
@@ -43,55 +49,28 @@ public:
 
 protected:
 	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Setup")
-	void CreateTranslateCore(ATranslateGizmo*& OutTranslateCore);
-	virtual void CreateTranslateCore_Implementation(ATranslateGizmo*& OutTranslateCore);
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Setup")
-	void CreateRotateCore(ARotateGizmo*& OutRotateCore);
-	virtual void CreateRotateCore_Implementation(ARotateGizmo*& OutRotateCore);
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Setup")
-	void CreateScaleCore(AScaleGizmo*& OutScaleCore);
-	virtual void CreateScaleCore_Implementation(AScaleGizmo*& OutScaleCore);
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Setup")
-	void CreateSelectCore(ASelectGizmo*& OutSelectCore);
-	virtual void CreateSelectCore_Implementation(ASelectGizmo*& OutSelectCore);
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Setup")
-	void CreateElementsCore(AElementsGizmo*& OutSelectCore);
-	virtual void CreateElementsCore_Implementation(AElementsGizmo*& OutElementsCore);
+	void CreateTranslateCore_Implementation(ATranslateGizmo*& OutTranslateCore) override;
+	void CreateRotateCore_Implementation(ARotateGizmo*& OutRotateCore) override;
+	void CreateScaleCore_Implementation(AScaleGizmo*& OutScaleCore) override;
+	void CreateSelectCore_Implementation(ASelectGizmo*& OutSelectCore) override;
+	void CreateElementsCore_Implementation(AElementsGizmo*& OutElementsCore) override;
 
 
 	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Protected|Core Events")
-	void Translate_TranslationChanged(bool bEnded, FVector DeltaTranslation);
-	void Translate_TranslationChanged_Implementation(bool bEnded, FVector DeltaTranslation);
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Protected|Core Events")
-	void Translate_TransformEnded(bool bEnded, FTransform DeltaTransform);
-	void Translate_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform);
+	void Translate_TranslationChanged_Implementation(bool bEnded, FVector DeltaTranslation) override;
+	void Translate_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform) override;
 
 	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Protected|Core Events")
-	void Rotate_RotationChanged(bool bEnded, FRotator DeltaRotation);
-	void Rotate_RotationChanged_Implementation(bool bEnded, FRotator DeltaRotation);
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Protected|Core Events")
-	void Rotate_TransformEnded(bool bEnded, FTransform DeltaTransform);
-	void Rotate_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform);
+	void Rotate_RotationChanged_Implementation(bool bEnded, FRotator DeltaRotation) override;
+	void Rotate_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform) override;
 
 	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Protected|Core Events")
-	void Scale_ScaleChanged(bool bEnded, FVector DeltaScale);
-	void Scale_ScaleChanged_Implementation(bool bEnded, FVector DeltaScale);
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Protected|Core Events")
-	void Scale_TransformEnded(bool bEnded, FTransform DeltaTransform);
-	void Scale_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform);
+	void Scale_ScaleChanged_Implementation(bool bEnded, FVector DeltaScale) override;
+	void Scale_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform) override;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Protected|Core Events")
-	void Select_Finished(UActorSelectionRequest* Request, bool bSuccess);
-	void Select_Finished_Implementation(UActorSelectionRequest* Request, bool bSuccess);
-
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Protected|Core Events")
-	void Elements_Finished(AElementsGizmo* Core);
-	void Elements_Finished_Implementation(AElementsGizmo* Core);
+	/** Please add a function description */
+	void Select_Finished_Implementation(UActorSelectionRequest* Request, bool bSuccess) override;
+	void Elements_Finished_Implementation(AElementsGizmo* Core) override;
 
 
 
@@ -110,46 +89,24 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category = "Intern")
 	void UpdatePivot(bool bRefreshLocation = true, bool bRefreshOrientation = true);
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable, Category = "Intern")
 	FVector GetPivotLocationFromSelection();
-	UFUNCTION()
-	FRotator GetPivotOrientationFromSelection();
+	UFUNCTION(BlueprintCallable, Category = "Intern")
+	FRotator GetPivotOrientationFromSelection();	
+	
+	UFUNCTION(BlueprintCallable, Category = "Intern")
+	void SetPivotLocationSource(const EGizmoPivotSource InLocationSource) {
+		this->PivotLocationSource = InLocationSource;
+	};
+	UFUNCTION(BlueprintCallable, Category = "Intern")
+	void SetPivotOrientationSource(const EGizmoPivotSource InOrientationSource) {
+		this->PivotOrientationSource = InOrientationSource;
+	};
 
 
 public:
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
 	TObjectPtr<USceneComponent> DefaultSceneRoot;
-
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default|Cores")
-	TObjectPtr<ATranslateGizmo> TranslateCore;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default|Cores")
-	TSubclassOf<ATranslateGizmo> TranslateCoreClass = ATranslateGizmo::StaticClass();
-
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default|Cores")
-	TObjectPtr<ARotateGizmo> RotateCore;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default|Cores")
-	TSubclassOf<ARotateGizmo> RotateCoreClass = ARotateGizmo::StaticClass();
-
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default|Cores")
-	TObjectPtr<AScaleGizmo> ScaleCore;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default|Cores")
-	TSubclassOf<AScaleGizmo> ScaleCoreClass = AScaleGizmo::StaticClass();
-
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default|Cores")
-	TObjectPtr<ASelectGizmo> SelectCore;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default|Cores")
-	TSubclassOf<ASelectGizmo> SelectCoreClass = ASelectGizmo::StaticClass();
-
-
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default|Cores")
-	TObjectPtr<AElementsGizmo> ElementsCore;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default|Cores")
-	TSubclassOf<AElementsGizmo> ElementsCoreClass = AElementsGizmo::StaticClass();
 
 };

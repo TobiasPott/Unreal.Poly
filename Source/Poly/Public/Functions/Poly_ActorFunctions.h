@@ -3,8 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
-#include "UI/ActorSelectionRequest.h"
+#include "Gizmos/GizmoTypes.h"
 #include "Poly_ActorFunctions.generated.h"
 
 
@@ -38,5 +39,11 @@ public:
 
 		return Result;
 	}
+
+	UFUNCTION(BlueprintCallable, Category = "Actor")
+	static FVector GetLocation(AActor* TargetActor, const ETransformSpace& Space);
+
+	UFUNCTION(BlueprintCallable, Category = "Actor")
+	static FRotator GetRotation(AActor* TargetActor, const ETransformSpace& Space);
 
 };

@@ -82,8 +82,10 @@ public:
 	TArray<AActor*> GetSelection() { return this->Selection; };
 
 	bool IsEmpty() { return this->Selection.IsEmpty(); };
+	bool IsNotEmpty() { return !this->Selection.IsEmpty(); };
 
 	AActor* GetFirstSelected() { return this->Selection.Num() > 0 ? this->Selection[0] : nullptr; };
+	AActor* GetLastSelected() { return this->Selection.Num() > 0 ? this->Selection[this->Selection.Num() - 1] : nullptr; };
 
 protected:
 
