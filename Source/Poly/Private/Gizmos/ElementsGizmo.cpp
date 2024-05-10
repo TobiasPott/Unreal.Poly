@@ -356,7 +356,6 @@ void AElementsGizmo::OnInputKey_Released(FKey InKey)
 	if (bIsMousePressed && IsValid(Request))
 	{
 		bIsMousePressed = false;
-		// ToDo: @tpott: Add selection mode change with left shift & left ctrl
 		const APlayerController* PC = UGameplayStatics::GetPlayerController(this, this->PlayerIndex);
 		const bool bShift = PC->IsInputKeyDown(EKeys::LeftShift);
 		const bool bCtrl = PC->IsInputKeyDown(EKeys::LeftControl);

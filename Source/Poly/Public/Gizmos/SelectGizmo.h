@@ -65,7 +65,7 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Selection")
-	void Setup(ESelectionRequestMode InMarqueeMode, UClass* InFilterClass, bool bInIncludeNonCollider = false, bool bInIncludeOnlyEnclosed = false, 
+	void Setup(ESelectionRequestMode InMarqueeMode, UClass* InFilterClass, bool bInIncludeNonCollider = false, bool bInIncludeOnlyEnclosed = false,
 		bool bInDisableOnFinish = false);
 
 	void SetEnabled(const bool bInEnable);
@@ -74,6 +74,13 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SetSelectionMode(EPolySelectionMode InSelectionMode = EPolySelectionMode::Replace);
+
+
+	/** Please add a function description */
+	void UpdateSelection();
+
+
+	TArray<AActor*> GetSelection() { return this->Selection; };
 
 protected:
 

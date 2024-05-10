@@ -95,6 +95,36 @@ void ASelectGizmo::SetSelectionMode(EPolySelectionMode InSelectionMode)
 	this->SelectionMode = InSelectionMode;
 }
 
+void ASelectGizmo::UpdateSelection()
+{
+	switch (this->SelectionMode)
+	{
+	case EPolySelectionMode::Deselect:
+	{
+		for (AActor* Actor : this->Request->Actors)
+		{ this->Selection.Remove(Actor); }
+		break;
+	}
+	case EPolySelectionMode::Select:
+	{
+		for (AActor* Actor : this->Request->Actors)
+		{ this->Selection.AddUnique(Actor); }
+		break;
+	}
+	case EPolySelectionMode::Replace:
+	default:
+	{
+		// ToDo: @tpott: Add selection mode change with left shift & left ctrl
+		this->Selection.Reset(this->Request->Count());
+		this->Selection.Append(this->Request->Actors);
+		break;
+	}
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("SelectGizmo.UpdateSelection: %s"), *UEnum::GetValueAsString(this->SelectionMode))
+
+}
+
 
 void ASelectGizmo::OnInputKey_Pressed(FKey InKey)
 {
@@ -117,7 +147,6 @@ void ASelectGizmo::OnInputKey_Released(FKey InKey)
 	if (bIsMousePressed && IsValid(Request))
 	{
 		bIsMousePressed = false;
-		// ToDo: @tpott: Add selection mode change with left shift & left ctrl
 		const APlayerController* PC = UGameplayStatics::GetPlayerController(this, this->PlayerIndex);
 		const bool bShift = PC->IsInputKeyDown(EKeys::LeftShift);
 		const bool bCtrl = PC->IsInputKeyDown(EKeys::LeftControl);
@@ -156,10 +185,9 @@ void ASelectGizmo::OnRequestFinished(UActorSelectionRequest* InRequest, bool bSu
 	Request->Finished.RemoveDynamic(this, &ASelectGizmo::OnRequestFinished);
 	if (bSuccess)
 	{
-		this->Selection.Reset(this->Request->Count());
-		this->Selection.Append(this->Request->Actors);
+		this->UpdateSelection();
 	}
-	//this->Request = InRequest;
+
 	this->OnFinished();
 }
 

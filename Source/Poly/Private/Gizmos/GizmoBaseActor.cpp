@@ -141,7 +141,7 @@ void AGizmoBaseActor::Select_Finished_Implementation(UActorSelectionRequest* Req
 
 	if (bSuccess)
 	{
-		TArray<AActor*> Actors = Request->GetActors();
+		TArray<AActor*> Actors = this->SelectCore->GetSelection();
 		this->Selection.Reset();
 		this->Selection.Append(Actors);
 		Selector->ReplaceAll(Actors);
