@@ -117,7 +117,6 @@ void AGizmoBaseActor::Rotate_TransformEnded_Implementation(bool bEnded, FTransfo
 	{
 		RotateCore->SetActorRelativeRotation(FRotator::ZeroRotator);
 		this->UpdatePivot(false, true);
-		this->SetActorRotation(this->Pivot.Orientation);
 	}
 }
 
@@ -148,7 +147,6 @@ void AGizmoBaseActor::Select_Finished_Implementation(UActorSelectionRequest* Req
 		Selector->ReplaceAll(Actors);
 
 		this->UpdatePivot(true, false);
-		this->SetActorLocation(this->Pivot.Location);
 	}
 	else
 	{
@@ -230,10 +228,16 @@ void AGizmoBaseActor::UpdateGizmoSpace(ETransformSpace InSpace)
 void AGizmoBaseActor::UpdatePivot(bool bRefreshLocation, bool bRefreshOrientation)
 {
 	if (bRefreshLocation)
+	{
 		this->Pivot.Location = GetPivotLocationFromSelection();
+		this->SetActorLocation(this->Pivot.Location);
+	}
 
 	if (bRefreshOrientation)
+	{
 		this->Pivot.Orientation = GetPivotOrientationFromSelection();
+		this->SetActorRotation(this->Pivot.Orientation);
+	}
 }
 
 FVector AGizmoBaseActor::GetPivotLocationFromSelection()
