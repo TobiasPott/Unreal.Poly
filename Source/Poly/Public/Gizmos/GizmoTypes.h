@@ -62,7 +62,7 @@ enum class EGizmoPivotSource : uint8
 {
 	//PS_NONE = 0				UMETA(Hidden),
 	PS_Identity = 0			UMETA(DisplayName = "Identity"),
-	PS_Self = 1				UMETA(DisplayName = "Self"),  // ToDo: @tpott: Consider these covered by Pivot.Space and shouldn't be part of the enums
+	PS_Self = 1				UMETA(DisplayName = "Self"),
 	PS_First = 2			UMETA(DisplayName = "First (of selection)"), // defaults to identity of unsupported
 	PS_Last = 3				UMETA(DisplayName = "Last (of selection)"), // defaults to identity of unsupported
 	PS_Center = 4			UMETA(DisplayName = "Center (of selection)"), // defaults to identity of unsupported

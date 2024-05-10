@@ -114,7 +114,6 @@ void ASelectGizmo::UpdateSelection()
 	case EPolySelectionMode::Replace:
 	default:
 	{
-		// ToDo: @tpott: Add selection mode change with left shift & left ctrl
 		this->Selection.Reset(this->Request->Count());
 		this->Selection.Append(this->Request->Actors);
 		break;

@@ -213,7 +213,6 @@ void AElementsGizmo::UpdateSelection()
 	UPoly_UIFunctions::GetScreenRay(this, this->PlayerIndex, this->SecondPoint, RayOrigin, RayDir);
 
 	// check selection type (only triangles and poly groups use mesh to display)
-	// ToDo: @tpott: Add Niagara particles emitter to visualise vertices selection (needs reading into Niagara)
 	UDynamicMesh* TempMesh = Pool->RequestMesh();
 	//for (auto& KvPair : Selections)
 	for (int i = 0; i < Keys.Num(); i++)
@@ -278,7 +277,6 @@ void AElementsGizmo::UpdateSelection()
 				IndexList.Reset(EGeometryScriptIndexType::Triangle);
 				IndexList.List->Add(QueryResult.HitTriangleID);
 
-				// ToDo: @tpott: Add conversion to poly group from triangle index if mode is triangles
 				FGeometryScriptMeshSelection ClickSelection;
 				UGeometryScriptLibrary_MeshSelectionFunctions::ConvertIndexListToMeshSelection(TargetMesh, IndexList, EGeometryScriptMeshSelectionType::Triangles, ClickSelection);
 				if (this->SelectionType == EGeometryScriptMeshSelectionType::Polygroups)

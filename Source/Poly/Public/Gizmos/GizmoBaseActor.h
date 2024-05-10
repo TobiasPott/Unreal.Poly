@@ -30,9 +30,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, EditInstanceOnly, Category = "Default")
 	FGizmoPivot Pivot = FGizmoPivot();
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Default")
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
 	EGizmoPivotSource PivotLocationSource = EGizmoPivotSource::PS_Center;
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Default")
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
 	EGizmoPivotSource PivotOrientationSource = EGizmoPivotSource::PS_Identity;
 
 
@@ -42,10 +42,12 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Default")
 	TObjectPtr<UClass> SelectClass = AActor::StaticClass();
 
+
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Default")
-	TArray<AActor*> Selection;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default")
-	TMap<AActor*, FGeometryScriptMeshSelection> Selections;
+	bool bHasActorSelection = false;
+	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Default")
+	bool bHasElementSelection = false;
+
 
 protected:
 	/** Please add a function description */

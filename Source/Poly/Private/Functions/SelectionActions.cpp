@@ -35,7 +35,6 @@ bool UDeleteSelectedElementsAction::Execute_Implementation(bool bEmitRecord)
 	if (this->Selection.GetNumSelected() > 0
 		&& this->Selection.GetSelectionType() == EGeometryScriptMeshSelectionType::Triangles)
 	{
-		// ToDo: @tpott: add deletion of selection using the respective GeometryScript function library
 		UDynamicMesh* TargetMesh = Target->GetComponentByClass<UBaseDynamicMeshComponent>()->GetDynamicMesh();
 		int NumDeleted;
 		UGeometryScriptLibrary_MeshBasicEditFunctions::DeleteSelectedTrianglesFromMesh(TargetMesh, this->Selection, NumDeleted);

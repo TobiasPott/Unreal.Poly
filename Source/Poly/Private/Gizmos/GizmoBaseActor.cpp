@@ -139,25 +139,46 @@ void AGizmoBaseActor::Select_Finished_Implementation(UActorSelectionRequest* Req
 	ASelectorBase* Selector;
 	SelectorSubsystem->GetSelector(this, this->SelectorName, Selector);
 
+	this->bHasActorSelection = bSuccess;
 	if (bSuccess)
 	{
 		TArray<AActor*> Actors = this->SelectCore->GetSelection();
-		this->Selection.Reset();
-		this->Selection.Append(Actors);
 		Selector->ReplaceAll(Actors);
-
 		this->UpdatePivot(true, false);
 	}
 	else
 	{
-		this->Selection.Reset();
 		Selector->ClearSelection();
+		this->UpdatePivot(true, true);
 	}
 }
 
 
 void AGizmoBaseActor::Elements_Finished_Implementation(AElementsGizmo* Core)
 {
+	bool bSuccess = false;
+	TMap<AActor*, FGeometryScriptMeshSelection> Selections = Core->GetSelections();
+	if (!Selections.IsEmpty())
+	{
+		for (auto KvPair : Selections)
+		{
+			if (KvPair.Value.GetNumSelected() > 0)
+			{
+				bSuccess = true;
+				break;
+			}
+		}
+	}
+	this->bHasElementSelection = bSuccess;
+	if (bSuccess)
+	{
+		// ToDo: @tpott: Add location and rotation determination from given selection
+		//this->UpdatePivot(true, false);
+	}
+	else
+	{
+		//this->UpdatePivot(true, true);
+	}
 }
 
 void AGizmoBaseActor::SetupCores()
@@ -260,7 +281,7 @@ FVector AGizmoBaseActor::GetPivotLocationFromSelection()
 	case EGizmoPivotSource::PS_Center:
 	{
 		FVector SelectionCenter,SelectionExtents;
-		UGameplayStatics::GetActorArrayBounds(this->Selection, false, SelectionCenter, SelectionExtents);
+		UGameplayStatics::GetActorArrayBounds(this->SelectCore->GetSelection(), false, SelectionCenter, SelectionExtents);
 		return SelectionCenter;
 	}
 

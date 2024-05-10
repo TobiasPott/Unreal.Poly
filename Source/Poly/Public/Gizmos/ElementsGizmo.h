@@ -109,6 +109,8 @@ public:
 
 	void UpdateSelection();
 
+	TMap<AActor*, FGeometryScriptMeshSelection> GetSelections() { return this->Selections; };
+
 
 protected:
 
