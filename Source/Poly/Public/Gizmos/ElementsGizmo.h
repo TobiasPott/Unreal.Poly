@@ -15,16 +15,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FElementsSelectionFinished, class AElementsGizmo*, Core);
 
-/**
- * Type of combine behaviour for element selections
- */
-UENUM(BlueprintType)
-enum class EElementSelectionMode : uint8
-{
-	Replace = 0,
-	Select = 1,
-	Deselect = 2,
-};
+
 
 UCLASS(Blueprintable, BlueprintType)
 class POLY_API AElementsGizmo : public AGizmoCore
@@ -71,9 +62,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Filter")
 	ESelectionRequestMode MarqueeMode = ESelectionRequestMode::Click;
 	UPROPERTY(BlueprintReadOnly, EditInstanceOnly, Category = "Filter")
-	EGeometryScriptMeshSelectionType SelectionType = EGeometryScriptMeshSelectionType::Triangles;
+	EPolySelectionMode SelectionMode = EPolySelectionMode::Replace;
 	UPROPERTY(BlueprintReadOnly, EditInstanceOnly, Category = "Filter")
-	EElementSelectionMode SelectionMode = EElementSelectionMode::Replace;
+	EGeometryScriptMeshSelectionType SelectionType = EGeometryScriptMeshSelectionType::Triangles;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Filter")
 	float Distance = 10000.0;
@@ -108,9 +99,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SetTargets(const TArray<AActor*>& Targets);
 	UFUNCTION(BlueprintCallable, Category = "Selection")
-	void SetSelectionType(EGeometryScriptMeshSelectionType InSelectionType = EGeometryScriptMeshSelectionType::Triangles);
+	void SetSelectionMode(EPolySelectionMode InSelectionMode = EPolySelectionMode::Replace);
 	UFUNCTION(BlueprintCallable, Category = "Selection")
-	void SetSelectionMode(EElementSelectionMode InSelectionMode= EElementSelectionMode::Replace);
+	void SetSelectionType(EGeometryScriptMeshSelectionType InSelectionType = EGeometryScriptMeshSelectionType::Triangles);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category = "Intern")

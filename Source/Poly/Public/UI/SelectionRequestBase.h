@@ -20,6 +20,17 @@
 #include "GeometryScript/GeometryScriptSelectionTypes.h"
 #include "SelectionRequestBase.generated.h"
 
+/**
+ * Type of combine behaviour for actor selections
+ */
+UENUM(BlueprintType)
+enum class EPolySelectionMode : uint8
+{
+	Replace = 0,
+	Select = 1,
+	Deselect = 2,
+};
+
 
 UCLASS(Blueprintable)
 class POLY_API USelectionRequestBase : public UObject

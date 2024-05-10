@@ -90,6 +90,11 @@ void ASelectGizmo::SetGizmoHidden(const bool bHiddenInGame)
 	this->SetEnabled(!bHiddenInGame);
 }
 
+void ASelectGizmo::SetSelectionMode(EPolySelectionMode InSelectionMode)
+{
+	this->SelectionMode = InSelectionMode;
+}
+
 
 void ASelectGizmo::OnInputKey_Pressed(FKey InKey)
 {
@@ -113,6 +118,12 @@ void ASelectGizmo::OnInputKey_Released(FKey InKey)
 	{
 		bIsMousePressed = false;
 		// ToDo: @tpott: Add selection mode change with left shift & left ctrl
+		const APlayerController* PC = UGameplayStatics::GetPlayerController(this, this->PlayerIndex);
+		const bool bShift = PC->IsInputKeyDown(EKeys::LeftShift);
+		const bool bCtrl = PC->IsInputKeyDown(EKeys::LeftControl);
+		if (bCtrl) this->SetSelectionMode(EPolySelectionMode::Deselect);
+		else if (bShift) this->SetSelectionMode(EPolySelectionMode::Select);
+		else this->SetSelectionMode(EPolySelectionMode::Replace);
 
 		UPoly_UIFunctions::GetMousePosition(this, PlayerIndex, SecondPoint);
 		Request->UpdateSecondPoint(SecondPoint);

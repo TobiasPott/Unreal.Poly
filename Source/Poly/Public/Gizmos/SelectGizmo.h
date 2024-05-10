@@ -8,6 +8,7 @@
 #include "Gizmos/GizmoCore.h"
 #include "SelectGizmo.generated.h"
 
+
 UCLASS(Blueprintable, BlueprintType)
 class POLY_API ASelectGizmo : public AGizmoCore
 {
@@ -42,6 +43,8 @@ protected:
 	// Filter values
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Filter")
 	ESelectionRequestMode MarqueeMode = ESelectionRequestMode::Click;
+	UPROPERTY(BlueprintReadOnly, EditInstanceOnly, Category = "Filter")
+	EPolySelectionMode SelectionMode = EPolySelectionMode::Replace;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Filter")
 	TSubclassOf<AActor> FilterClass;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Filter")
@@ -68,6 +71,9 @@ public:
 	void SetEnabled(const bool bInEnable);
 
 	virtual void SetGizmoHidden(const bool bHiddenInGame = false) override;
+
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void SetSelectionMode(EPolySelectionMode InSelectionMode = EPolySelectionMode::Replace);
 
 protected:
 

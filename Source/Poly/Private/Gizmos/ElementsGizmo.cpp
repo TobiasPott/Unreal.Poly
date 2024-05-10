@@ -140,7 +140,7 @@ void AElementsGizmo::SetSelectionType(EGeometryScriptMeshSelectionType InSelecti
 {
 	this->SelectionType = InSelectionType;
 }
-void AElementsGizmo::SetSelectionMode(EElementSelectionMode InSelectionMode)
+void AElementsGizmo::SetSelectionMode(EPolySelectionMode InSelectionMode)
 {
 	this->SelectionMode = InSelectionMode;
 }
@@ -295,14 +295,14 @@ void AElementsGizmo::UpdateSelection()
 		// perform selection combine for select and deselct modes
 		switch (this->SelectionMode)
 		{
-		case EElementSelectionMode::Select:
+		case EPolySelectionMode::Select:
 		{
 			FGeometryScriptMeshSelection OldSelection = Selections[Target];
 			OldSelection.CombineSelectionInPlace(Selection, EGeometryScriptCombineSelectionMode::Add);
 			Selection = OldSelection;
 			break;
 		}
-		case EElementSelectionMode::Deselect:
+		case EPolySelectionMode::Deselect:
 		{
 			FGeometryScriptMeshSelection OldSelection = Selections[Target];
 			OldSelection.CombineSelectionInPlace(Selection, EGeometryScriptCombineSelectionMode::Subtract);
@@ -310,7 +310,7 @@ void AElementsGizmo::UpdateSelection()
 			break;
 		}
 		default:
-		case EElementSelectionMode::Replace:
+		case EPolySelectionMode::Replace:
 			break;
 		}
 
@@ -357,6 +357,12 @@ void AElementsGizmo::OnInputKey_Released(FKey InKey)
 	{
 		bIsMousePressed = false;
 		// ToDo: @tpott: Add selection mode change with left shift & left ctrl
+		const APlayerController* PC = UGameplayStatics::GetPlayerController(this, this->PlayerIndex);
+		const bool bShift = PC->IsInputKeyDown(EKeys::LeftShift);
+		const bool bCtrl = PC->IsInputKeyDown(EKeys::LeftControl);
+		if (bCtrl) this->SetSelectionMode(EPolySelectionMode::Deselect);
+		else if (bShift) this->SetSelectionMode(EPolySelectionMode::Select);
+		else this->SetSelectionMode(EPolySelectionMode::Replace);
 
 		UPoly_UIFunctions::GetMousePosition(this, PlayerIndex, SecondPoint);
 		Request->UpdateSecondPoint(SecondPoint);
