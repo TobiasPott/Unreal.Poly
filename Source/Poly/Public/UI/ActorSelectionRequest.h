@@ -55,9 +55,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void Init(const ESelectionRequestMode InMode, const FVector2D& InFirstPoint, const FVector2D& InSecondPoint, TSubclassOf<AActor> InFilterClass, bool bInIncludeNonCollider = false, bool bInOnlyEnclosed = false);
 
-
-	UFUNCTION(BlueprintCallable, Category = "Selection")
-	void UpdateSecondPoint(const FVector2D InSecondPoint) { this->SecondPoint = InSecondPoint; }
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SetTrace(const TEnumAsByte<ETraceTypeQuery> InTraceChannel, bool bInTraceComplex = true, float InTraceDistance = 100000000)
 	{

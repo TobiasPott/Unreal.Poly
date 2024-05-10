@@ -42,4 +42,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void Submit() { this->bSubmitted = true; }
+
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void UpdateSecondPoint(const FVector2D InSecondPoint) { this->SecondPoint = InSecondPoint; }
+
 };

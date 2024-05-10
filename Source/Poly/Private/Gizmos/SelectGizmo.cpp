@@ -93,7 +93,6 @@ void ASelectGizmo::SetGizmoHidden(const bool bHiddenInGame)
 
 void ASelectGizmo::OnInputKey_Pressed(FKey InKey)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("OnInputKey_Pressed"));
 	UPoly_UIFunctions::GetMousePosition(this, PlayerIndex, FirstPoint);
 	SecondPoint = FirstPoint;
 
@@ -110,10 +109,11 @@ void ASelectGizmo::OnInputKey_Pressed(FKey InKey)
 
 void ASelectGizmo::OnInputKey_Released(FKey InKey)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("OnInputKey_Released"));
 	if (bIsMousePressed && IsValid(Request))
 	{
 		bIsMousePressed = false;
+		// ToDo: @tpott: Add selection mode change with left shift & left ctrl
+
 		UPoly_UIFunctions::GetMousePosition(this, PlayerIndex, SecondPoint);
 		Request->UpdateSecondPoint(SecondPoint);
 

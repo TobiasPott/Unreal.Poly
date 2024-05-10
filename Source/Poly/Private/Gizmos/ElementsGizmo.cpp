@@ -356,8 +356,10 @@ void AElementsGizmo::OnInputKey_Released(FKey InKey)
 	if (bIsMousePressed && IsValid(Request))
 	{
 		bIsMousePressed = false;
+		// ToDo: @tpott: Add selection mode change with left shift & left ctrl
+
 		UPoly_UIFunctions::GetMousePosition(this, PlayerIndex, SecondPoint);
-		Request->SecondPoint = SecondPoint;
+		Request->UpdateSecondPoint(SecondPoint);
 
 		// update mesh used or elements selection
 		this->UpdateSelectionMesh(this->FirstPoint, this->SecondPoint);
