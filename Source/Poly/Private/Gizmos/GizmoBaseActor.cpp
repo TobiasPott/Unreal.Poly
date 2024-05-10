@@ -116,7 +116,8 @@ void AGizmoBaseActor::Rotate_TransformEnded_Implementation(bool bEnded, FTransfo
 	if (bEnded)
 	{
 		RotateCore->SetActorRelativeRotation(FRotator::ZeroRotator);
-		this->SetActorRotation(this->GetRotationFromSelection());
+		this->UpdatePivot(false, true);
+		this->SetActorRotation(this->Pivot.Orientation);
 	}
 }
 
@@ -146,10 +147,8 @@ void AGizmoBaseActor::Select_Finished_Implementation(UActorSelectionRequest* Req
 		this->Selection.Append(Actors);
 		Selector->ReplaceAll(Actors);
 
-		FVector ArrCenter;
-		FVector ArrExtents;
-		UGameplayStatics::GetActorArrayBounds(Actors, false, ArrCenter, ArrExtents);
-		this->SetActorLocation(ArrCenter);
+		this->UpdatePivot(true, false);
+		this->SetActorLocation(this->Pivot.Location);
 	}
 	else
 	{
@@ -179,11 +178,12 @@ void AGizmoBaseActor::SetupCores()
 
 void AGizmoBaseActor::TransformSelection(FTransform DeltaTransform, bool bInLocalSpace)
 {
+	TArray<AActor*> ActiveSelection = this->SelectCore->GetSelection();
 	if (bInLocalSpace)
 	{
-		for (int i = 0; i < this->Selection.Num(); i++)
+		for (int i = 0; i < ActiveSelection.Num(); i++)
 		{
-			AActor* Selected = this->Selection[i];
+			AActor* Selected = ActiveSelection[i];
 			Selected->AddActorLocalOffset(DeltaTransform.GetLocation());
 			Selected->AddActorLocalRotation(DeltaTransform.GetRotation());
 			Selected->SetActorRelativeScale3D(Selected->GetActorRelativeScale3D() + DeltaTransform.GetScale3D());
@@ -191,9 +191,9 @@ void AGizmoBaseActor::TransformSelection(FTransform DeltaTransform, bool bInLoca
 	}
 	else
 	{
-		for (int i = 0; i < this->Selection.Num(); i++)
+		for (int i = 0; i < ActiveSelection.Num(); i++)
 		{
-			AActor* Selected = this->Selection[i];
+			AActor* Selected = ActiveSelection[i];
 			Selected->AddActorWorldOffset(DeltaTransform.GetLocation());
 			Selected->AddActorWorldRotation(DeltaTransform.GetRotation());
 			Selected->SetActorScale3D(Selected->GetActorScale3D() + DeltaTransform.GetScale3D());
@@ -221,17 +221,35 @@ void AGizmoBaseActor::TransformCore(FTransform DeltaTransform, bool bInLocalSpac
 
 void AGizmoBaseActor::UpdateGizmoSpace(ETransformSpace InSpace)
 {
-	this->Space = InSpace;
-	this->TranslateCore->UpdateGizmoSpace(Space);
-	this->RotateCore->UpdateGizmoSpace(Space);
-	this->ScaleCore->UpdateGizmoSpace(Space);
+	this->Pivot.Space = InSpace;
+	this->TranslateCore->UpdateGizmoSpace(InSpace);
+	this->RotateCore->UpdateGizmoSpace(InSpace);
+	this->ScaleCore->UpdateGizmoSpace(InSpace);
 }
 
-FRotator AGizmoBaseActor::GetRotationFromSelection()
+void AGizmoBaseActor::UpdatePivot(bool bRefreshLocation, bool bRefreshOrientation)
 {
-	if (this->IsWorldSpace() || Selection.IsEmpty())
+	if (bRefreshLocation)
+		this->Pivot.Location = GetPivotLocationFromSelection();
+
+	if (bRefreshOrientation)
+		this->Pivot.Orientation = GetPivotOrientationFromSelection();
+}
+
+FVector AGizmoBaseActor::GetPivotLocationFromSelection()
+{
+	FVector ArrCenter;
+	FVector ArrExtents;
+	UGameplayStatics::GetActorArrayBounds(this->Selection, false, ArrCenter, ArrExtents);
+	this->SetActorLocation(ArrCenter);
+	return ArrCenter;
+}
+
+FRotator AGizmoBaseActor::GetPivotOrientationFromSelection()
+{
+	if (this->Pivot.IsWorldSpace() || SelectCore->IsEmpty())
 		return FRotator::ZeroRotator;
 
-	AActor* FirstSelected = Selection[0];
+	AActor* FirstSelected = SelectCore->GetFirstSelected();
 	return FirstSelected->GetActorRotation();
 }

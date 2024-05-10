@@ -25,8 +25,10 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Default")
 	EGizmoExtType Type = EGizmoExtType::GET_NoTransform;
-	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Default")
-	ETransformSpace Space = ETransformSpace::TS_World;
+
+
+	UPROPERTY(BlueprintReadOnly, EditInstanceOnly, Category = "Default")
+	FGizmoPivot Pivot = FGizmoPivot();
 
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Default")
 	FName SelectorName = "Default";
@@ -36,15 +38,8 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Default")
 	TArray<AActor*> Selection;
-
-
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Default")
-	inline ETransformSpace InverseSpace() { return Space == ETransformSpace::TS_Local ? ETransformSpace::TS_World : ETransformSpace::TS_Local; };
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Default")
-	inline bool IsLocalSpace() { return Space == ETransformSpace::TS_Local; };
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Default")
-	inline bool IsWorldSpace() { return Space == ETransformSpace::TS_World; };
-
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default")
+	TMap<AActor*, FGeometryScriptMeshSelection> Selections;
 
 protected:
 	/** Please add a function description */
@@ -103,6 +98,7 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Intern")
 	void SetupCores();
 
+
 	UFUNCTION(BlueprintCallable, Category = "Intern")
 	void TransformSelection(FTransform DeltaTransform, bool bInLocalSpace);
 	UFUNCTION(BlueprintCallable, Category = "Intern")
@@ -113,7 +109,11 @@ protected:
 
 
 	UFUNCTION(BlueprintCallable, Category = "Intern")
-	FRotator GetRotationFromSelection();
+	void UpdatePivot(bool bRefreshLocation = true, bool bRefreshOrientation = true);
+	UFUNCTION()
+	FVector GetPivotLocationFromSelection();
+	UFUNCTION()
+	FRotator GetPivotOrientationFromSelection();
 
 
 public:

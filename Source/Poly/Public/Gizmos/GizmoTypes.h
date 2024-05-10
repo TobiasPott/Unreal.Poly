@@ -8,6 +8,8 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(LogGizmo, Log, All);
 
+
+
 UENUM(BlueprintType)
 enum class EGizmoType : uint8
 {
@@ -72,3 +74,35 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGizmoDeltaTransformDelegate, bool,
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGizmoTranslateTransformDelegate, bool, bEnded, FVector, DeltaTranslation);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGizmoScaleTransformDelegate, bool, bEnded, FVector, DeltaScale);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGizmoRotateTransformDelegate, bool, bEnded, FRotator, DeltaRotation);
+
+
+
+
+USTRUCT(Blueprintable)
+struct POLY_API FGizmoPivot
+{
+	GENERATED_BODY()
+
+
+
+public:
+
+	UPROPERTY(BlueprintReadOnly, EditInstanceOnly)
+	FVector Location = FVector::ZeroVector;
+	UPROPERTY(BlueprintReadOnly, EditInstanceOnly)
+	FRotator Orientation = FRotator::ZeroRotator;
+	UPROPERTY(BlueprintReadOnly, EditInstanceOnly)
+	ETransformSpace Space = ETransformSpace::TS_World;
+
+
+	inline FVector GetLocation() const { return Location; };
+	inline FRotator GetOrientation() const { return Orientation; };
+	inline ETransformSpace GetSpace() const { return Space; };
+	inline ETransformSpace GetInverseSpace() const { return Space == ETransformSpace::TS_Local ? ETransformSpace::TS_World : ETransformSpace::TS_Local; };
+	inline bool IsLocalSpace() const { return Space == ETransformSpace::TS_Local; };
+	inline bool IsWorldSpace() const { return Space == ETransformSpace::TS_World; };
+
+};
+
+
+

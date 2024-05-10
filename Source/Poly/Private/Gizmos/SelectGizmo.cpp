@@ -121,8 +121,6 @@ void ASelectGizmo::UpdateSelection()
 	}
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("SelectGizmo.UpdateSelection: %s"), *UEnum::GetValueAsString(this->SelectionMode))
-
 }
 
 
@@ -172,7 +170,6 @@ void ASelectGizmo::OnMouseY(float AxisValue)
 
 void ASelectGizmo::OnMouse2D(FVector AxisValue)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Axis 2D %s"), *AxisValue.ToString());
 	if (bIsMousePressed)
 	{
 		UPoly_UIFunctions::GetMousePosition(this, PlayerIndex, SecondPoint);

@@ -53,7 +53,7 @@ protected:
 	bool bIncludeOnlyEnclosed = false;
 
 protected:
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Selection")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Selection")
 	TArray<AActor*> Selection;
 
 
@@ -76,11 +76,14 @@ public:
 	void SetSelectionMode(EPolySelectionMode InSelectionMode = EPolySelectionMode::Replace);
 
 
-	/** Please add a function description */
+
 	void UpdateSelection();
 
-
 	TArray<AActor*> GetSelection() { return this->Selection; };
+
+	bool IsEmpty() { return this->Selection.IsEmpty(); };
+
+	AActor* GetFirstSelected() { return this->Selection.Num() > 0 ? this->Selection[0] : nullptr; };
 
 protected:
 
