@@ -261,6 +261,11 @@ void AGizmoBaseActor::UpdatePivot(bool bRefreshLocation, bool bRefreshOrientatio
 	}
 }
 
+EGizmoPivotSelectionSource AGizmoBaseActor::GetPivotSelectionSource()
+{
+	return this->PivotSelectionSource;
+}
+
 FVector AGizmoBaseActor::GetPivotLocationFromSelection()
 {
 	ETransformSpace Space = this->Pivot.Space;
@@ -280,7 +285,8 @@ FVector AGizmoBaseActor::GetPivotLocationFromSelection()
 		break;
 	case EGizmoPivotSource::PS_Center:
 	{
-		FVector SelectionCenter,SelectionExtents;
+		// ToDo: @tpott: Add branch for 'Elements' PivotSelectionSource to determine position from selection
+		FVector SelectionCenter, SelectionExtents;
 		UGameplayStatics::GetActorArrayBounds(this->SelectCore->GetSelection(), false, SelectionCenter, SelectionExtents);
 		return SelectionCenter;
 	}
@@ -313,6 +319,8 @@ FRotator AGizmoBaseActor::GetPivotOrientationFromSelection()
 	default:
 	case EGizmoPivotSource::PS_Center:
 	case EGizmoPivotSource::PS_Identity:
+		// ToDo: @tpott: Add branch for 'Elements' PivotSelectionSource to determine rotation/Normal from given selection
+		//					Would also apply to PS_Last and First? to use orientation from selection of first or last selected actor?
 		break;
 	}
 	// return 'identity' rotator

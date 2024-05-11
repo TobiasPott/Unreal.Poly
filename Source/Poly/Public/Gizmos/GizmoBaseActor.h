@@ -30,6 +30,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, EditInstanceOnly, Category = "Default")
 	FGizmoPivot Pivot = FGizmoPivot();
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
+	EGizmoPivotSelectionSource PivotSelectionSource = EGizmoPivotSelectionSource::ST_NONE;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
 	EGizmoPivotSource PivotLocationSource = EGizmoPivotSource::PS_Center;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
@@ -41,7 +44,6 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Default")
 	TObjectPtr<UClass> SelectClass = AActor::StaticClass();
-
 
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Default")
 	bool bHasActorSelection = false;
@@ -92,10 +94,16 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Intern")
 	void UpdatePivot(bool bRefreshLocation = true, bool bRefreshOrientation = true);
 	UFUNCTION(BlueprintCallable, Category = "Intern")
+	EGizmoPivotSelectionSource GetPivotSelectionSource();
+	UFUNCTION(BlueprintCallable, Category = "Intern")
 	FVector GetPivotLocationFromSelection();
 	UFUNCTION(BlueprintCallable, Category = "Intern")
 	FRotator GetPivotOrientationFromSelection();	
-	
+
+	UFUNCTION(BlueprintCallable, Category = "Intern")
+	void SetPivotSelectionSource(const EGizmoPivotSelectionSource InPivotSelectionSource) {
+		this->PivotSelectionSource = InPivotSelectionSource;
+	};
 	UFUNCTION(BlueprintCallable, Category = "Intern")
 	void SetPivotLocationSource(const EGizmoPivotSource InLocationSource) {
 		this->PivotLocationSource = InLocationSource;
