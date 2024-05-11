@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Gizmos/GizmoTypes.h"
+#include "UDynamicMesh.h"
 #include "Poly_ActorFunctions.generated.h"
 
 
@@ -39,6 +40,11 @@ public:
 
 		return Result;
 	}
+
+
+
+	UFUNCTION(BlueprintCallable, Category = "Actor")
+	static bool GetDynamicMesh(AActor* TargetActor, UDynamicMesh*& Mesh);
 
 	UFUNCTION(BlueprintCallable, Category = "Actor")
 	static FVector GetLocation(AActor* TargetActor, const ETransformSpace& Space);
