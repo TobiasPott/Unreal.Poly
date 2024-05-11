@@ -32,10 +32,10 @@ public:
 	FGizmoPivot Pivot = FGizmoPivot();
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
-	EGizmoPivotSelectionSource PivotSelectionSource = EGizmoPivotSelectionSource::ST_NONE;
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
+	EGizmoPivotSelectionSource PivotSelectionSource = EGizmoPivotSelectionSource::PSS_Actor;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Default")
 	EGizmoPivotSource PivotLocationSource = EGizmoPivotSource::PS_Center;
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Default")
 	EGizmoPivotSource PivotOrientationSource = EGizmoPivotSource::PS_Identity;
 
 
@@ -103,6 +103,7 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Intern")
 	void SetPivotSelectionSource(const EGizmoPivotSelectionSource InPivotSelectionSource) {
 		this->PivotSelectionSource = InPivotSelectionSource;
+		this->UpdatePivot(true, true);
 	};
 	UFUNCTION(BlueprintCallable, Category = "Intern")
 	void SetPivotLocationSource(const EGizmoPivotSource InLocationSource) {

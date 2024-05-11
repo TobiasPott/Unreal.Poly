@@ -4,6 +4,10 @@
 #include "Functions/Poly_BaseFunctions.h"
 #include "Selection/SelectorSubsystem.h"
 #include "Kismet/GameplayStatics.h"
+#include "GeometryScript/MeshSelectionFunctions.h"
+#include "GeometryScript/MeshSelectionQueryFunctions.h"
+//#include "GeometryScript/GeometryScriptTypes.h"
+#include "GeometryScript/GeometryScriptSelectionTypes.h"
 #include "Functions/Poly_ActorFunctions.h"
 
 
@@ -285,10 +289,50 @@ FVector AGizmoBaseActor::GetPivotLocationFromSelection()
 		break;
 	case EGizmoPivotSource::PS_Center:
 	{
-		// ToDo: @tpott: Add branch for 'Elements' PivotSelectionSource to determine position from selection
-		FVector SelectionCenter, SelectionExtents;
-		UGameplayStatics::GetActorArrayBounds(this->SelectCore->GetSelection(), false, SelectionCenter, SelectionExtents);
-		return SelectionCenter;
+		if (this->PivotSelectionSource == EGizmoPivotSelectionSource::PSS_Actor
+			&& bHasActorSelection)
+		{
+			// ToDo: @tpott: Add branch for 'Elements' PivotSelectionSource to determine position from selection
+			FVector SelectionCenter, SelectionExtents;
+			UGameplayStatics::GetActorArrayBounds(this->SelectCore->GetSelection(), false, SelectionCenter, SelectionExtents);
+			return SelectionCenter;
+		}
+		else if (this->PivotSelectionSource == EGizmoPivotSelectionSource::PSS_Elements
+			&& bHasElementSelection)
+		{
+			TMap<AActor*, FGeometryScriptMeshSelection> Selections = this->ElementsCore->GetSelections();
+			int Count = 0;
+			FVector SelectionCenter;
+
+			for (auto KvPair : Selections)
+			{
+				FGeometryScriptMeshSelection Value = KvPair.Value;
+				if (Value.GetNumSelected() == 0)
+					continue;
+				else
+				{
+					UDynamicMesh* TargetMesh;
+					if (UPoly_ActorFunctions::GetDynamicMesh(KvPair.Key, TargetMesh))
+					{
+						FBox Bounds;
+						bool bIsEmpty = false;
+						//UGeometryScriptLibrary_MeshSelectionFunctions::GetMeshSelectionInfo()
+						UGeometryScriptLibrary_MeshSelectionQueryFunctions::GetMeshSelectionBoundingBox(TargetMesh, Value, Bounds, bIsEmpty);
+						if (!bIsEmpty)
+						{
+							SelectionCenter = SelectionCenter + KvPair.Key->GetTransform().TransformPosition(Bounds.GetCenter());
+							Count++;
+						}
+					}
+				}
+			}
+
+			// ToDo: @tpott: Ponder about keeping the visualisation static placed in the world (check if there is a component to wrap around which keeps absolute transform
+			//				Otherwise: Every update to the visuals content should cause the components to be placed at origin (0,0,0)
+			SelectionCenter = SelectionCenter / Count;
+			UE_LOG(LogTemp, Warning, TEXT("Elements: %d / %d (%s)"), Count, Selections.Num(), *SelectionCenter.ToString())
+			return SelectionCenter;
+		}
 	}
 
 	default:

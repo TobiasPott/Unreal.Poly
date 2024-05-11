@@ -33,7 +33,7 @@ AElementsGizmo::AElementsGizmo()
 	DynamicMeshComponent->SetComponentTickEnabled(false);
 
 	SelectionDynamicMeshComponent = CreateDefaultSubobject<UDynamicMeshComponent>(TEXT("SelectionDynamicMeshComponent"));
-	SelectionDynamicMeshComponent->SetupAttachment(DefaultSceneRoot);
+	//SelectionDynamicMeshComponent->SetupAttachment(DefaultSceneRoot); // do not attach to keep at origin (free of actor location)
 	SelectionDynamicMeshComponent->SetComponentTickEnabled(false);
 	SelectionDynamicMeshComponent->SetGenerateOverlapEvents(false);
 	SelectionDynamicMeshComponent->SetCastShadow(false);
@@ -41,7 +41,7 @@ AElementsGizmo::AElementsGizmo()
 	SelectionDynamicMeshComponent->SetAffectDynamicIndirectLighting(false);
 
 	InstancedStaticMeshComponent = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("InstancedStaticMeshComponent"));
-	InstancedStaticMeshComponent->SetupAttachment(DefaultSceneRoot);
+	//InstancedStaticMeshComponent->SetupAttachment(DefaultSceneRoot); // do not attach to keep at origin (free of actor location)
 	InstancedStaticMeshComponent->SetComponentTickEnabled(false);
 	InstancedStaticMeshComponent->SetGenerateOverlapEvents(false);
 	InstancedStaticMeshComponent->SetCastShadow(false);
@@ -139,6 +139,7 @@ void AElementsGizmo::SetTargets(const TArray<AActor*>& Targets)
 void AElementsGizmo::SetSelectionType(EGeometryScriptMeshSelectionType InSelectionType)
 {
 	this->SelectionType = InSelectionType;
+	// ToDo: @tpott: Add changes to DynamicMeshComponent and InstancedStaticMeshComponent visibility based on the selection type
 }
 void AElementsGizmo::SetSelectionMode(EPolySelectionMode InSelectionMode)
 {

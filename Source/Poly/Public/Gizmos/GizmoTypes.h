@@ -60,9 +60,9 @@ enum class EGizmoDomain : uint8
 UENUM(BlueprintType)
 enum class EGizmoPivotSelectionSource : uint8
 {
-	ST_NONE = 0				UMETA(DisplayName = "None"),
-	ST_Actor = 1			UMETA(DisplayName = "Actors"),
-	ST_Elements = 2			UMETA(DisplayName = "Elements"),
+	PSS_NONE = 0				UMETA(DisplayName = "None"),
+	PSS_Actor = 1			UMETA(DisplayName = "Actors"),
+	PSS_Elements = 2			UMETA(DisplayName = "Elements"),
 };
 
 UENUM(BlueprintType)
