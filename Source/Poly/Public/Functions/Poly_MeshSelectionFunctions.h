@@ -21,6 +21,8 @@ class POLY_API UPoly_MeshSelectionFunctions : public UBlueprintFunctionLibrary
 public:
 	UFUNCTION(BlueprintCallable, Category = "Geometry Script|Selection")
 	static bool GetSelectionCenterOfBounds(UDynamicMesh* TargetMesh, const FGeometryScriptMeshSelection& Selection, FVector& OutCenter);
+	UFUNCTION(BlueprintCallable, Category = "Geometry Script|Selection")
+	static bool GetSelectionCenterOfBoundsFromActor(AActor* TargetActor, const FGeometryScriptMeshSelection& Selection, FVector& OutCenter);
 	//UFUNCTION(BlueprintCallable, Category = "Geometry Script|Selection")
 	//static bool GetSelectionCenter(UDynamicMesh* TargetMesh, const FGeometryScriptMeshSelection& Selection, FVector& OutCenter);
 };

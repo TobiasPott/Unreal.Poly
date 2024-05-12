@@ -2,6 +2,7 @@
 
 
 #include "Functions/Poly_MeshSelectionFunctions.h"
+#include "Functions/Poly_ActorFunctions.h"
 #include "GeometryScript/MeshSelectionQueryFunctions.h"
 
 bool UPoly_MeshSelectionFunctions::GetSelectionCenterOfBounds(UDynamicMesh* TargetMesh, const FGeometryScriptMeshSelection& Selection, FVector& OutCenter)
@@ -25,4 +26,21 @@ bool UPoly_MeshSelectionFunctions::GetSelectionCenterOfBounds(UDynamicMesh* Targ
 		OutCenter = FVector::ZeroVector;
 		return false;
 	}
+}
+
+bool UPoly_MeshSelectionFunctions::GetSelectionCenterOfBoundsFromActor(AActor* TargetActor, const FGeometryScriptMeshSelection& Selection, FVector& OutCenter)
+{
+	if (IsValid(TargetActor))
+	{
+		UDynamicMesh* TargetMesh;
+		if (UPoly_ActorFunctions::GetDynamicMesh(TargetActor, TargetMesh)
+			&& UPoly_MeshSelectionFunctions::GetSelectionCenterOfBounds(TargetMesh, Selection, OutCenter))
+		{
+			OutCenter = TargetActor->GetTransform().TransformPosition(OutCenter);
+			return true;
+		}
+	}
+
+	OutCenter = FVector::ZeroVector;
+	return false;
 }
