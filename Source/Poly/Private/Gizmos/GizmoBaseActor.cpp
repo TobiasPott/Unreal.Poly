@@ -2,13 +2,14 @@
 
 #include "Gizmos/GizmoBaseActor.h"
 #include "Functions/Poly_BaseFunctions.h"
+#include "Functions/Poly_ActorFunctions.h"
+#include "Functions/Poly_MeshSelectionFunctions.h"
 #include "Selection/SelectorSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "GeometryScript/MeshSelectionFunctions.h"
 #include "GeometryScript/MeshSelectionQueryFunctions.h"
 //#include "GeometryScript/GeometryScriptTypes.h"
 #include "GeometryScript/GeometryScriptSelectionTypes.h"
-#include "Functions/Poly_ActorFunctions.h"
 
 
 // Sets default values
@@ -148,13 +149,13 @@ void AGizmoBaseActor::Select_Finished_Implementation(UActorSelectionRequest* Req
 	{
 		TArray<AActor*> Actors = this->SelectCore->GetSelection();
 		Selector->ReplaceAll(Actors);
-		this->UpdatePivot(true, false);
 	}
 	else
 	{
 		Selector->ClearSelection();
-		this->UpdatePivot(true, true);
 	}
+	// update pivot transform
+	this->UpdatePivot(true, true);
 }
 
 
@@ -177,12 +178,12 @@ void AGizmoBaseActor::Elements_Finished_Implementation(AElementsGizmo* Core)
 	if (bSuccess)
 	{
 		// ToDo: @tpott: Add location and rotation determination from given selection
-		//this->UpdatePivot(true, false);
 	}
 	else
 	{
-		//this->UpdatePivot(true, true);
 	}
+	// update pivot transform
+	this->UpdatePivot(true, true);
 }
 
 void AGizmoBaseActor::SetupCores()
@@ -304,26 +305,19 @@ FVector AGizmoBaseActor::GetPivotLocationFromSelection()
 			int Count = 0;
 			FVector SelectionCenter;
 
+			// ToDo: Refine this to determine 'median' position from selection (bounds will shift location to selection 3D center
+			//			Extract method to get center location of mesh elements selectionn & dynamic mesh
+			//			Create method to get median location of mesh elements (tri & polygroups use tri-barycentric center, vertices use vertex position)
 			for (auto KvPair : Selections)
 			{
 				FGeometryScriptMeshSelection Value = KvPair.Value;
-				if (Value.GetNumSelected() == 0)
-					continue;
-				else
+				UDynamicMesh* TargetMesh;
+				FVector SelCenter;
+				if (UPoly_ActorFunctions::GetDynamicMesh(KvPair.Key, TargetMesh)
+					&& UPoly_MeshSelectionFunctions::GetSelectionCenterOfBounds(TargetMesh, Value, SelCenter))
 				{
-					UDynamicMesh* TargetMesh;
-					if (UPoly_ActorFunctions::GetDynamicMesh(KvPair.Key, TargetMesh))
-					{
-						FBox Bounds;
-						bool bIsEmpty = false;
-						//UGeometryScriptLibrary_MeshSelectionFunctions::GetMeshSelectionInfo()
-						UGeometryScriptLibrary_MeshSelectionQueryFunctions::GetMeshSelectionBoundingBox(TargetMesh, Value, Bounds, bIsEmpty);
-						if (!bIsEmpty)
-						{
-							SelectionCenter = SelectionCenter + KvPair.Key->GetTransform().TransformPosition(Bounds.GetCenter());
-							Count++;
-						}
-					}
+					SelectionCenter = SelectionCenter + KvPair.Key->GetTransform().TransformPosition(SelCenter);
+					Count++;
 				}
 			}
 
@@ -331,7 +325,7 @@ FVector AGizmoBaseActor::GetPivotLocationFromSelection()
 			//				Otherwise: Every update to the visuals content should cause the components to be placed at origin (0,0,0)
 			SelectionCenter = SelectionCenter / Count;
 			UE_LOG(LogTemp, Warning, TEXT("Elements: %d / %d (%s)"), Count, Selections.Num(), *SelectionCenter.ToString())
-			return SelectionCenter;
+				return SelectionCenter;
 		}
 	}
 
