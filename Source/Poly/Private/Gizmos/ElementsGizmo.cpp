@@ -16,6 +16,10 @@
 #include "GeometryScript/MeshBasicEditFunctions.h"
 #include "GeometryScript/MeshSpatialFunctions.h"
 
+
+// ToDo: @tpott: Consider using a SplineComponent to render selected edges
+// ToDo: @tpott: Cosider a structure to store Edge selection (will require custom FEdge type to track VertexIDs and TriangleIDs
+
 // Sets default values
 AElementsGizmo::AElementsGizmo()
 {
@@ -238,7 +242,7 @@ void AElementsGizmo::UpdateSelection()
 				this->SelectionType, this->bInvert, 0.0, this->WindingThreshold, this->MinTrianglePoints);
 			// ! ! ! !
 			// DEBUG Output
-			UPoly_SelectionFunctions::LogSelectionInfo("Triangles: ", Selection);
+			//UPoly_SelectionFunctions::LogSelectionInfo("Triangles: ", Selection);
 		}
 		else if (this->SelectionType == EGeometryScriptMeshSelectionType::Polygroups)
 		{
@@ -249,7 +253,7 @@ void AElementsGizmo::UpdateSelection()
 			UGeometryScriptLibrary_MeshSelectionFunctions::ConvertMeshSelection(TargetMesh, PolyGroupSelection, Selection, EGeometryScriptMeshSelectionType::Triangles, true);
 			// ! ! ! !
 			// DEBUG Output
-			UPoly_SelectionFunctions::LogSelectionInfo("PolyGroups: ", PolyGroupSelection);
+			//UPoly_SelectionFunctions::LogSelectionInfo("PolyGroups: ", PolyGroupSelection);
 		}
 		else
 		{
@@ -286,7 +290,7 @@ void AElementsGizmo::UpdateSelection()
 				Selection.CombineSelectionInPlace(ClickSelection, EGeometryScriptCombineSelectionMode::Add);
 
 				// DEBUG Output
-				UPoly_SelectionFunctions::LogSelectionInfo("Click: ", ClickSelection);
+				//UPoly_SelectionFunctions::LogSelectionInfo("Click: ", ClickSelection);
 			}
 
 		}

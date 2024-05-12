@@ -147,6 +147,7 @@ void AGizmoBaseActor::Select_Finished_Implementation(UActorSelectionRequest* Req
 	this->bHasActorSelection = bSuccess;
 	if (bSuccess)
 	{
+		this->UpdatePivot(true, true);
 		TArray<AActor*> Actors = this->SelectCore->GetSelection();
 		Selector->ReplaceAll(Actors);
 	}
@@ -155,7 +156,7 @@ void AGizmoBaseActor::Select_Finished_Implementation(UActorSelectionRequest* Req
 		Selector->ClearSelection();
 	}
 	// update pivot transform
-	this->UpdatePivot(true, true);
+	// ToDo: @tpott: Cleanup ElementCore.Selections and only keep those actors in there, which are also selcted by SelectCore
 }
 
 
@@ -178,12 +179,12 @@ void AGizmoBaseActor::Elements_Finished_Implementation(AElementsGizmo* Core)
 	if (bSuccess)
 	{
 		// ToDo: @tpott: Add location and rotation determination from given selection
+		this->UpdatePivot(true, true);
 	}
 	else
 	{
 	}
 	// update pivot transform
-	this->UpdatePivot(true, true);
 }
 
 void AGizmoBaseActor::SetupCores()
@@ -306,26 +307,20 @@ FVector AGizmoBaseActor::GetPivotLocationFromSelection()
 			FVector SelectionCenter;
 
 			// ToDo: Refine this to determine 'median' position from selection (bounds will shift location to selection 3D center
-			//			Extract method to get center location of mesh elements selectionn & dynamic mesh
 			//			Create method to get median location of mesh elements (tri & polygroups use tri-barycentric center, vertices use vertex position)
 			for (auto KvPair : Selections)
 			{
-				FGeometryScriptMeshSelection Value = KvPair.Value;
-				UDynamicMesh* TargetMesh;
-				FVector SelCenter;
-				if (UPoly_ActorFunctions::GetDynamicMesh(KvPair.Key, TargetMesh)
-					&& UPoly_MeshSelectionFunctions::GetSelectionCenterOfBounds(TargetMesh, Value, SelCenter))
+				FVector Center;
+				if (UPoly_MeshSelectionFunctions::GetSelectionCenterOfBoundsFromActor(KvPair.Key, KvPair.Value, Center))
 				{
-					SelectionCenter = SelectionCenter + KvPair.Key->GetTransform().TransformPosition(SelCenter);
+					SelectionCenter = SelectionCenter + Center;
 					Count++;
 				}
 			}
 
-			// ToDo: @tpott: Ponder about keeping the visualisation static placed in the world (check if there is a component to wrap around which keeps absolute transform
-			//				Otherwise: Every update to the visuals content should cause the components to be placed at origin (0,0,0)
 			SelectionCenter = SelectionCenter / Count;
-			UE_LOG(LogTemp, Warning, TEXT("Elements: %d / %d (%s)"), Count, Selections.Num(), *SelectionCenter.ToString())
-				return SelectionCenter;
+			UE_LOG(LogTemp, Warning, TEXT("Elements: %d / %d (%s)"), Count, Selections.Num(), *SelectionCenter.ToString());
+			return SelectionCenter;
 		}
 	}
 
