@@ -17,7 +17,7 @@ class POLY_API ASelectorVisualiserBase : public AActor
 
 protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	class USceneComponent* SceneComponent;
+	TObjectPtr<USceneComponent> DefaultSceneRoot;
 
 public:	
 	// Sets default values for this actor's properties

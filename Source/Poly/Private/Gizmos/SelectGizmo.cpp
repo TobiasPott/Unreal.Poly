@@ -25,7 +25,7 @@ void ASelectGizmo::BeginPlay()
 
 }
 
-void ASelectGizmo::Setup(EActorSelectionRequestMode InMarqueeMode, UClass* InFilterClass, bool bInIncludeNonCollider, bool bInIncludeOnlyEnclosed,
+void ASelectGizmo::Setup(ESelectionRequestMode InMarqueeMode, UClass* InFilterClass, bool bInIncludeNonCollider, bool bInIncludeOnlyEnclosed,
 	bool bInDisableOnFinish)
 {
 	MarqueeMode = InMarqueeMode;
@@ -90,10 +90,41 @@ void ASelectGizmo::SetGizmoHidden(const bool bHiddenInGame)
 	this->SetEnabled(!bHiddenInGame);
 }
 
+void ASelectGizmo::SetSelectionMode(EPolySelectionMode InSelectionMode)
+{
+	this->SelectionMode = InSelectionMode;
+}
+
+void ASelectGizmo::UpdateSelection()
+{
+	switch (this->SelectionMode)
+	{
+	case EPolySelectionMode::Deselect:
+	{
+		for (AActor* Actor : this->Request->Actors)
+		{ this->Selection.Remove(Actor); }
+		break;
+	}
+	case EPolySelectionMode::Select:
+	{
+		for (AActor* Actor : this->Request->Actors)
+		{ this->Selection.AddUnique(Actor); }
+		break;
+	}
+	case EPolySelectionMode::Replace:
+	default:
+	{
+		this->Selection.Reset(this->Request->Count());
+		this->Selection.Append(this->Request->Actors);
+		break;
+	}
+	}
+
+}
+
 
 void ASelectGizmo::OnInputKey_Pressed(FKey InKey)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("OnInputKey_Pressed"));
 	UPoly_UIFunctions::GetMousePosition(this, PlayerIndex, FirstPoint);
 	SecondPoint = FirstPoint;
 
@@ -110,10 +141,16 @@ void ASelectGizmo::OnInputKey_Pressed(FKey InKey)
 
 void ASelectGizmo::OnInputKey_Released(FKey InKey)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("OnInputKey_Released"));
 	if (bIsMousePressed && IsValid(Request))
 	{
 		bIsMousePressed = false;
+		const APlayerController* PC = UGameplayStatics::GetPlayerController(this, this->PlayerIndex);
+		const bool bShift = PC->IsInputKeyDown(EKeys::LeftShift);
+		const bool bCtrl = PC->IsInputKeyDown(EKeys::LeftControl);
+		if (bCtrl) this->SetSelectionMode(EPolySelectionMode::Deselect);
+		else if (bShift) this->SetSelectionMode(EPolySelectionMode::Select);
+		else this->SetSelectionMode(EPolySelectionMode::Replace);
+
 		UPoly_UIFunctions::GetMousePosition(this, PlayerIndex, SecondPoint);
 		Request->UpdateSecondPoint(SecondPoint);
 
@@ -132,7 +169,6 @@ void ASelectGizmo::OnMouseY(float AxisValue)
 
 void ASelectGizmo::OnMouse2D(FVector AxisValue)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Axis 2D %s"), *AxisValue.ToString());
 	if (bIsMousePressed)
 	{
 		UPoly_UIFunctions::GetMousePosition(this, PlayerIndex, SecondPoint);
@@ -142,9 +178,12 @@ void ASelectGizmo::OnMouse2D(FVector AxisValue)
 
 void ASelectGizmo::OnRequestFinished(UActorSelectionRequest* InRequest, bool bSuccess)
 {
-	//Request = InRequest;
 	Request->Finished.RemoveDynamic(this, &ASelectGizmo::OnRequestFinished);
-	//this->Request = InRequest;
+	if (bSuccess)
+	{
+		this->UpdateSelection();
+	}
+
 	this->OnFinished();
 }
 
@@ -155,5 +194,11 @@ void ASelectGizmo::OnFinished()
 
 	if (bDisableOnFinish)
 		this->SetEnabled(false);
+	this->Request = nullptr;
+}
+
+void ASelectGizmo::Clear()
+{
+	this->Selection.Reset(this->Request->Count());
 	this->Request = nullptr;
 }

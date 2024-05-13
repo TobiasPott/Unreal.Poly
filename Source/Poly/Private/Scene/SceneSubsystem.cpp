@@ -2,6 +2,7 @@
 
 
 #include "Scene/SceneSubsystem.h"
+#include "Functions/Poly_ActorFunctions.h"
 
 ASceneSubsystemRoot::ASceneSubsystemRoot()
 {
@@ -9,9 +10,7 @@ ASceneSubsystemRoot::ASceneSubsystemRoot()
 	PrimaryActorTick.bCanEverTick = false;
 
 	// create new scene component and make it root component others attach to
-	SceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
-	SceneComponent->SetMobility(EComponentMobility::Static);
-	SetRootComponent(SceneComponent);
+	DefaultSceneRoot = UPoly_ActorFunctions::CreateDefaultSceneComponent<USceneComponent>(this, "DefaultSceneRoot", EComponentMobility::Static);
 }
 
 

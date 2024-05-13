@@ -16,7 +16,7 @@ class ASceneSubsystemRoot : public AActor
 protected:
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
-	TObjectPtr<USceneComponent> SceneComponent;
+	TObjectPtr<USceneComponent> DefaultSceneRoot;
 
 public:
 	// Sets default values for this actor's properties

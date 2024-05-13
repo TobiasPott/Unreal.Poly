@@ -108,7 +108,12 @@ FTransform AScaleGizmo::GetDeltaTransform(const FVector& LookingVector, const FV
 
 		// unify delta with z component for XYZ domain
 		if (Domain == EGizmoDomain::TD_XYZ)
-			deltaLocation = FVector(deltaLocation.Z) * PreviousViewScale;
+		{
+			float Max = deltaLocation.GetMax();
+			float Min = deltaLocation.GetMin();
+
+			deltaLocation = FVector(FMath::Abs(Min) > Max ? deltaLocation.GetMin() : Max) * PreviousViewScale;
+		}
 
 		if (this->ActiveSpace == ETransformSpace::TS_Local)
 		{

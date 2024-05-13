@@ -8,6 +8,7 @@
 #include "Gizmos/GizmoCore.h"
 #include "SelectGizmo.generated.h"
 
+
 UCLASS(Blueprintable, BlueprintType)
 class POLY_API ASelectGizmo : public AGizmoCore
 {
@@ -21,11 +22,11 @@ protected:
 	bool bIsMousePressed = false;
 	bool bIsEnabled = false;
 
-	UPROPERTY()
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Default")
 	int32 PlayerIndex = 0;
 	UPROPERTY()
 	FName InputAction = EKeys::LeftMouseButton.GetFName();
-	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Filter")
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Selection")
 	bool bDisableOnFinish = false;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
@@ -41,7 +42,9 @@ protected:
 
 	// Filter values
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Filter")
-	EActorSelectionRequestMode MarqueeMode = EActorSelectionRequestMode::Click;
+	ESelectionRequestMode MarqueeMode = ESelectionRequestMode::Click;
+	UPROPERTY(BlueprintReadOnly, EditInstanceOnly, Category = "Filter")
+	EPolySelectionMode SelectionMode = EPolySelectionMode::Replace;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Filter")
 	TSubclassOf<AActor> FilterClass;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Filter")
@@ -49,19 +52,42 @@ protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Filter")
 	bool bIncludeOnlyEnclosed = false;
 
+protected:
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Selection")
+	TArray<AActor*> Selection;
+
+
 
 protected:
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+public:
 	UFUNCTION(BlueprintCallable, Category = "Selection")
-	void Setup(EActorSelectionRequestMode InMarqueeMode, UClass* InFilterClass, bool bInIncludeNonCollider = false, bool bInIncludeOnlyEnclosed = false, 
+	void Setup(ESelectionRequestMode InMarqueeMode, UClass* InFilterClass, bool bInIncludeNonCollider = false, bool bInIncludeOnlyEnclosed = false,
 		bool bInDisableOnFinish = false);
 
 	void SetEnabled(const bool bInEnable);
 
 	virtual void SetGizmoHidden(const bool bHiddenInGame = false) override;
+
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void SetSelectionMode(EPolySelectionMode InSelectionMode = EPolySelectionMode::Replace);
+
+
+
+	void UpdateSelection();
+
+	TArray<AActor*> GetSelection() { return this->Selection; };
+
+	bool IsEmpty() { return this->Selection.IsEmpty(); };
+	bool IsNotEmpty() { return !this->Selection.IsEmpty(); };
+
+	AActor* GetFirstSelected() { return this->Selection.Num() > 0 ? this->Selection[0] : nullptr; };
+	AActor* GetLastSelected() { return this->Selection.Num() > 0 ? this->Selection[this->Selection.Num() - 1] : nullptr; };
+
+protected:
 
 	UFUNCTION()
 	virtual void OnInputKey_Pressed(FKey InKey);
@@ -81,6 +107,10 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	virtual void OnFinished();
+
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	virtual void Clear();
+
 
 public:
 
