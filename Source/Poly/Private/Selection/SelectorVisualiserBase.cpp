@@ -3,7 +3,8 @@
 
 #include "Selection/SelectorVisualiserBase.h"
 #include "Selection/SelectorBase.h"
-#include "PolyMeshFunctions/PolyMesh_SelectionFunctions.h"
+#include "Functions/Poly_SelectionFunctions.h"
+#include "Functions/Poly_ActorFunctions.h"
 
 // Sets default values
 ASelectorVisualiserBase::ASelectorVisualiserBase()
@@ -12,9 +13,8 @@ ASelectorVisualiserBase::ASelectorVisualiserBase()
 	PrimaryActorTick.bCanEverTick = false;
 
 	// create new scene component and make it root component others attach to
-	SceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
-	SceneComponent->SetMobility(EComponentMobility::Static);
-	SetRootComponent(SceneComponent);
+	DefaultSceneRoot = UPoly_ActorFunctions::CreateDefaultSceneComponent<USceneComponent>(this, "DefaultSceneRoot", EComponentMobility::Static);
+
 }
 
 // Called when the game starts or when spawned
@@ -38,12 +38,12 @@ void ASelectorVisualiserBase::Init()
 
 void ASelectorVisualiserBase::OnSelectableSelected_Implementation(ASelectorBase* InSelector, AActor* InSelectable)
 {
-	UPolyMesh_SelectionFunctions::SetMaterialForState(InSelectable->GetOwner(), true, this->OverlayMaterial, InSelector->Stencil);
+	UPoly_SelectionFunctions::SetMaterialForState(InSelectable->GetOwner(), true, this->OverlayMaterial, InSelector->Stencil);
 }
 
 void ASelectorVisualiserBase::OnSelectableDeselected_Implementation(ASelectorBase* InSelector, AActor* InSelectable)
 {
-	UPolyMesh_SelectionFunctions::SetMaterialForState(InSelectable->GetOwner(), false, this->OverlayMaterial, InSelector->Stencil);
+	UPoly_SelectionFunctions::SetMaterialForState(InSelectable->GetOwner(), false, this->OverlayMaterial, InSelector->Stencil);
 }
 
 void ASelectorVisualiserBase::OnSelectorDestroyed(AActor* DestroyedActor)

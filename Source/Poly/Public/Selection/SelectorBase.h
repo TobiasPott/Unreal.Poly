@@ -16,7 +16,7 @@ class POLY_API ASelectorBase : public AActor
 
 protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	class USceneComponent* SceneComponent;
+	TObjectPtr<USceneComponent> DefaultSceneRoot;
 
 
 public:	
@@ -73,13 +73,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Selector")
 	void ReplaceAll(const TArray<AActor*>& InSelectables);
 
-
-protected:
-	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Intern")
 	void ClearSelection();
 	void ClearSelection_Implementation();
-	
+
+protected:
 	UFUNCTION()
 	void SetVisualiser(TSubclassOf<ASelectorVisualiserBase> NewVisualiserClass);
 

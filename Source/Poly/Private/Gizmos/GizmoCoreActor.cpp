@@ -3,6 +3,7 @@
 
 #include "Gizmos/GizmoCoreActor.h"
 #include "Functions/Poly_UIFunctions.h"
+#include "Functions/Poly_ActorFunctions.h"
 #include "Components/SceneComponent.h"
 #include "Components/ShapeComponent.h"
 #include "Components/BoxComponent.h"
@@ -15,11 +16,11 @@ AGizmoCoreActor::AGizmoCoreActor()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
-	this->SetRootComponent(RootScene);
+	// create new scene component and make it root component others attach to
+	DefaultSceneRoot = UPoly_ActorFunctions::CreateDefaultSceneComponent<USceneComponent>(this, "DefaultSceneRoot", EComponentMobility::Movable);
 
 	ScalingScene = CreateDefaultSubobject<USceneComponent>(TEXT("ScalingScene"));
-	ScalingScene->SetupAttachment(RootScene);
+	ScalingScene->SetupAttachment(DefaultSceneRoot);
 
 	X_AxisBox = CreateDefaultSubobject<UBoxComponent>(TEXT("X Axis Box"));
 	X_AxisBox->SetComponentTickEnabled(false);

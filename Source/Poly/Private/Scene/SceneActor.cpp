@@ -3,6 +3,7 @@
 
 #include "Scene/SceneActor.h"
 #include "Engine/World.h"
+#include "Functions/Poly_ActorFunctions.h"
 
 // Sets default values
 ASceneActor::ASceneActor()
@@ -11,9 +12,8 @@ ASceneActor::ASceneActor()
 	PrimaryActorTick.bCanEverTick = false;
 
 	// create new scene component and make it root component others attach to
-	SceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
-	SceneComponent->SetMobility(EComponentMobility::Movable);
-	SetRootComponent(SceneComponent);
+	DefaultSceneRoot = UPoly_ActorFunctions::CreateDefaultSceneComponent<USceneComponent>(this, "DefaultSceneRoot", EComponentMobility::Static);
+
 }
 
 void ASceneActor::Add(AActor* InActor, bool bAttach)

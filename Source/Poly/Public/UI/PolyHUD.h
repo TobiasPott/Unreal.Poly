@@ -25,6 +25,8 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Default")
 	TArray<UActorSelectionRequest*> MarqueeRequests;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Default")
+	TArray<USelectionRequestBase*> BaseRequests;
 
 
 public:
@@ -32,6 +34,8 @@ public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category = "Default")
 	void QueueRequest(UActorSelectionRequest* Request);
+	UFUNCTION(BlueprintCallable, Category = "Default")
+	void QueueBaseRequest(USelectionRequestBase* Request);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category = "Default")

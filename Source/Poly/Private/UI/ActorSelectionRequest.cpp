@@ -3,7 +3,7 @@
 
 #include "UI/ActorSelectionRequest.h"
 
-void UActorSelectionRequest::Init(const EActorSelectionRequestMode InMode, const FVector2D& InFirstPoint, const FVector2D& InSecondPoint, TSubclassOf<AActor> InFilterClass, bool bInIncludeNonCollider, bool bInOnlyEnclosed)
+void UActorSelectionRequest::Init(const ESelectionRequestMode InMode, const FVector2D& InFirstPoint, const FVector2D& InSecondPoint, TSubclassOf<AActor> InFilterClass, bool bInIncludeNonCollider, bool bInOnlyEnclosed)
 {
 	this->Actors.Reset(0);
 	this->Mode = InMode;

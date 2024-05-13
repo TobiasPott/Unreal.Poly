@@ -9,9 +9,8 @@
 // UI Icon resources
 // https://fonts.google.com/icons?icon.category=Common+actions&icon.style=Rounded&icon.size=96&icon.color=%23FFFFFF
 
-
 UENUM(BlueprintType)
-enum class EActorSelectionRequestMode : uint8 {
+enum class ESelectionRequestMode : uint8 {
 	Click = 0,
 	Marquee,
 	Trace

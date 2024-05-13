@@ -16,26 +16,18 @@
 #include "Misc/UObjectToken.h"
 #include "UObject/UObjectIterator.h"
 #include "UI/UserWidgetTypes.h"
+#include "UI/SelectionRequestBase.h"
 #include "ActorSelectionRequest.generated.h"
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FActorSelectionRequestFinished, class UActorSelectionRequest*, Request, bool, bSuccess);
 
 UCLASS(Blueprintable)
-class POLY_API UActorSelectionRequest : public UObject
+class POLY_API UActorSelectionRequest : public USelectionRequestBase
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
-	EActorSelectionRequestMode Mode = EActorSelectionRequestMode::Click;
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
-	bool bSubmitted = false;
-
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
-	FVector2D FirstPoint = FVector2D(0, 0);
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
-	FVector2D SecondPoint = FVector2D(0, 0);
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
 	bool bIncludeNonCollider = false;
@@ -61,13 +53,8 @@ public:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Selection")
-	void Init(const EActorSelectionRequestMode InMode, const FVector2D& InFirstPoint, const FVector2D& InSecondPoint, TSubclassOf<AActor> InFilterClass, bool bInIncludeNonCollider = false, bool bInOnlyEnclosed = false);
+	void Init(const ESelectionRequestMode InMode, const FVector2D& InFirstPoint, const FVector2D& InSecondPoint, TSubclassOf<AActor> InFilterClass, bool bInIncludeNonCollider = false, bool bInOnlyEnclosed = false);
 
-
-	UFUNCTION(BlueprintCallable, Category = "Selection")
-	void Submit() { this->bSubmitted = true; }
-	UFUNCTION(BlueprintCallable, Category = "Selection")
-	void UpdateSecondPoint(const FVector2D InSecondPoint) { this->SecondPoint = InSecondPoint; }
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SetTrace(const TEnumAsByte<ETraceTypeQuery> InTraceChannel, bool bInTraceComplex = true, float InTraceDistance = 100000000)
 	{
