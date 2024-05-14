@@ -19,10 +19,10 @@ public:
 	UCreateShapeActionBase()
 	{
 		Description = "poly.CreateShape";
-		ShortName = "Create Shape";
+		ShortName = "<Create Shape>";
 	}
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Actions|Creation", meta = (ExposeOnSpawn = "true"))
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	FVector Offset = FVector::ZeroVector;
 };
 
@@ -42,7 +42,7 @@ public:
 		ShortName = "Create Box";
 	}
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Actions|Creation", meta = (ExposeOnSpawn = "true"))
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	FVector Dimensions = FVector(100, 100, 100);
 
 public:
@@ -63,16 +63,16 @@ public:
 		ShortName = "Create Sphere";
 	}
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Actions|Creation", meta = (ExposeOnSpawn = "true"))
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	float Radius = 50.0f;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Actions|Creation", meta = (ExposeOnSpawn = "true"))
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	int32 StepX = 6;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Actions|Creation", meta = (ExposeOnSpawn = "true"))
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	int32 StepY = 6;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Actions|Creation", meta = (ExposeOnSpawn = "true"))
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	int32 StepZ = 6;
 
 public:
@@ -93,16 +93,16 @@ public:
 		ShortName = "Create Cylinder";
 	}
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Actions|Creation", meta = (ExposeOnSpawn = "true"))
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	float Radius = 50.0f;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Actions|Creation", meta = (ExposeOnSpawn = "true"))
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	float Height = 100.0f;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Actions|Creation", meta = (ExposeOnSpawn = "true"))
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	int32 RadialSteps = 12;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Actions|Creation", meta = (ExposeOnSpawn = "true"))
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	int32 HeightSteps = 0;
 
 public:
@@ -123,19 +123,19 @@ public:
 		ShortName = "Create Cone";
 	}
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Actions|Creation", meta = (ExposeOnSpawn = "true"))
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	float BaseRadius = 50.0f;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Actions|Creation", meta = (ExposeOnSpawn = "true"))
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	float TopRadius = 5.0;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Actions|Creation", meta = (ExposeOnSpawn = "true"))
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	float Height = 100;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Actions|Creation", meta = (ExposeOnSpawn = "true"))
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	int32 RadialSteps = 12;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Actions|Creation", meta = (ExposeOnSpawn = "true"))
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	int32 HeightSteps = 4;
 
 public:

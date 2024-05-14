@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Poly_ActorFunctions.h"
+#include "Functions/Poly_ActorFunctions.h"
 #include "Components/BaseDynamicMeshComponent.h"
 
 bool UPoly_ActorFunctions::GetDynamicMesh(AActor* TargetActor, UDynamicMesh*& Mesh)
