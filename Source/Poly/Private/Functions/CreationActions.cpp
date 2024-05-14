@@ -5,16 +5,17 @@
 #include "Functions/Poly_CreationFunctions.h"
 #include "PolyMeshActor.h"
 #include "Scene/SceneSubsystemFunctions.h"
+#include "Actions/ActionMacros.h"
 
-
-#define RETURN_ActionSubmit(Actor)	\
-		{							\
-			if (IsValid(Actor))		\
-				this->Submit();		\
-			else					\
-				this->Discard();	\
-			return IsValid(Actor);	\
-		}
+//
+//#define RETURN_ActionSubmit(Actor)	\
+//		{							\
+//			if (IsValid(Actor))		\
+//				this->Submit();		\
+//			else					\
+//				this->Discard();	\
+//			return IsValid(Actor);	\
+//		}
 
 bool UCreateBoxAction::Execute_Implementation(bool bEmitRecord)
 {
@@ -23,7 +24,7 @@ bool UCreateBoxAction::Execute_Implementation(bool bEmitRecord)
 
 	// attach created actor to ActiveScene (ToDo: wrap into function library)
 	USceneSubsystemFunctions::AddToActiveScene(this, PolyMeshActor);
-	RETURN_ActionSubmit(PolyMeshActor)
+	RETURN_ACTIONSUBMIT_ISVALIDACTOR(PolyMeshActor)
 }
 
 bool UCreateSphereAction::Execute_Implementation(bool bEmitRecord)
@@ -33,7 +34,7 @@ bool UCreateSphereAction::Execute_Implementation(bool bEmitRecord)
 
 	// attach created actor to ActiveScene (ToDo: wrap into function library)
 	USceneSubsystemFunctions::AddToActiveScene(this, PolyMeshActor);
-	RETURN_ActionSubmit(PolyMeshActor)
+	RETURN_ACTIONSUBMIT_ISVALIDACTOR(PolyMeshActor)
 }
 
 bool UCreateCylinderAction::Execute_Implementation(bool bEmitRecord)
@@ -43,7 +44,7 @@ bool UCreateCylinderAction::Execute_Implementation(bool bEmitRecord)
 
 	// attach created actor to ActiveScene (ToDo: wrap into function library)
 	USceneSubsystemFunctions::AddToActiveScene(this, PolyMeshActor);
-	RETURN_ActionSubmit(PolyMeshActor)
+	RETURN_ACTIONSUBMIT_ISVALIDACTOR(PolyMeshActor)
 }
 
 bool UCreateConeAction::Execute_Implementation(bool bEmitRecord)
@@ -53,7 +54,7 @@ bool UCreateConeAction::Execute_Implementation(bool bEmitRecord)
 
 	// attach created actor to ActiveScene (ToDo: wrap into function library)
 	USceneSubsystemFunctions::AddToActiveScene(this, PolyMeshActor);
-	RETURN_ActionSubmit(PolyMeshActor)
+	RETURN_ACTIONSUBMIT_ISVALIDACTOR(PolyMeshActor)
 }
 
 // ToDo: @tpott: Convert code to template function to reduce code repetition
@@ -64,7 +65,7 @@ bool UCreateDirectionalLightAction::Execute_Implementation(bool bEmitRecord)
 
 	// attach created actor to ActiveScene (ToDo: wrap into function library)
 	USceneSubsystemFunctions::AddToActiveScene(this, LightActor);
-	RETURN_ActionSubmit(LightActor)
+	RETURN_ACTIONSUBMIT_ISVALIDACTOR(LightActor)
 }
 
 bool UCreateSpotLightAction::Execute_Implementation(bool bEmitRecord)
@@ -74,7 +75,7 @@ bool UCreateSpotLightAction::Execute_Implementation(bool bEmitRecord)
 
 	// attach created actor to ActiveScene (ToDo: wrap into function library)
 	USceneSubsystemFunctions::AddToActiveScene(this, LightActor);
-	RETURN_ActionSubmit(LightActor)
+	RETURN_ACTIONSUBMIT_ISVALIDACTOR(LightActor)
 }
 
 bool UCreatePointLightAction::Execute_Implementation(bool bEmitRecord)
@@ -84,5 +85,5 @@ bool UCreatePointLightAction::Execute_Implementation(bool bEmitRecord)
 
 	// attach created actor to ActiveScene (ToDo: wrap into function library)
 	USceneSubsystemFunctions::AddToActiveScene(this, LightActor);
-	RETURN_ActionSubmit(LightActor)
+	RETURN_ACTIONSUBMIT_ISVALIDACTOR(LightActor)
 }
