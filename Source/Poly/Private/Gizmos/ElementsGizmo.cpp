@@ -15,6 +15,7 @@
 #include "GeometryScript/MeshTransformFunctions.h"
 #include "GeometryScript/MeshBasicEditFunctions.h"
 #include "GeometryScript/MeshSpatialFunctions.h"
+#include "GeometryScript/MeshQueryFunctions.h"
 
 
 // ToDo: @tpott: Consider using a SplineComponent to render selected edges
@@ -217,6 +218,8 @@ void AElementsGizmo::UpdateSelection()
 	FVector RayOrigin, RayDir;
 	UPoly_UIFunctions::GetScreenRay(this, this->PlayerIndex, this->SecondPoint, RayOrigin, RayDir);
 
+	const FVector VertexScale = FVector(0.05, 0.05, 0.05);
+	TArray<FTransform> InstancesArray;
 	// check selection type (only triangles and poly groups use mesh to display)
 	UDynamicMesh* TempMesh = Pool->RequestMesh();
 	//for (auto& KvPair : Selections)
@@ -231,6 +234,7 @@ void AElementsGizmo::UpdateSelection()
 			continue;
 
 		const FTransform TargetTransform = Target->GetActorTransform();
+		const FQuat TargetRotation = TargetTransform.GetRotation();
 		const FTransform InvTargetTransform = TargetTransform.Inverse();
 		UDynamicMesh* TargetMesh = DMC->GetDynamicMesh();
 		FGeometryScriptMeshSelection Selection;
@@ -320,16 +324,39 @@ void AElementsGizmo::UpdateSelection()
 		// place updated selection back into selection map
 		Selections.Emplace(Target, Selection);
 
-
-		if (Selection.GetSelectionType() != EGeometryScriptMeshSelectionType::Vertices && Selection.GetNumSelected() > 0)
+		EGeometryScriptMeshSelectionType TypeOfSelection = Selection.GetSelectionType();
+		if (Selection.GetNumSelected() > 0)
 		{
-			// get selection of all before append
-			UGeometryScriptLibrary_MeshDecompositionFunctions::CopyMeshSelectionToMesh(TargetMesh, TempMesh, Selection, TempMesh, false);
-			UGeometryScriptLibrary_MeshBasicEditFunctions::AppendMesh(SelectionMesh, TempMesh, TargetTransform, false, AppendOptions);
+			if (TypeOfSelection != EGeometryScriptMeshSelectionType::Vertices)
+			{
+				// get selection of all before append
+				UGeometryScriptLibrary_MeshDecompositionFunctions::CopyMeshSelectionToMesh(TargetMesh, TempMesh, Selection, TempMesh, false);
+				UGeometryScriptLibrary_MeshBasicEditFunctions::AppendMesh(SelectionMesh, TempMesh, TargetTransform, false, AppendOptions);
+			}
+			else if (TypeOfSelection == EGeometryScriptMeshSelectionType::Vertices)
+			{
+				// get vertices for selection and add transform to instannces array
+				TArray<int32> IndexArray;
+				EGeometryScriptMeshSelectionType OutType;
+				UGeometryScriptLibrary_MeshSelectionFunctions::ConvertMeshSelectionToIndexArray(TargetMesh, Selection, IndexArray, OutType);
+
+				for (int vI = 0; vI < IndexArray.Num(); vI++)
+				{
+					bool bIsValid = false;
+					const FVector Location = TargetTransform.TransformPosition(UGeometryScriptLibrary_MeshQueryFunctions::GetVertexPosition(TargetMesh, IndexArray[vI], bIsValid));
+					InstancesArray.Add(FTransform(TargetRotation, Location, VertexScale));
+				}
+			}
 		}
 
-
 	}
+
+	// Add vertices to instanced static mesh component
+	InstancedStaticMeshComponent->ClearInstances();
+	if (!InstancesArray.IsEmpty())
+		InstancedStaticMeshComponent->AddInstances(InstancesArray, false, true, false);
+
+	
 	// return temp mesh
 	Pool->ReturnMesh(TempMesh);
 
