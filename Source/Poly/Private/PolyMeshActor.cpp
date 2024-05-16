@@ -2,11 +2,20 @@
 
 
 #include "PolyMeshActor.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 APolyMeshActor::APolyMeshActor()
 {
 	SetCollision(true);
 	this->GetRootComponent()->SetMobility(EComponentMobility::Movable);
+
+	IdentifierComponent = CreateDefaultSubobject<UIdentifierComponent>(TEXT("IdentifierComponent"));
+}
+
+void APolyMeshActor::BeginPlay()
+{
+	Super::BeginPlay();
+	IdentifierComponent->SetAutoIdentifier(UKismetSystemLibrary::GetObjectName(this));
 }
 
 void APolyMeshActor::SetCollision(bool bIsEnabled)

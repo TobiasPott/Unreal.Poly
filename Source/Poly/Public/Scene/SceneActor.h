@@ -4,25 +4,37 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "IdentifierComponent.h"
 #include "SceneActor.generated.h"
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSceneChangedSignature, ASceneActor*, Scene);
 
 
+// ToDo: @tpott: Add a method to name a scene and use it as display name
+//				May be a switch in inspector blueprint
+
 UCLASS(BlueprintType)
 class POLY_API ASceneActor : public AActor
 {
 	GENERATED_BODY()
 
-protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TObjectPtr<USceneComponent> DefaultSceneRoot;
-
 
 public:	
 	// Sets default values for this actor's properties
 	ASceneActor();
+
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<USceneComponent> DefaultSceneRoot;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	class UIdentifierComponent* IdentifierComponent;
+
+
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Scene")
 	FName Name = FName("NewScene");

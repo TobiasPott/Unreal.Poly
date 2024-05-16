@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DynamicMeshActor.h"
+#include "IdentifierComponent.h"
 #include "PolyMeshActor.generated.h"
 
 /**
@@ -17,7 +18,18 @@ class POLY_API APolyMeshActor : public ADynamicMeshActor
 public:
 	APolyMeshActor();
 
-	/** Please add a function description */
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	class UIdentifierComponent* IdentifierComponent;
+
+
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
+	FName Name = FName("PolyMeshActor");
+
 	UFUNCTION(BlueprintCallable, Category = "Default")
 	void SetCollision(bool bIsEnabled);
 
