@@ -52,4 +52,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Actor")
 	static FRotator GetRotation(AActor* TargetActor, const ETransformSpace& Space);
 
+
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Actor")
+	static bool IsAttached(AActor* TargetActor);
 };
