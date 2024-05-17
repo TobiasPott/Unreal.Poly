@@ -4,6 +4,7 @@
 #include "IdentifierComponent.h"
 
 int32 UIdentifierComponent::NextId = 0;
+TArray<UIdentifierComponent*> UIdentifierComponent::AllComponents = TArray<UIdentifierComponent*>();
 
 // Sets default values for this component's properties
 UIdentifierComponent::UIdentifierComponent()
@@ -17,6 +18,18 @@ UIdentifierComponent::UIdentifierComponent()
 void UIdentifierComponent::SetAutoIdentifier(const FString& NewDisplayName)
 {
 	this->SetIdentifier(UIdentifierComponent::GetNextId(), NewDisplayName);
+}
+
+void UIdentifierComponent::BeginPlay()
+{
+	Super::BeginPlay();
+	UIdentifierComponent::AllComponents.AddUnique(this);
+}
+
+void UIdentifierComponent::BeginDestroy()
+{
+	Super::BeginDestroy();
+	UIdentifierComponent::AllComponents.Remove(this);
 }
 
 void UIdentifierComponent::SetIdentifier(const int32& NewId, const FString& NewDisplayName)

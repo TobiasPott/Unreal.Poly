@@ -10,6 +10,8 @@
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class POLY_API UIdentifierComponent : public UActorComponent
 {
+	friend class UPoly_IdentifierFunctions;
+
 	GENERATED_BODY()
 
 public:	
@@ -18,23 +20,28 @@ public:
 
 private:
 	static int32 NextId;
+	static TArray<UIdentifierComponent*> AllComponents;
 
 public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
 	int32 Id = -1;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
-	FString DisplayName = FString("None");
+	FString DisplayName = FString("Unnamed");
+
+
+
+	virtual void BeginPlay() override;
+	virtual void BeginDestroy() override;
+
 
 
 	UFUNCTION(BlueprintCallable, Category = "Identifier")
 	void SetAutoIdentifier(const FString& NewDisplayName);
-
-
 	UFUNCTION(BlueprintCallable, Category = "Identifier")
 	void SetIdentifier(const int32& NewId, const FString& NewDisplayName);
 
 
-	UFUNCTION(BlueprintCallable, Category = "Identifier")
+	UFUNCTION()
 	static int32 GetNextId();
 
 };
