@@ -21,5 +21,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Actor")
 	static bool GetActorById(const int32 IdentifierId, AActor*& OutActor, UIdentifierComponent*& OutComponent);
 
+	UFUNCTION(BlueprintCallable, Category = "Actor")
+	static bool GetActorId(AActor* Actor, int32& OutId, UIdentifierComponent*& OutComponent, const bool bAdd = false);
+
 
 };
