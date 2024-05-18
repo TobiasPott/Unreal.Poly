@@ -138,7 +138,7 @@ void AGizmoBaseActor::Scale_TransformEnded_Implementation(bool bEnded, FTransfor
 {
 }
 
-void AGizmoBaseActor::Select_Finished_Implementation(UActorSelectionRequest* Request, bool bSuccess)
+void AGizmoBaseActor::Select_Finished_Implementation(USelectionRequest* Request, bool bSuccess)
 {
 	USelectorSubsystem* SelectorSubsystem = UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>();
 	ASelectorBase* Selector;

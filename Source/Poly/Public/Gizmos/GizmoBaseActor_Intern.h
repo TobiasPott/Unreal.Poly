@@ -66,8 +66,8 @@ protected:
 	virtual void Scale_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform) { };
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Protected|Core Events")
-	void Select_Finished(UActorSelectionRequest* Request, bool bSuccess);
-	virtual void Select_Finished_Implementation(UActorSelectionRequest* Request, bool bSuccess) { };
+	void Select_Finished(USelectionRequest* Request, bool bSuccess);
+	virtual void Select_Finished_Implementation(USelectionRequest* Request, bool bSuccess) { };
 
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Protected|Core Events")

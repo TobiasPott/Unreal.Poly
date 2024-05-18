@@ -79,7 +79,7 @@ void UPoly_UIFunctions::GetRectCorners(const FVector2D Origin, const FVector2D S
 	OutTopRight = Origin + FVector2D(Size.X, 0);
 }
 
-void UPoly_UIFunctions::SelectWithSelectionRequest(UActorSelectionRequest* Request, AHUD* HUD)
+void UPoly_UIFunctions::SelectWithSelectionRequest(USelectionRequest* Request, AHUD* HUD)
 {
 	switch (Request->Mode)
 	{

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "UI/ActorSelectionRequest.h"
+#include "Selection/SelectionRequest.h"
 #include "Gizmos/GizmoCore.h"
 #include "SelectGizmo.generated.h"
 
@@ -37,7 +37,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
 	FHitResult HitResult;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
-	UActorSelectionRequest* Request = nullptr;
+	USelectionRequest* Request = nullptr;
 
 
 	// Filter values
@@ -103,7 +103,7 @@ protected:
 
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
-	virtual void OnRequestFinished(UActorSelectionRequest* InRequest, bool bSuccess);
+	virtual void OnRequestFinished(USelectionRequest* InRequest, bool bSuccess);
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	virtual void OnFinished();
@@ -115,7 +115,7 @@ protected:
 public:
 
 	UPROPERTY(BlueprintAssignable, EditDefaultsOnly, Category = "Default")
-	FActorSelectionRequestFinished Finished;
+	FSelectionRequestFinished Finished;
 
 
 };

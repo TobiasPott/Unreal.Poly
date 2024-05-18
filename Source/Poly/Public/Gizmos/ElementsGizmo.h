@@ -8,7 +8,7 @@
 #include "Components/InstancedStaticMeshComponent.h"
 #include "GeometryScript/GeometryScriptTypes.h"
 #include "GeometryScript/GeometryScriptSelectionTypes.h"
-#include "UI/SelectionRequestBase.h"
+#include "Selection/SelectionRequestBase.h"
 #include "Gizmos/GizmoCore.h"
 #include "ElementsGizmo.generated.h"
 

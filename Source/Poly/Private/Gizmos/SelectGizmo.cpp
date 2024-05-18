@@ -20,7 +20,7 @@ void ASelectGizmo::BeginPlay()
 	Super::BeginPlay();
 
 	// create new request if none is available yet
-	Request = NewObject<UActorSelectionRequest>(this);
+	Request = NewObject<USelectionRequest>(this);
 
 
 }
@@ -128,7 +128,7 @@ void ASelectGizmo::OnInputKey_Pressed(FKey InKey)
 	UPoly_UIFunctions::GetMousePosition(this, PlayerIndex, FirstPoint);
 	SecondPoint = FirstPoint;
 
-	Request = NewObject<UActorSelectionRequest>(this);
+	Request = NewObject<USelectionRequest>(this);
 	Request->Init(MarqueeMode, FirstPoint, FirstPoint, FilterClass, bIncludeNonCollider, bIncludeOnlyEnclosed);
 
 	APolyHUD* Hud = Cast<APolyHUD>(UGameplayStatics::GetPlayerController(this, PlayerIndex)->GetHUD());
@@ -176,7 +176,7 @@ void ASelectGizmo::OnMouse2D(FVector AxisValue)
 	}
 }
 
-void ASelectGizmo::OnRequestFinished(UActorSelectionRequest* InRequest, bool bSuccess)
+void ASelectGizmo::OnRequestFinished(USelectionRequest* InRequest, bool bSuccess)
 {
 	Request->Finished.RemoveDynamic(this, &ASelectGizmo::OnRequestFinished);
 	if (bSuccess)

@@ -16,14 +16,14 @@
 #include "Misc/UObjectToken.h"
 #include "UObject/UObjectIterator.h"
 #include "UI/UserWidgetTypes.h"
-#include "UI/SelectionRequestBase.h"
-#include "ActorSelectionRequest.generated.h"
+#include "Selection/SelectionRequestBase.h"
+#include "SelectionRequest.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FActorSelectionRequestFinished, class UActorSelectionRequest*, Request, bool, bSuccess);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSelectionRequestFinished, class USelectionRequest*, Request, bool, bSuccess);
 
 UCLASS(Blueprintable)
-class POLY_API UActorSelectionRequest : public USelectionRequestBase
+class POLY_API USelectionRequest : public USelectionRequestBase
 {
 	GENERATED_BODY()
 
@@ -89,6 +89,6 @@ public:
 public:
 
 	UPROPERTY(BlueprintAssignable, EditDefaultsOnly, Category = "Default")
-	FActorSelectionRequestFinished Finished;
+	FSelectionRequestFinished Finished;
 
 };

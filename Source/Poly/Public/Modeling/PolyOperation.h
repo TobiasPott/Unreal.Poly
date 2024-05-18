@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "PolyMeshSelection.h"
-#include "PolyMeshOperation.generated.h"
+#include "PolySelection.h"
+#include "PolyOperation.generated.h"
 /**
  * 
  */
 UCLASS(BlueprintType)
-class POLY_API UPolyMeshOperation : public UObject
+class POLY_API UPolyOperation : public UObject
 {
 	GENERATED_BODY()
 	
