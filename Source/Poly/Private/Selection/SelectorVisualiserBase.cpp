@@ -3,7 +3,7 @@
 
 #include "Selection/SelectorVisualiserBase.h"
 #include "Selection/SelectorBase.h"
-#include "Functions/Poly_SelectionFunctions.h"
+#include "Functions/Poly_SelectorFunctions.h"
 #include "Functions/Poly_ActorFunctions.h"
 
 // Sets default values
@@ -38,12 +38,12 @@ void ASelectorVisualiserBase::Init()
 
 void ASelectorVisualiserBase::OnSelectableSelected_Implementation(ASelectorBase* InSelector, AActor* InSelectable)
 {
-	UPoly_SelectionFunctions::SetMaterialForState(InSelectable->GetOwner(), true, this->OverlayMaterial, InSelector->Stencil);
+	UPoly_SelectorFunctions::SetMaterialForState(InSelectable->GetOwner(), true, this->OverlayMaterial, InSelector->Stencil);
 }
 
 void ASelectorVisualiserBase::OnSelectableDeselected_Implementation(ASelectorBase* InSelector, AActor* InSelectable)
 {
-	UPoly_SelectionFunctions::SetMaterialForState(InSelectable->GetOwner(), false, this->OverlayMaterial, InSelector->Stencil);
+	UPoly_SelectorFunctions::SetMaterialForState(InSelectable->GetOwner(), false, this->OverlayMaterial, InSelector->Stencil);
 }
 
 void ASelectorVisualiserBase::OnSelectorDestroyed(AActor* DestroyedActor)

@@ -4,7 +4,7 @@
 #include "Selection/SelectorBase.h"
 #include "Selection/SelectableBase.h"
 #include "Selection/SelectorVisualiserBase.h"
-#include "Functions/Poly_SelectionFunctions.h"
+#include "Functions/Poly_SelectorFunctions.h"
 #include "Functions/Poly_ActorFunctions.h"
 #include "Engine/World.h"
 
@@ -45,7 +45,7 @@ void ASelectorBase::Select_Implementation(AActor* InSelectable, bool& IsSelected
 	Selection.AddUnique(InSelectable);
 	IsSelected = Selection.Contains(InSelectable);
 
-	UPoly_SelectionFunctions::SetMaterialForState(InSelectable, IsSelected, nullptr, 1);
+	UPoly_SelectorFunctions::SetMaterialForState(InSelectable, IsSelected, nullptr, 1);
 
 
 	if (IsSelected)
@@ -64,7 +64,7 @@ void ASelectorBase::Deselect_Implementation(AActor* InSelectable, bool& IsSelect
 	Selection.Remove(InSelectable);
 	IsSelected = Selection.Contains(InSelectable);
 
-	UPoly_SelectionFunctions::SetMaterialForState(InSelectable, IsSelected, nullptr, 1);
+	UPoly_SelectorFunctions::SetMaterialForState(InSelectable, IsSelected, nullptr, 1);
 
 	if (!IsSelected)
 		if (this->SelectableDeselected.IsBound())

@@ -3,7 +3,7 @@
 
 #include "Gizmos/ElementsGizmo.h"
 #include "Functions/Poly_UIFunctions.h"
-#include "Functions/Poly_SelectionFunctions.h"
+//#include "Functions/Poly_SelectorFunctions.h"
 #include "Functions/Poly_ActorFunctions.h"
 #include "UI/PolyHUD.h"
 #include "Kismet/GameplayStatics.h"
@@ -266,7 +266,7 @@ void AElementsGizmo::UpdateSelection()
 				this->SelectionType, this->bInvert, 0.0, this->WindingThreshold, this->MinTrianglePoints);
 			// ! ! ! !
 			// DEBUG Output
-			UPoly_SelectionFunctions::LogSelectionInfo("Vertices: ", Selection);
+			//UPoly_SelectionFunctions::LogSelectionInfo("Vertices: ", Selection);
 		}
 
 		if (this->SelectionType != EGeometryScriptMeshSelectionType::Vertices)
