@@ -31,8 +31,18 @@ public:
 
 
 public:
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Selection")
+	bool Resolve();
+	virtual bool Resolve_Implementation();
+
+
+
 	UFUNCTION(BlueprintCallable, Category = "Selection")
-	virtual bool Resolve();
+	bool IsSelectedActor(AActor* InActor);
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	bool IsSelectedIdentifier(UIdentifierComponent* InIdentifier);
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	bool IsSelectedId(int32 InId);
 
 };
 
@@ -58,5 +68,5 @@ public:
 
 
 public:
-	virtual bool Resolve() override;
+	virtual bool Resolve_Implementation() override;
 };

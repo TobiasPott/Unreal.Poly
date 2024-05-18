@@ -28,6 +28,8 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
 	FString DisplayName = FString("Unnamed");
 
+	// ToDo: @tpott: Ponder about adding a flag or sort of for auto-generated Ids 
+	//				Intent is to indicate which Identifiers where created upon query for one (and have not been initialised before)
 
 
 	virtual void BeginPlay() override;

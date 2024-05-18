@@ -3,6 +3,7 @@
 
 #include "Functions/Poly_MeshSelectionFunctions.h"
 #include "Functions/Poly_ActorFunctions.h"
+#include "Functions/Poly_IdentifierFunctions.h"
 #include "GeometryScript/MeshSelectionQueryFunctions.h"
 
 bool UPoly_MeshSelectionFunctions::GetSelectionCenterOfBounds(UDynamicMesh* TargetMesh, const FGeometryScriptMeshSelection& Selection, FVector& OutCenter)
@@ -43,4 +44,105 @@ bool UPoly_MeshSelectionFunctions::GetSelectionCenterOfBoundsFromActor(AActor* T
 
 	OutCenter = FVector::ZeroVector;
 	return false;
+}
+
+
+
+
+/**
+* Poly Selection Functions
+*/
+
+int32 UPoly_MeshSelectionFunctions::AddByActor(TArray<UPolySelection*>& Array, AActor* Actor)
+{
+	if (!IsValid(Actor))
+		return INDEX_NONE;
+	int32 Index = Array.IndexOfByPredicate([Actor](UPolySelection* Item) { return Item->IsSelectedActor(Actor); });
+	if (Index != INDEX_NONE)
+		return Index;
+
+	UIdentifierComponent* IdComp;
+	UPoly_IdentifierFunctions::GetActorId(Actor, Index, IdComp, true);
+	return Index;
+}
+
+int32 UPoly_MeshSelectionFunctions::AddByActors(TArray<UPolySelection*>& Array, TArray<AActor*> Actors)
+{
+	int32 NumAdded = 0;
+
+	for (auto Item : Actors)
+	{
+		if (AddByActor(Array, Item) != INDEX_NONE)
+			NumAdded++;
+	}
+	return NumAdded;
+}
+
+int32 UPoly_MeshSelectionFunctions::RemoveByActor(TArray<UPolySelection*>& Array, AActor* Actor)
+{
+	int32 NumRemoved = 0;
+	for (int i = Array.Num() - 1; i > 0; i--)
+	{
+		UPolySelection* Selection = Array[i];
+		if (Selection->IsSelectedActor(Actor))
+		{
+			Array.RemoveAt(i);
+			NumRemoved++;
+		}
+	}
+	return NumRemoved;
+}
+
+int32 UPoly_MeshSelectionFunctions::RemoveByActors(TArray<UPolySelection*>& Array, TArray<AActor*> Actors)
+{
+	int32 NumRemoved = 0;
+	for (auto Item : Actors)
+		NumRemoved += RemoveByActor(Array, Item);
+	return NumRemoved;
+}
+
+int32 UPoly_MeshSelectionFunctions::RemoveByIdentifier(TArray<UPolySelection*>& Array, UIdentifierComponent* Identifier)
+{
+	int32 NumRemoved = 0;
+	for (int i = Array.Num() - 1; i > 0; i--)
+	{
+		UPolySelection* Selection = Array[i];
+		if (Selection->IsSelectedIdentifier(Identifier))
+		{
+			Array.RemoveAt(i);
+			NumRemoved++;
+		}
+	}
+	return NumRemoved;
+}
+
+int32 UPoly_MeshSelectionFunctions::RemoveByIdentifiers(TArray<UPolySelection*>& Array, TArray<UIdentifierComponent*> Identifiers)
+{
+	int32 NumRemoved = 0;
+	for (auto Item : Identifiers)
+		NumRemoved += RemoveByIdentifier(Array, Item);
+	return NumRemoved;
+}
+
+int32 UPoly_MeshSelectionFunctions::RemoveById(TArray<UPolySelection*>& Array, int32 Id)
+{
+	int32 NumRemoved = 0;
+	for (int i = Array.Num() - 1; i > 0; i--)
+	{
+		UPolySelection* Selection = Array[i];
+		if (Selection->IsSelectedId(Id))
+		{
+			Array.RemoveAt(i);
+			NumRemoved++;
+		}
+	}
+	return NumRemoved;
+}
+
+int32 UPoly_MeshSelectionFunctions::RemoveByIds(TArray<UPolySelection*>& Array, TArray<int32> Ids)
+{
+	int32 NumRemoved = 0;
+	for (auto Item : Ids)
+		NumRemoved += RemoveById(Array, Item);
+	return NumRemoved;
 }

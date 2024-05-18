@@ -19,7 +19,7 @@ public:
 
 
 	UFUNCTION(BlueprintCallable, Category = "Gizmo")
-	virtual void SetGizmoHidden(const bool bHiddenInGame = false);
+	virtual void SetGizmoHidden(bool bHiddenInGame = false);
 
 
 public:

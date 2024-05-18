@@ -6,7 +6,7 @@
 #include "Functions/Poly_ActorFunctions.h"
 
 
-bool UPolySelection::Resolve()
+bool UPolySelection::Resolve_Implementation()
 {
 	if (IsValid(this->TargetIdentifier) && IsValid(this->TargetActor))
 	{
@@ -20,7 +20,22 @@ bool UPolySelection::Resolve()
 	return false;
 }
 
-bool UPolyMeshSelection::Resolve()
+bool UPolySelection::IsSelectedActor(AActor* InActor)
+{
+	return IsValid(this->TargetActor) ? this->TargetActor == InActor : false;
+}
+
+bool UPolySelection::IsSelectedIdentifier(UIdentifierComponent* InIdentifier)
+{
+	return IsValid(this->TargetIdentifier) ? this->TargetIdentifier == InIdentifier : false;
+}
+
+bool UPolySelection::IsSelectedId(int32 InId)
+{
+	return IsValid(this->TargetIdentifier) ? this->TargetIdentifier->Id == InId : false;
+}
+
+bool UPolyMeshSelection::Resolve_Implementation()
 {
 	if (Super::Resolve())
 	{

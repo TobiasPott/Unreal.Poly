@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Selection/SelectionRequest.h"
+#include "Modeling/PolySelection.h"
 #include "Gizmos/GizmoCore.h"
 #include "SelectGizmo.generated.h"
 
@@ -55,7 +56,8 @@ protected:
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Selection")
 	TArray<AActor*> Selection;
-
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Selection")
+	TArray<UPolySelection*> PolySelection;
 
 
 protected:
@@ -70,7 +72,7 @@ public:
 
 	void SetEnabled(const bool bInEnable);
 
-	virtual void SetGizmoHidden(const bool bHiddenInGame = false) override;
+	virtual void SetGizmoHidden(bool bHiddenInGame = false) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SetSelectionMode(EPolySelectionMode InSelectionMode = EPolySelectionMode::Replace);

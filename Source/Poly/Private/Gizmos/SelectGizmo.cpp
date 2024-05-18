@@ -3,6 +3,7 @@
 
 #include "Gizmos/SelectGizmo.h"
 #include "Functions/Poly_UIFunctions.h"
+#include "Functions/Poly_MeshSelectionFunctions.h"
 #include "UI/PolyHUD.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -84,7 +85,7 @@ void ASelectGizmo::SetEnabled(const bool bInEnable)
 	bIsEnabled = bInEnable;
 }
 
-void ASelectGizmo::SetGizmoHidden(const bool bHiddenInGame)
+void ASelectGizmo::SetGizmoHidden(bool bHiddenInGame)
 {
 	Super::SetGizmoHidden(bHiddenInGame);
 	this->SetEnabled(!bHiddenInGame);
@@ -102,13 +103,19 @@ void ASelectGizmo::UpdateSelection()
 	case EPolySelectionMode::Deselect:
 	{
 		for (AActor* Actor : this->Request->Actors)
-		{ this->Selection.Remove(Actor); }
+		{
+			this->Selection.Remove(Actor);
+			UPoly_MeshSelectionFunctions::RemoveByActor(this->PolySelection, Actor);
+		}
 		break;
 	}
 	case EPolySelectionMode::Select:
 	{
 		for (AActor* Actor : this->Request->Actors)
-		{ this->Selection.AddUnique(Actor); }
+		{
+			this->Selection.AddUnique(Actor);
+			UPoly_MeshSelectionFunctions::AddByActor(this->PolySelection, Actor);
+		}
 		break;
 	}
 	case EPolySelectionMode::Replace:
@@ -116,6 +123,9 @@ void ASelectGizmo::UpdateSelection()
 	{
 		this->Selection.Reset(this->Request->Count());
 		this->Selection.Append(this->Request->Actors);
+
+		this->PolySelection.Reset(0);
+		UPoly_MeshSelectionFunctions::AddByActors(this->PolySelection, this->Selection);
 		break;
 	}
 	}
