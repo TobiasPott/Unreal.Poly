@@ -114,7 +114,7 @@ void ASelectGizmo::UpdateSelection()
 		for (AActor* Actor : this->Request->Actors)
 		{
 			this->Selection.AddUnique(Actor);
-			UPoly_MeshSelectionFunctions::AddByActor(this->PolySelection, Actor);
+			UPoly_MeshSelectionFunctions::AddByActorT(this->PolySelection, Actor);
 		}
 		break;
 	}
@@ -125,7 +125,7 @@ void ASelectGizmo::UpdateSelection()
 		this->Selection.Append(this->Request->Actors);
 
 		this->PolySelection.Reset(0);
-		UPoly_MeshSelectionFunctions::AddByActors(this->PolySelection, this->Selection);
+		UPoly_MeshSelectionFunctions::AddByActorsT(this->PolySelection, this->Selection);
 		break;
 	}
 	}

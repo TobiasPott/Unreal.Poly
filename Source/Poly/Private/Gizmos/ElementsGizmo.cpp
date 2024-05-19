@@ -4,6 +4,7 @@
 #include "Gizmos/ElementsGizmo.h"
 #include "Functions/Poly_UIFunctions.h"
 //#include "Functions/Poly_SelectorFunctions.h"
+#include "Functions/Poly_MeshSelectionFunctions.h"
 #include "Functions/Poly_ActorFunctions.h"
 #include "UI/PolyHUD.h"
 #include "Kismet/GameplayStatics.h"
@@ -134,7 +135,10 @@ void AElementsGizmo::SetTargets(const TArray<AActor*>& Targets)
 		AActor* Target = Targets[i];
 		UBaseDynamicMeshComponent* BaseDMC = Target->GetComponentByClass<UBaseDynamicMeshComponent>();
 		if (IsValid(BaseDMC))
+		{
 			this->Selections.Add(Target, FGeometryScriptMeshSelection());
+			UPoly_MeshSelectionFunctions::AddByActorT<UPolyMeshSelection>(this->PolySelections, Target);
+		}
 	}
 
 	// Reset selection mesh

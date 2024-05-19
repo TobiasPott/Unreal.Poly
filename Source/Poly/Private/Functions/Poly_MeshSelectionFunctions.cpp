@@ -53,30 +53,6 @@ bool UPoly_MeshSelectionFunctions::GetSelectionCenterOfBoundsFromActor(AActor* T
 * Poly Selection Functions
 */
 
-int32 UPoly_MeshSelectionFunctions::AddByActor(TArray<UPolySelection*>& Array, AActor* Actor)
-{
-	if (!IsValid(Actor))
-		return INDEX_NONE;
-	int32 Index = Array.IndexOfByPredicate([Actor](UPolySelection* Item) { return Item->IsSelectedActor(Actor); });
-	if (Index != INDEX_NONE)
-		return Index;
-
-	UIdentifierComponent* IdComp;
-	UPoly_IdentifierFunctions::GetActorId(Actor, Index, IdComp, true);
-	return Index;
-}
-
-int32 UPoly_MeshSelectionFunctions::AddByActors(TArray<UPolySelection*>& Array, TArray<AActor*> Actors)
-{
-	int32 NumAdded = 0;
-
-	for (auto Item : Actors)
-	{
-		if (AddByActor(Array, Item) != INDEX_NONE)
-			NumAdded++;
-	}
-	return NumAdded;
-}
 
 int32 UPoly_MeshSelectionFunctions::RemoveByActor(TArray<UPolySelection*>& Array, AActor* Actor)
 {

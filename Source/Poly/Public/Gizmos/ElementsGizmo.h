@@ -9,6 +9,7 @@
 #include "GeometryScript/GeometryScriptTypes.h"
 #include "GeometryScript/GeometryScriptSelectionTypes.h"
 #include "Selection/SelectionRequestBase.h"
+#include "Modeling/PolySelection.h"
 #include "Gizmos/GizmoCore.h"
 #include "ElementsGizmo.generated.h"
 
@@ -30,7 +31,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	class UDynamicMeshComponent* SelectionDynamicMeshComponent;
 
-	/** Please add a variable description */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Default")
 	TObjectPtr<UInstancedStaticMeshComponent> InstancedStaticMeshComponent;
 
@@ -79,6 +79,9 @@ protected:
 protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Selection")
 	TMap<AActor*, FGeometryScriptMeshSelection> Selections;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Selection")
+	TArray<UPolyMeshSelection*> PolySelections;
 
 	UPROPERTY()
 	TObjectPtr<UDynamicMeshPool> Pool;
