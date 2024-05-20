@@ -37,6 +37,13 @@ public:
 
 
 
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Selection")
+	AActor* SelectedActor() const { return TargetActor; };
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Selection")
+	UIdentifierComponent* SelectedIdentifier() const { return TargetIdentifier; };
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Selection")
+	int32 SelectedId() const { return TargetId; };
+
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	bool IsSelectedActor(AActor* InActor);
 	UFUNCTION(BlueprintCallable, Category = "Selection")

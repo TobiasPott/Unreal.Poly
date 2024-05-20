@@ -130,6 +130,7 @@ void AElementsGizmo::SetGizmoHidden(const bool bHiddenInGame)
 void AElementsGizmo::SetTargets(const TArray<AActor*>& Targets)
 {
 	this->Selections.Reset();
+	this->PolySelections.Reset();
 	for (int i = 0; i < Targets.Num(); i++)
 	{
 		AActor* Target = Targets[i];
@@ -137,8 +138,20 @@ void AElementsGizmo::SetTargets(const TArray<AActor*>& Targets)
 		if (IsValid(BaseDMC))
 		{
 			this->Selections.Add(Target, FGeometryScriptMeshSelection());
-			UPoly_MeshSelectionFunctions::AddByActorT<UPolyMeshSelection>(this->PolySelections, Target);
 		}
+	}
+
+	// remove poly selections for actors no longer selected
+	for (int i = this->PolySelections.Num() - 1; i >= 0; i--)
+	{
+		if (!this->Selections.Contains(this->PolySelections[i]->SelectedActor()))
+			this->PolySelections.RemoveAt(i);
+	}
+	// add new poly selection instances for selected actors (reuse existing ones)
+	for (int i = 0; i < Targets.Num(); i++)
+	{
+		AActor* Target = Targets[i];
+		UPoly_MeshSelectionFunctions::AddByActorT<UPolyMeshSelection>(this->PolySelections, Target);
 	}
 
 	// Reset selection mesh
@@ -441,5 +454,6 @@ void AElementsGizmo::OnFinished()
 void AElementsGizmo::Clear()
 {
 	this->Selections.Reset();
+	this->PolySelections.Reset();
 	this->Request = nullptr;
 }

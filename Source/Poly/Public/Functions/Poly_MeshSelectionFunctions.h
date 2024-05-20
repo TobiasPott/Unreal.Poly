@@ -53,8 +53,12 @@ public:
 		UClass* ReturnType = TPolySelectionType::StaticClass();
 		TPolySelectionType* Result = NewObject<TPolySelectionType>(Actor);
 		Result->TargetId = Id;
-		Index = Array.Add(Result);
-		return Index;
+		if (Result->Resolve())
+		{
+			Index = Array.Add(Result);
+			return Index;
+		}
+		return INDEX_NONE;
 	}
 
 	/**

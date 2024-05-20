@@ -113,6 +113,7 @@ public:
 	void UpdateSelection();
 
 	TMap<AActor*, FGeometryScriptMeshSelection> GetSelections() { return this->Selections; };
+	TArray<UPolyMeshSelection*> GetPolySelections() { return this->PolySelections; };
 
 
 protected:
