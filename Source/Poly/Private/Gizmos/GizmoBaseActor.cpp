@@ -148,7 +148,7 @@ void AGizmoBaseActor::Select_Finished_Implementation(USelectionRequest* Request,
 	if (bSuccess)
 	{
 		this->UpdatePivot(true, true);
-		TArray<AActor*> Actors = this->SelectCore->GetSelection();
+		TArray<UPolySelection*> Actors = this->SelectCore->GetPolySelection();
 		Selector->ReplaceAll(Actors);
 	}
 	else
@@ -156,7 +156,7 @@ void AGizmoBaseActor::Select_Finished_Implementation(USelectionRequest* Request,
 		Selector->ClearSelection();
 	}
 	// update pivot transform
-	// ToDo: @tpott: Cleanup ElementCore.Selections and only keep those actors in there, which are also selcted by SelectCore
+	// ToDo: @tpott: Cleanup ElementCore.Selections and only keep those actors in there, which are also selected by SelectCore
 }
 
 

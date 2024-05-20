@@ -82,6 +82,7 @@ public:
 	void UpdateSelection();
 
 	TArray<AActor*> GetSelection() { return this->Selection; };
+	TArray<UPolySelection*> GetPolySelection() { return this->PolySelection; };
 
 	bool IsEmpty() { return this->Selection.IsEmpty(); };
 	bool IsNotEmpty() { return !this->Selection.IsEmpty(); };

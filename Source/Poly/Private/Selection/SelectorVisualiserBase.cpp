@@ -36,14 +36,16 @@ void ASelectorVisualiserBase::Init()
 	}
 }
 
-void ASelectorVisualiserBase::OnSelectableSelected_Implementation(ASelectorBase* InSelector, AActor* InSelectable)
+void ASelectorVisualiserBase::OnSelectableSelected_Implementation(ASelectorBase* InSelector, UPolySelection* InSelectable)
 {
-	UPoly_SelectorFunctions::SetMaterialForState(InSelectable->GetOwner(), true, this->OverlayMaterial, InSelector->Stencil);
+	if (IsValid(InSelectable->GetSelectedActor()))
+		UPoly_SelectorFunctions::SetMaterialForState(InSelectable->GetSelectedActor()->GetOwner(), true, this->OverlayMaterial, InSelector->Stencil);
 }
 
-void ASelectorVisualiserBase::OnSelectableDeselected_Implementation(ASelectorBase* InSelector, AActor* InSelectable)
+void ASelectorVisualiserBase::OnSelectableDeselected_Implementation(ASelectorBase* InSelector, UPolySelection* InSelectable)
 {
-	UPoly_SelectorFunctions::SetMaterialForState(InSelectable->GetOwner(), false, this->OverlayMaterial, InSelector->Stencil);
+	if (IsValid(InSelectable->GetSelectedActor()))
+		UPoly_SelectorFunctions::SetMaterialForState(InSelectable->GetSelectedActor()->GetOwner(), false, this->OverlayMaterial, InSelector->Stencil);
 }
 
 void ASelectorVisualiserBase::OnSelectorDestroyed(AActor* DestroyedActor)

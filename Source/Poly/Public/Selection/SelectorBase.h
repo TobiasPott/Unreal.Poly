@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "SelectableBase.h"
+#include "Modeling/PolySelection.h"
 #include "SelectorVisualiserBase.h"
 #include "SelectorBase.generated.h"
 
@@ -29,9 +29,10 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Selector")
 	uint8 Stencil = 1;
 
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Selector")
-	TArray<AActor*> Selection;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Selector")
+	TArray<AActor*> SelectionOLD;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Selector")
+	TArray<UPolySelection*> Selection;
 
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Selector")
@@ -45,33 +46,29 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Selector")
-	bool IsSelected(AActor* InSelectable);
-	virtual bool IsSelected_Implementation(AActor* InSelectable);
+	bool IsSelected(UPolySelection* InSelectable);
+	virtual bool IsSelected_Implementation(UPolySelection* InSelectable);
 
-	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Selector")
-	void Select(AActor* InSelectable, bool& IsSelected);
-	void Select_Implementation(AActor* InSelectable, bool& IsSelected);
+	void Select(UPolySelection* InSelectable, bool& IsSelected);
+	void Select_Implementation(UPolySelection* InSelectable, bool& IsSelected);
 
-	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Selector")
-	void Deselect(AActor* InSelectable, bool& IsSelected);
-	void Deselect_Implementation(AActor* InSelectable, bool& IsSelected);
+	void Deselect(UPolySelection* InSelectable, bool& IsSelected);
+	void Deselect_Implementation(UPolySelection* InSelectable, bool& IsSelected);
 	
-	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Selector")
-	void Replace(AActor* InSelectable, bool& IsSelected);
-	void Replace_Implementation(AActor* InSelectable, bool& IsSelected);
+	void Replace(UPolySelection* InSelectable, bool& IsSelected);
+	void Replace_Implementation(UPolySelection* InSelectable, bool& IsSelected);
 
 
 	UFUNCTION(BlueprintCallable, Category = "Selector")
-	void SelectAll(const TArray<AActor*>& InSelectables);
+	void SelectAll(const TArray<UPolySelection*>& InSelectables);
 	UFUNCTION(BlueprintCallable, Category = "Selector")
-	void DeselectAll(const TArray<AActor*>& InSelectables);
+	void DeselectAll(const TArray<UPolySelection*>& InSelectables);
 	UFUNCTION(BlueprintCallable, Category = "Selector")
-	void ReplaceAll(const TArray<AActor*>& InSelectables);
+	void ReplaceAll(const TArray<UPolySelection*>& InSelectables);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Intern")
 	void ClearSelection();
@@ -82,7 +79,7 @@ protected:
 	void SetVisualiser(TSubclassOf<ASelectorVisualiserBase> NewVisualiserClass);
 
 public:
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSelectableSelected, ASelectorBase*, Selector, AActor*, Selectable);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSelectableSelected, ASelectorBase*, Selector, UPolySelection*, Selectable);
 	UPROPERTY(BlueprintAssignable, EditDefaultsOnly, Category = "Default")
 	FSelectableSelected SelectableSelected;
 

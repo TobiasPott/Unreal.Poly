@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Actions/ActionBase.h"
 #include "Selection/SelectorTypes.h"
+#include "Modeling/PolyMeshSelection.h"
 #include "GeometryScript/GeometryScriptSelectionTypes.h"
 #include "SelectionActions.generated.h"
 
@@ -25,7 +26,7 @@ public:
 		ShortName = "Destroy Selected";
 	}
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Actions|Selection", meta = (ExposeOnSpawn = "true"))
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	FName SelectorName = USelectorNames::Default;
 
 public:
@@ -45,13 +46,12 @@ public:
 		ShortName = "Delete Selected Elements";
 	}
 
-	UPROPERTY()
-	AActor* Target;
 
-	UPROPERTY()
-	FGeometryScriptMeshSelection Selection;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
+	UPolyMeshSelection* Target;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Actions|Selection", meta = (ExposeOnSpawn = "true"))
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	bool bCompact = false;
 
 public:

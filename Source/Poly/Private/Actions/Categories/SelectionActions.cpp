@@ -14,13 +14,15 @@ bool UDestroySelectedAction::Execute_Implementation(bool bEmitRecord)
 	ASelectorBase* Selector;
 	if (SelectorSubsystem->GetSelector(this, this->SelectorName, Selector))
 	{
-		TArray<AActor*> SelectedActors = Selector->Selection;
+		TArray<UPolySelection*> SelectedActors = Selector->Selection;
 		for (int i = 0; i < SelectedActors.Num(); i++)
 		{
-			AActor* Selected = SelectedActors[i];
+			UPolySelection* Selected = SelectedActors[i];
 			bool IsSelected;
 			Selector->Deselect(Selected, IsSelected);
-			Selected->Destroy();
+			// destroy actor
+			if (IsValid(Selected->GetSelectedActor()))
+				Selected->GetSelectedActor()->Destroy();
 		}
 		this->Submit();
 		return true;
@@ -32,17 +34,22 @@ bool UDestroySelectedAction::Execute_Implementation(bool bEmitRecord)
 
 bool UDeleteSelectedElementsAction::Execute_Implementation(bool bEmitRecord)
 {
-	if (this->Selection.GetNumSelected() > 0
-		&& this->Selection.GetSelectionType() == EGeometryScriptMeshSelectionType::Triangles)
+	if (IsValid(this->Target))
 	{
-		UDynamicMesh* TargetMesh = Target->GetComponentByClass<UBaseDynamicMeshComponent>()->GetDynamicMesh();
-		int NumDeleted;
-		UGeometryScriptLibrary_MeshBasicEditFunctions::DeleteSelectedTrianglesFromMesh(TargetMesh, this->Selection, NumDeleted);
+		FGeometryScriptMeshSelection Selection = this->Target->GetMeshElementsSelection();
+		if (Selection.GetNumSelected() > 0
+			&& Selection.GetSelectionType() == EGeometryScriptMeshSelectionType::Triangles)
+		{
+			// ToDo: @tpott: check for polygroup selection type and convert selection temporarily to triangles and delete afterwards
+			UDynamicMesh* TargetMesh = this->Target->GetSelectedMesh();
+			int NumDeleted;
+			UGeometryScriptLibrary_MeshBasicEditFunctions::DeleteSelectedTrianglesFromMesh(TargetMesh, Selection, NumDeleted);
 
-		this->Submit();
-		return true;
+			this->Submit();
+			return true;
+		}
+
 	}
-
 	this->Discard();
 	return false;
 }

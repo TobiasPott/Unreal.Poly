@@ -2,7 +2,6 @@
 
 
 #include "Selection/SelectorBase.h"
-#include "Selection/SelectableBase.h"
 #include "Selection/SelectorVisualiserBase.h"
 #include "Functions/Poly_SelectorFunctions.h"
 #include "Functions/Poly_ActorFunctions.h"
@@ -27,12 +26,12 @@ void ASelectorBase::BeginPlay()
 	this->SetVisualiser(this->VisualiserClass);
 }
 
-bool ASelectorBase::IsSelected_Implementation(AActor* InSelectable)
+bool ASelectorBase::IsSelected_Implementation(UPolySelection* InSelectable)
 {
 	return this->Selection.Contains(InSelectable);
 }
 
-void ASelectorBase::Select_Implementation(AActor* InSelectable, bool& IsSelected)
+void ASelectorBase::Select_Implementation(UPolySelection* InSelectable, bool& IsSelected)
 {
 	if (!Selection.IsEmpty() && IsSingleSelection)
 		this->ClearSelection();
@@ -45,7 +44,7 @@ void ASelectorBase::Select_Implementation(AActor* InSelectable, bool& IsSelected
 	Selection.AddUnique(InSelectable);
 	IsSelected = Selection.Contains(InSelectable);
 
-	UPoly_SelectorFunctions::SetMaterialForState(InSelectable, IsSelected, nullptr, 1);
+	UPoly_SelectorFunctions::SetMaterialForState(InSelectable->GetSelectedActor(), IsSelected, nullptr, 1);
 
 
 	if (IsSelected)
@@ -53,7 +52,7 @@ void ASelectorBase::Select_Implementation(AActor* InSelectable, bool& IsSelected
 			this->SelectableSelected.Broadcast(this, InSelectable);
 }
 
-void ASelectorBase::Deselect_Implementation(AActor* InSelectable, bool& IsSelected)
+void ASelectorBase::Deselect_Implementation(UPolySelection* InSelectable, bool& IsSelected)
 {
 	if (!Selection.Contains(InSelectable))
 	{
@@ -64,7 +63,7 @@ void ASelectorBase::Deselect_Implementation(AActor* InSelectable, bool& IsSelect
 	Selection.Remove(InSelectable);
 	IsSelected = Selection.Contains(InSelectable);
 
-	UPoly_SelectorFunctions::SetMaterialForState(InSelectable, IsSelected, nullptr, 1);
+	UPoly_SelectorFunctions::SetMaterialForState(InSelectable->GetSelectedActor(), IsSelected, nullptr, 1);
 
 	if (!IsSelected)
 		if (this->SelectableDeselected.IsBound())
@@ -72,27 +71,27 @@ void ASelectorBase::Deselect_Implementation(AActor* InSelectable, bool& IsSelect
 
 }
 
-void ASelectorBase::Replace_Implementation(AActor* InSelectable, bool& IsSelected)
+void ASelectorBase::Replace_Implementation(UPolySelection* InSelectable, bool& IsSelected)
 {
 	this->ClearSelection();
 	this->Select(InSelectable, IsSelected);
 }
 
-void ASelectorBase::SelectAll(const TArray<AActor*>& InSelectables)
+void ASelectorBase::SelectAll(const TArray<UPolySelection*>& InSelectables)
 {
 	bool IsSelected = false;
 	for (int i = 0; i < InSelectables.Num(); i++)
 		this->Select(InSelectables[i], IsSelected);
 }
 
-void ASelectorBase::DeselectAll(const TArray<AActor*>& InSelectables)
+void ASelectorBase::DeselectAll(const TArray<UPolySelection*>& InSelectables)
 {
 	bool IsSelected = false;
 	for (int i = 0; i < InSelectables.Num(); i++)
 		this->Deselect(InSelectables[i], IsSelected);
 }
 
-void ASelectorBase::ReplaceAll(const TArray<AActor*>& InSelectables)
+void ASelectorBase::ReplaceAll(const TArray<UPolySelection*>& InSelectables)
 {
 	this->ClearSelection();
 	this->SelectAll(InSelectables);
@@ -103,7 +102,7 @@ void ASelectorBase::ClearSelection_Implementation()
 	bool bIsSelected = false;
 	for (int i = Selection.Num() - 1; i >= 0; i--)
 	{
-		AActor* Selected = Selection[i];
+		UPolySelection* Selected = Selection[i];
 		if (IsValid(Selected))
 			this->Deselect(Selected, bIsSelected);
 	}
