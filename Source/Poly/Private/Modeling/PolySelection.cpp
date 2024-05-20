@@ -37,7 +37,8 @@ bool UPolySelection::IsSelectedId(int32 InId)
 
 bool UPolyMeshSelection::Resolve_Implementation()
 {
-	if (Super::Resolve())
+	// culprit for recursive stack overflow crash?
+	if (Super::Resolve_Implementation())
 	{
 		// try get dynamic mesh from actor (assumes only one component exists)s
 		if (UPoly_ActorFunctions::GetDynamicMesh(this->TargetActor, this->TargetMesh))
