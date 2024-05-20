@@ -24,7 +24,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void Apply() { };
 
-	// ToDo: @tpott: Ponder if I need or/and can supply a revert function for messh operations
+	// ToDo: PONDER: @tpott: Ponder if I need or/and can supply a revert function for messh operations
 	//				Might be put into a derived class, may include sth to 'preview'
 
 };

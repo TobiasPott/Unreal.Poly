@@ -19,8 +19,8 @@
 #include "GeometryScript/MeshQueryFunctions.h"
 
 
-// ToDo: @tpott: Consider using a SplineComponent to render selected edges
-// ToDo: @tpott: Cosider a structure to store Edge selection (will require custom FEdge type to track VertexIDs and TriangleIDs
+// ToDo: CONSIDER: @tpott: Consider using a SplineComponent to render selected edges
+// ToDo: CONSIDER: @tpott: Consider a structure to store Edge selection (will require custom FEdge type to track VertexIDs and TriangleIDs
 
 // Sets default values
 AElementsGizmo::AElementsGizmo()
@@ -342,7 +342,16 @@ void AElementsGizmo::UpdateSelection()
 
 		// place updated selection back into selection map
 		Selections.Emplace(Target, Selection);
+		// get poly selection instance for target and assign current geo script selection to it
+		UPolyMeshSelection* PolySelection = *this->PolySelections.FindByPredicate([Target](UPolyMeshSelection* Item) { return Item->IsSelectedActor(Target); });
+		if (IsValid(PolySelection))
+		{
+			PolySelection->LocalToWorld = Target->GetTransform();
+			PolySelection->Selection = Selection;
+		}
 
+
+		// ToDo: @tpott: Move this to own function to run afterwards when all selections are queried/build (use the poly selections for this!)
 		EGeometryScriptMeshSelectionType TypeOfSelection = Selection.GetSelectionType();
 		if (Selection.GetNumSelected() > 0)
 		{

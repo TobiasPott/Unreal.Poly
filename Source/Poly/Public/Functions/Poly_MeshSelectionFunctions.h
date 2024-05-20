@@ -28,7 +28,7 @@ public:
 
 
 
-	// ToDo: @tpott: Move template functions to UPolySelection type?! (Conideration requied)
+	// ToDo: CONSIDER: @tpott: Move template functions to UPolySelection type?!
 
 	/**
 	 * Documentation missing (@tpott).
@@ -44,8 +44,6 @@ public:
 		if (Index != INDEX_NONE)
 			return Index;
 
-		//ToDo: @tpott:This is incomplete!: Add creation of UPolySelection from the given actor using the queried Identifier
-		//				Consider adding class param to control which UPolySelection to create.
 		UIdentifierComponent* IdComp;
 		int32 Id;
 		UPoly_IdentifierFunctions::GetActorId(Actor, Id, IdComp, true);

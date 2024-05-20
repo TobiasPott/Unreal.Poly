@@ -11,9 +11,6 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSceneChangedSignature, ASceneActor*, Scene);
 
 
-// ToDo: @tpott: Add a method to name a scene and use it as display name
-//				May be a switch in inspector blueprint
-
 UCLASS(BlueprintType)
 class POLY_API ASceneActor : public AActor
 {
