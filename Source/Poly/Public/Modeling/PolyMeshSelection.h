@@ -33,4 +33,12 @@ public:
 
 public:
 	virtual bool Resolve_Implementation() override;
+
+
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Selection")
+	UDynamicMesh* GetSelectedMesh() const { return TargetMesh; };
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Selection")
+	FGeometryScriptMeshSelection GetMeshElementsSelection() const { return Selection; };
+
 };

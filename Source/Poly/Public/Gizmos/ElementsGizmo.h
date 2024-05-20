@@ -111,6 +111,7 @@ public:
 	void UpdateSelectionMesh(const FVector2D FirstScreenPoint, const FVector2D SecondScreenPoint);
 
 	void UpdateSelection();
+	void UpdateSelectionVisuals();
 
 	TMap<AActor*, FGeometryScriptMeshSelection> GetSelections() { return this->Selections; };
 	TArray<UPolyMeshSelection*> GetPolySelections() { return this->PolySelections; };

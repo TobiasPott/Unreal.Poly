@@ -38,11 +38,11 @@ public:
 
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Selection")
-	AActor* SelectedActor() const { return TargetActor; };
+	AActor* GetSelectedActor() const { return TargetActor; };
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Selection")
-	UIdentifierComponent* SelectedIdentifier() const { return TargetIdentifier; };
+	UIdentifierComponent* GetSelectedIdentifier() const { return TargetIdentifier; };
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Selection")
-	int32 SelectedId() const { return TargetId; };
+	int32 GetSelectedId() const { return TargetId; };
 
 
 	bool IsSelected(AActor* InActor) const;
