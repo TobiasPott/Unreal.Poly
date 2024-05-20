@@ -161,7 +161,9 @@ void AElementsGizmo::SetTargets(const TArray<AActor*>& Targets)
 void AElementsGizmo::SetSelectionType(EGeometryScriptMeshSelectionType InSelectionType)
 {
 	this->SelectionType = InSelectionType;
-	// ToDo: @tpott: Add changes to DynamicMeshComponent and InstancedStaticMeshComponent visibility based on the selection type
+	// set visualiser components hidden based on current selection type
+	this->SelectionDynamicMeshComponent->SetHiddenInGame(this->SelectionType == EGeometryScriptMeshSelectionType::Vertices);
+	this->InstancedStaticMeshComponent->SetHiddenInGame(this->SelectionType != EGeometryScriptMeshSelectionType::Vertices);
 }
 void AElementsGizmo::SetSelectionMode(EPolySelectionMode InSelectionMode)
 {
