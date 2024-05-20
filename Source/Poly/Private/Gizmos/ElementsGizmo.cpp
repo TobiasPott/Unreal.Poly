@@ -151,7 +151,7 @@ void AElementsGizmo::SetTargets(const TArray<AActor*>& Targets)
 	for (int i = 0; i < Targets.Num(); i++)
 	{
 		AActor* Target = Targets[i];
-		UPoly_MeshSelectionFunctions::AddByActorT<UPolyMeshSelection>(this->PolySelections, Target);
+		UPolySelection::AddByActorT<UPolyMeshSelection>(this->PolySelections, Target);
 	}
 
 	// Reset selection mesh

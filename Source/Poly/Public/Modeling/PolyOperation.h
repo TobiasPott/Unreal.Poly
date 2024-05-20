@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "PolySelection.h"
+#include "PolyMeshSelection.h"
 #include "PolyOperation.generated.h"
 /**
  * 

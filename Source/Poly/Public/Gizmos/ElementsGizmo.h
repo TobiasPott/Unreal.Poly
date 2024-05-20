@@ -9,7 +9,7 @@
 #include "GeometryScript/GeometryScriptTypes.h"
 #include "GeometryScript/GeometryScriptSelectionTypes.h"
 #include "Selection/SelectionRequestBase.h"
-#include "Modeling/PolySelection.h"
+#include "Modeling/PolyMeshSelection.h"
 #include "Gizmos/GizmoCore.h"
 #include "ElementsGizmo.generated.h"
 

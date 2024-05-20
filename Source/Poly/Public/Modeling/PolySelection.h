@@ -44,36 +44,99 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Selection")
 	int32 SelectedId() const { return TargetId; };
 
-	UFUNCTION(BlueprintCallable, Category = "Selection")
-	bool IsSelectedActor(AActor* InActor);
-	UFUNCTION(BlueprintCallable, Category = "Selection")
-	bool IsSelectedIdentifier(UIdentifierComponent* InIdentifier);
-	UFUNCTION(BlueprintCallable, Category = "Selection")
-	bool IsSelectedId(int32 InId);
 
-};
+	bool IsSelected(AActor* InActor) const;
+	bool IsSelected(UIdentifierComponent* InIdentifier) const;
+	bool IsSelected(int32 InId) const;
 
-/**
- * 
- */
-UCLASS(BlueprintType)
-class POLY_API UPolyMeshSelection : public UPolySelection
-{
-	GENERATED_BODY()
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	bool IsSelectedActor(AActor* InActor) const { return IsSelected(InActor); };
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	bool IsSelectedIdentifier(UIdentifierComponent* InIdentifier) const { return IsSelected(InIdentifier); };
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	bool IsSelectedId(int32 InId) const { return IsSelected(InId); };
+
+
+public:
+	/**
+	 * Documentation missing (@tpott).
+	 * @param	Array
+	 * @param	Actor
+	 */
+	template<class TPolySelectionType>
+	static int32 AddByActorT(TArray<TPolySelectionType*>& Array, AActor* Actor)
+	{
+		if (!IsValid(Actor))
+			return INDEX_NONE;
+		int32 Index = Array.IndexOfByPredicate([Actor](TPolySelectionType* Item) { return Item->IsSelectedActor(Actor); });
+		if (Index != INDEX_NONE)
+			return Index;
+
+		UIdentifierComponent* IdComp;
+		int32 Id;
+		UPoly_IdentifierFunctions::GetActorId(Actor, Id, IdComp, true);
+
+		UClass* ReturnType = TPolySelectionType::StaticClass();
+		TPolySelectionType* Result = NewObject<TPolySelectionType>(Actor);
+		Result->TargetId = Id;
+		if (Result->Resolve())
+		{
+			Index = Array.Add(Result);
+			return Index;
+		}
+		return INDEX_NONE;
+	}
+
+	/**
+	 * Documentation missing (@tpott).
+	 * @param	Array
+	 * @param	Actors
+	 */
+	template<class TPolySelectionType>
+	static int32 AddByActorsT(TArray<TPolySelectionType*>& Array, TArray<AActor*> Actors)
+	{
+		int32 NumAdded = 0;
+		for (auto Item : Actors)
+		{
+			if (UPolySelection::AddByActorT<TPolySelectionType>(Array, Item) != INDEX_NONE)
+				NumAdded++;
+		}
+		return NumAdded;
+	}
 	
-protected:
-	UPROPERTY()
-	UDynamicMesh* TargetMesh = nullptr;
+	/**
+	 * Documentation missing (@tpott).
+	 * @param	Array
+	 * @param	Actors
+	 */
+	template<class TPolySelectionType>
+	static int32 RemoveByActorsT(TArray<TPolySelectionType*>& Array, TArray<AActor*> Actors)
+	{
+		int32 NumRemoved = 0;
+		for (auto Item : Actors)
+			NumRemoved += RemoveByT(Array, Item);
+		return NumRemoved;
+	}
 
+	/**
+	 * Documentation missing (@tpott).
+	 * @param	Array
+	 * @param	SelectedBy
+	 */
+	template<class TPolySelectionType, class TSelectedByType>
+	static int32 RemoveByT(TArray<TPolySelectionType*>& Array, TSelectedByType SelectedBy)
+	{
+		int32 NumRemoved = 0;
+		for (int i = Array.Num() - 1; i > 0; i--)
+		{
+			TPolySelectionType* Selection = Array[i];
+			if (Selection->IsSelected(SelectedBy))
+			{
+				Array.RemoveAt(i);
+				NumRemoved++;
+			}
+		}
+		return NumRemoved;
+	}
 
-public:
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
-	FGeometryScriptMeshSelection Selection = FGeometryScriptMeshSelection();
-
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
-	FTransform LocalToWorld = FTransform::Identity;
-
-
-public:
-	virtual bool Resolve_Implementation() override;
 };

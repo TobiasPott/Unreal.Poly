@@ -20,29 +20,17 @@ bool UPolySelection::Resolve_Implementation()
 	return false;
 }
 
-bool UPolySelection::IsSelectedActor(AActor* InActor)
+bool UPolySelection::IsSelected(AActor* InActor) const
 {
 	return IsValid(this->TargetActor) ? this->TargetActor == InActor : false;
 }
 
-bool UPolySelection::IsSelectedIdentifier(UIdentifierComponent* InIdentifier)
+bool UPolySelection::IsSelected(UIdentifierComponent* InIdentifier) const
 {
 	return IsValid(this->TargetIdentifier) ? this->TargetIdentifier == InIdentifier : false;
 }
 
-bool UPolySelection::IsSelectedId(int32 InId)
+bool UPolySelection::IsSelected(int32 InId) const
 {
 	return IsValid(this->TargetIdentifier) ? this->TargetIdentifier->Id == InId : false;
-}
-
-bool UPolyMeshSelection::Resolve_Implementation()
-{
-	// culprit for recursive stack overflow crash?
-	if (Super::Resolve_Implementation())
-	{
-		// try get dynamic mesh from actor (assumes only one component exists)s
-		if (UPoly_ActorFunctions::GetDynamicMesh(this->TargetActor, this->TargetMesh))
-			return true;
-	}
-	return false;
 }

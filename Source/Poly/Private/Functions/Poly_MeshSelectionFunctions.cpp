@@ -53,30 +53,6 @@ bool UPoly_MeshSelectionFunctions::GetSelectionCenterOfBoundsFromActor(AActor* T
 * Poly Selection Functions
 */
 
-
-int32 UPoly_MeshSelectionFunctions::RemoveByActor(TArray<UPolySelection*>& Array, AActor* Actor)
-{
-	int32 NumRemoved = 0;
-	for (int i = Array.Num() - 1; i > 0; i--)
-	{
-		UPolySelection* Selection = Array[i];
-		if (Selection->IsSelectedActor(Actor))
-		{
-			Array.RemoveAt(i);
-			NumRemoved++;
-		}
-	}
-	return NumRemoved;
-}
-
-int32 UPoly_MeshSelectionFunctions::RemoveByActors(TArray<UPolySelection*>& Array, TArray<AActor*> Actors)
-{
-	int32 NumRemoved = 0;
-	for (auto Item : Actors)
-		NumRemoved += RemoveByActor(Array, Item);
-	return NumRemoved;
-}
-
 int32 UPoly_MeshSelectionFunctions::RemoveByIdentifier(TArray<UPolySelection*>& Array, UIdentifierComponent* Identifier)
 {
 	int32 NumRemoved = 0;
