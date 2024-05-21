@@ -8,7 +8,7 @@
 #include "GeometryScript/MeshBasicEditFunctions.h"
 
 
-bool UDestroySelectedAction::Execute_Implementation(bool bEmitRecord)
+bool UDestroySelectedActorsAction::Execute_Implementation(bool bEmitRecord)
 {
 	USelectorSubsystem* SelectorSubsystem = UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>();
 	ASelectorBase* Selector;
@@ -34,21 +34,34 @@ bool UDestroySelectedAction::Execute_Implementation(bool bEmitRecord)
 
 bool UDeleteSelectedElementsAction::Execute_Implementation(bool bEmitRecord)
 {
-	if (IsValid(this->Target))
+	USelectorSubsystem* SelectorSubsystem = UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>();
+	ASelectorBase* Selector;
+	if (SelectorSubsystem->GetSelector(this, this->SelectorName, Selector))
 	{
-		FGeometryScriptMeshSelection Selection = this->Target->GetMeshElementsSelection();
-		if (Selection.GetNumSelected() > 0
-			&& Selection.GetSelectionType() == EGeometryScriptMeshSelectionType::Triangles)
+		TArray<UPolySelection*> Selected = Selector->Selection;
+		for (int i = 0; i < Selected.Num(); i++)
 		{
-			// ToDo: @tpott: check for polygroup selection type and convert selection temporarily to triangles and delete afterwards
-			UDynamicMesh* TargetMesh = this->Target->GetSelectedMesh();
-			int NumDeleted;
-			UGeometryScriptLibrary_MeshBasicEditFunctions::DeleteSelectedTrianglesFromMesh(TargetMesh, Selection, NumDeleted);
+			UPolyMeshSelection* Target = Cast<UPolyMeshSelection>(Selected[i]);
+			if (IsValid(Target))
+			{
+				FGeometryScriptMeshSelection Selection = Target->GetMeshElementsSelection();
+				if (Selection.GetNumSelected() > 0
+					&& Selection.GetSelectionType() == EGeometryScriptMeshSelectionType::Triangles)
+				{
+					// ToDo: @tpott: check for polygroup selection type and convert selection temporarily to triangles and delete afterwards
+					UDynamicMesh* TargetMesh = Target->GetSelectedMesh();
+					int NumDeleted;
+					UGeometryScriptLibrary_MeshBasicEditFunctions::DeleteSelectedTrianglesFromMesh(TargetMesh, Selection, NumDeleted);
 
+				}
+
+			}
+		}
+		if (Selected.Num() > 0)
+		{
 			this->Submit();
 			return true;
 		}
-
 	}
 	this->Discard();
 	return false;

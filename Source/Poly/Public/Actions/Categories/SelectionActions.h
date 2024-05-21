@@ -14,20 +14,20 @@
  * 
  */
 UCLASS(Blueprintable)
-class POLY_API UDestroySelectedAction : public UActionBase
+class POLY_API UDestroySelectedActorsAction : public UActionBase
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
-	UDestroySelectedAction()
+	UDestroySelectedActorsAction()
 	{
-		Description = "poly.DestroySelected";
-		ShortName = "Destroy Selected";
+		Description = "poly.DestroySelectedActors";
+		ShortName = "Destroy Selected Actors";
 	}
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
-	FName SelectorName = USelectorNames::Default;
+	FName SelectorName = USelectorNames::Actors;
 
 public:
 	bool Execute_Implementation(bool bEmitRecord) override;
@@ -46,10 +46,8 @@ public:
 		ShortName = "Delete Selected Elements";
 	}
 
-
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
-	UPolyMeshSelection* Target;
-
+	FName SelectorName = USelectorNames::Elements;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	bool bCompact = false;
