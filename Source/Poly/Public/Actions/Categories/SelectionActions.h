@@ -49,8 +49,26 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	FName SelectorName = USelectorNames::Elements;
 
+public:
+	bool Execute_Implementation(bool bEmitRecord) override;
+};
+
+
+UCLASS(Blueprintable)
+class POLY_API UFillPolygonAction : public UActionBase
+{
+	GENERATED_BODY()
+
+public:
+	// Sets default values for this actor's properties
+	UFillPolygonAction()
+	{
+		Description = "poly.FillPolygon";
+		ShortName = "Fill Polygon";
+	}
+
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
-	bool bCompact = false;
+	FName SelectorName = USelectorNames::Elements;
 
 public:
 	bool Execute_Implementation(bool bEmitRecord) override;
