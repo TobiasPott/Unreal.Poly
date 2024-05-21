@@ -77,6 +77,7 @@ protected:
 
 
 protected:
+	//  ToDo: @tpott: Remove internal 'Selections' member (move to PolySelection instead)
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Selection")
 	TMap<AActor*, FGeometryScriptMeshSelection> Selections;
 
@@ -113,7 +114,7 @@ public:
 	void UpdateSelection();
 	void UpdateSelectionVisuals();
 
-	TMap<AActor*, FGeometryScriptMeshSelection> GetSelections() { return this->Selections; };
+
 	TArray<UPolyMeshSelection*> GetPolySelections() { return this->PolySelections; };
 
 
