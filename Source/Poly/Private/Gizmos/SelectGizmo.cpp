@@ -4,6 +4,8 @@
 #include "Gizmos/SelectGizmo.h"
 #include "Functions/Poly_UIFunctions.h"
 #include "Functions/Poly_MeshSelectionFunctions.h"
+#include "Selection/SelectorSubsystem.h"
+#include "Selection/SelectorBase.h"
 #include "UI/PolyHUD.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -128,6 +130,13 @@ void ASelectGizmo::UpdateSelection()
 		UPolySelection::AddByActorsT(this->PolySelection, this->Selection);
 		break;
 	}
+	}
+
+	// Add poly selection to selector 'Actors'
+	ASelectorBase* Selector;
+	if (UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>()->GetSelector(this, USelectorNames::Actors, Selector))
+	{
+		Selector->ReplaceAll(this->PolySelection);
 	}
 
 }

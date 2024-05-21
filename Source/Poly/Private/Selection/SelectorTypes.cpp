@@ -7,3 +7,6 @@ FName USelectorNames::Default = FName("Default");
 FName USelectorNames::Second = FName("Second");
 FName USelectorNames::Third = FName("Third");
 FName USelectorNames::Fourth = FName("Fourth");
+
+FName USelectorNames::Actors = FName("Actors");
+FName USelectorNames::Elements = FName("Elements");

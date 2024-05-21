@@ -15,8 +15,8 @@ enum class ESelectorChannel : uint8 {
 	Fourth = 0b00001000,
 	Fifth = 0b00010000,
 	Sixth = 0b00100000,
-	Seventh = 0b01000000,
-	Eighth = 0b10000000,
+	Actors = 0b01000000,
+	Elements = 0b10000000,
 };
 
 
@@ -30,6 +30,8 @@ public:
 	static FName Second;
 	static FName Third;
 	static FName Fourth;
+	static FName Actors;
+	static FName Elements;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Selector|Names")
 	static void DefaultName(FName& OutName) { OutName = USelectorNames::Default; }
@@ -39,4 +41,9 @@ public:
 	static void ThirdName(FName& OutName) { OutName = USelectorNames::Third; }
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Selector|Names")
 	static void FourthName(FName& OutName) { OutName = USelectorNames::Fourth; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Selector|Names")
+	static void MeshName(FName& OutName) { OutName = USelectorNames::Actors; }
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Selector|Names")
+	static void ElementshName(FName& OutName) { OutName = USelectorNames::Elements; }
 };

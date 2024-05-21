@@ -5,7 +5,10 @@
 #include "Functions/Poly_UIFunctions.h"
 //#include "Functions/Poly_SelectorFunctions.h"
 #include "Functions/Poly_MeshSelectionFunctions.h"
+#include "Functions/Poly_UIFunctions.h"
 #include "Functions/Poly_ActorFunctions.h"
+#include "Selection/SelectorSubsystem.h"
+#include "Selection/SelectorBase.h"
 #include "UI/PolyHUD.h"
 #include "Kismet/GameplayStatics.h"
 #include "UDynamicMesh.h"
@@ -157,6 +160,14 @@ void AElementsGizmo::SetTargets(const TArray<AActor*>& Targets)
 
 	// Reset selection mesh
 	this->SelectionDynamicMeshComponent->GetDynamicMesh()->Reset();
+	this->InstancedStaticMeshComponent->ClearInstances();
+
+	// Add poly mesh selection to selector 'Elements'
+	ASelectorBase* Selector;
+	if (UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>()->GetSelector(this, USelectorNames::Elements, Selector))
+	{
+		Selector->ReplaceAllT(this->PolySelections);
+	}
 }
 
 void AElementsGizmo::SetSelectionType(EGeometryScriptMeshSelectionType InSelectionType)

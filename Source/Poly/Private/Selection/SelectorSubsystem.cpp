@@ -28,7 +28,7 @@ void USelectorSubsystem::Init(const UObject* WorldContext)
 		SubsystemRoot = WorldContext->GetWorld()->SpawnActor<ASelectorSubsystemRoot>(ASelectorSubsystemRoot::StaticClass());
 	}
 
-	TArray<FName> SelectorNames = { USelectorNames::Default, USelectorNames::Second, USelectorNames::Third, USelectorNames::Fourth };
+	TArray<FName> SelectorNames = { USelectorNames::Default, USelectorNames::Second, USelectorNames::Third, USelectorNames::Fourth, USelectorNames::Actors, USelectorNames::Elements };
 	for (int i = 0; i < SelectorNames.Num(); i++)
 	{
 		// Add selector (using index as stencil (starting with 1 (i+1))
