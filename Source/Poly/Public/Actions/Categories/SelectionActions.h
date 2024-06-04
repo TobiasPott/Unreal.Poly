@@ -73,3 +73,25 @@ public:
 public:
 	bool Execute_Implementation(bool bEmitRecord) override;
 };
+
+
+
+UCLASS(Blueprintable)
+class POLY_API UFlipPolygonAction : public UActionBase
+{
+	GENERATED_BODY()
+
+public:
+	// Sets default values for this actor's properties
+	UFlipPolygonAction()
+	{
+		Description = "poly.FlipPolygon";
+		ShortName = "Flip Polygon";
+	}
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
+	FName SelectorName = USelectorNames::Elements;
+
+public:
+	bool Execute_Implementation(bool bEmitRecord) override;
+};

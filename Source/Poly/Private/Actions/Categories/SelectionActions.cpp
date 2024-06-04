@@ -7,7 +7,10 @@
 #include "Components/BaseDynamicMeshComponent.h"
 #include "GeometryScript/MeshBasicEditFunctions.h"
 #include "GeometryScript/MeshQueryFunctions.h"
+#include "GeometryScript/MeshSelectionFunctions.h"
 #include "GeometryScript/MeshPrimitiveFunctions.h"
+#include "GeometryScript/MeshNormalsFunctions.h"
+#include "GeometryScript/MeshDecompositionFunctions.h"
 
 
 bool UDestroySelectedActorsAction::Execute_Implementation(bool bEmitRecord)
@@ -136,5 +139,49 @@ bool UFillPolygonAction::Execute_Implementation(bool bEmitRecord)
 		}
 	}
 	this->Discard();
+	return false;
+}
+
+bool UFlipPolygonAction::Execute_Implementation(bool bEmitRecord)
+{
+	USelectorSubsystem* SelectorSubsystem = UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>();
+	ASelectorBase* Selector;
+
+	UDynamicMeshPool* Pool = NewObject<UDynamicMeshPool>(UDynamicMeshPool::StaticClass());
+	UDynamicMesh* TempMesh = Pool->RequestMesh();
+
+	if (SelectorSubsystem->GetSelector(this, this->SelectorName, Selector))
+	{
+		TArray<UPolySelection*> Selected = Selector->Selection;
+		for (int i = 0; i < Selected.Num(); i++)
+		{
+			UPolyMeshSelection* Target = Cast<UPolyMeshSelection>(Selected[i]);
+			if (IsValid(Target))
+			{
+				FGeometryScriptMeshSelection Selection = Target->GetMeshElementsSelection();
+				if (Selection.GetNumSelected() > 0
+					&& Selection.GetSelectionType() == EGeometryScriptMeshSelectionType::Triangles)
+				{
+					UDynamicMesh* TargetMesh = Target->GetSelectedMesh();
+					UGeometryScriptLibrary_MeshDecompositionFunctions::CopyMeshSelectionToMesh(TargetMesh, TempMesh, Selection, TempMesh, false, true);
+					int NumDeleted;
+					UGeometryScriptLibrary_MeshBasicEditFunctions::DeleteSelectedTrianglesFromMesh(TargetMesh, Selection, NumDeleted);
+					UGeometryScriptLibrary_MeshNormalsFunctions::FlipNormals(TempMesh);
+
+					FGeometryScriptMeshSelection AllSelection;
+					UGeometryScriptLibrary_MeshSelectionFunctions::CreateSelectAllMeshSelection(TempMesh, AllSelection, EGeometryScriptMeshSelectionType::Triangles);
+					UGeometryScriptLibrary_MeshDecompositionFunctions::CopyMeshSelectionToMesh(TempMesh, TargetMesh, AllSelection, TargetMesh, true, true);
+				}
+			}
+		}
+		if (Selected.Num() > 0)
+		{
+			this->Submit();
+			Pool->ReturnMesh(TempMesh);
+			return true;
+		}
+	}
+	this->Discard();
+	Pool->ReturnMesh(TempMesh);
 	return false;
 }
