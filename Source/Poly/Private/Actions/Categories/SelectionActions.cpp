@@ -89,7 +89,7 @@ bool UFillPolygonAction::Execute_Implementation(bool bEmitRecord)
 			{
 				FGeometryScriptMeshSelection Selection = Target->GetMeshElementsSelection();
 				const int NumSelected = Selection.GetNumSelected();
-				if (NumSelected > 0
+				if (NumSelected > 2
 					&& Selection.GetSelectionType() == EGeometryScriptMeshSelectionType::Vertices)
 				{
 					Positions.Reset(NumSelected);
@@ -108,28 +108,21 @@ bool UFillPolygonAction::Execute_Implementation(bool bEmitRecord)
 						}
 					}
 
-					//  ToDo: @tpott: Add sorting of positions (cw or ccw around center point)
-					//				https://d3kjluh73b9h9o.cloudfront.net/original/4X/4/e/4/4e4192edeff20776d0716d61fa96aef0aa42edd3.png
-					if (Positions.Num() > 0)
+					if (Positions.Num() > 2)
 					{
 						Center /= Positions.Num();
 						FVector RefVector = (Center - Positions[0]).GetUnsafeNormal();
-						Positions.Sort([Center, RefVector](const FVector& Pos0, const FVector& Pos1)
+						FVector RefNormal = FVector::CrossProduct((Positions[0] - Center).GetUnsafeNormal(), (Positions[1] - Center).GetUnsafeNormal());
+						//UE_LOG(LogTemp, Warning, TEXT("Normal: %s"), *RefNormal.ToString());
+						
+						Positions.Sort([Center, RefVector, RefNormal](const FVector& Pos0, const FVector& Pos1)
 							{
-								// access some random field just to test compile
-								FVector Vec0 = (Center - Pos0).GetUnsafeNormal();
-								FVector Vec1 = (Center - Pos1).GetUnsafeNormal();
-
-								//  ToDo:@tpott: DotProduct gives direction of rotation from sign
-								float Angle0 = FMath::RadiansToDegrees(acosf(FVector::DotProduct(Vec0, RefVector)));
-								float Angle1 = FMath::RadiansToDegrees(acosf(FVector::DotProduct(Vec1, RefVector)));
-								UE_LOG(LogTemp, Warning, TEXT("%s (%f)   -->   %s (%f)"), *Vec0.ToString(), Angle0, *Vec1.ToString(), Angle1)
-									return  Angle0 < Angle1;
+								const float Dot = Pos0.X * Pos1.X + Pos0.Y * Pos1.Y + Pos0.Z * Pos1.Z;
+								const float Det = FVector::DotProduct(RefNormal, FVector::CrossProduct(Pos0, Pos1));
+								const float Angle = FMath::RadiansToDegrees(FMath::Atan2(Det, Dot));
+								//UE_LOG(LogTemp, Warning, TEXT("\tAngle: %f"), Angle);
+								return Angle < 0;
 							});
-						//for (int v = 0; v < Positions.Num(); v++)
-						//{
-						//	UE_LOG(LogTemp, Warning, TEXT("%d: %s"), v, *Positions[v].ToString())
-						//}
 						UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendTriangulatedPolygon3D(TargetMesh, PrimitiveOptions, FTransform::Identity, Positions);
 					}
 				}
