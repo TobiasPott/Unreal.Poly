@@ -22,7 +22,7 @@ class IToolInterface
 	GENERATED_BODY()
 
 public:
-	// ToDo: @tpott: Consider adding 'ToolUpdate' to send intermediate updates from an active tool (e.g. move update)
+	// ToDo: CONSIDER: @tpott: Consider adding 'ToolUpdate' to send intermediate updates from an active tool (e.g. move update)
 	/** Add interface function declarations here */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Default")
 	bool CanActivate();

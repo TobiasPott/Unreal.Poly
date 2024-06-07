@@ -11,7 +11,7 @@ APolyHUD::APolyHUD()
 
 }
 
-void APolyHUD::QueueRequest(UActorSelectionRequest* Request)
+void APolyHUD::QueueRequest(USelectionRequest* Request)
 {
 	this->MarqueeRequests.AddUnique(Request);
 }
@@ -25,7 +25,7 @@ void APolyHUD::ProcessRequests()
 {
 	for (int i = this->MarqueeRequests.Num() - 1; i >= 0; i--)
 	{
-		UActorSelectionRequest* Request = this->MarqueeRequests[i];
+		USelectionRequest* Request = this->MarqueeRequests[i];
 		UPoly_UIFunctions::DrawRequest(Request, this, FLinearColor(0.15, 0.15, 0.3, 0.25));
 
 		if (Request->bSubmitted)

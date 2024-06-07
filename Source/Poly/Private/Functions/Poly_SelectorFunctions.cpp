@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Functions/Poly_SelectionFunctions.h"
+#include "Functions/Poly_SelectorFunctions.h"
 #include "Components/BaseDynamicMeshComponent.h"
 #include "GeometryScript/MeshSelectionFunctions.h"
 
-void UPoly_SelectionFunctions::SetMaterialForState(AActor* Actor, const bool IsSelected, UMaterialInterface* SelectedMaterial, const uint8 StencilValue)
+void UPoly_SelectorFunctions::SetMaterialForState(AActor* Actor, const bool IsSelected, UMaterialInterface* SelectedMaterial, const uint8 StencilValue)
 {
 	if (!IsValid(Actor))
 		return;
@@ -14,7 +14,7 @@ void UPoly_SelectionFunctions::SetMaterialForState(AActor* Actor, const bool IsS
 	UMaterialInterface* Material = IsSelected ? SelectedMaterial : nullptr;
 
 	TInlineComponentArray<UActorComponent*> Components;
-	Actor->GetComponents(Components); //s (UMeshComponent::StaticClass());
+	Actor->GetComponents(Components);
 	for (int i = 0; i < Components.Num(); i++)
 	{
 		UActorComponent* Comp = Components[i];
@@ -32,7 +32,7 @@ void UPoly_SelectionFunctions::SetMaterialForState(AActor* Actor, const bool IsS
 	}
 }
 
-void UPoly_SelectionFunctions::LogSelectionInfo(const FString LogText, const FGeometryScriptMeshSelection Selection)
+void UPoly_SelectorFunctions::LogSelectionInfo(const FString LogText, const FGeometryScriptMeshSelection Selection)
 {
 	int NumSelected = 0;
 	EGeometryScriptMeshSelectionType SelType;

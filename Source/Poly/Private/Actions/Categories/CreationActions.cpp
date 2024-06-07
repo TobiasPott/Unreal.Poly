@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Functions/CreationActions.h"
+#include "Actions/Categories/CreationActions.h"
 #include "Functions/Poly_CreationFunctions.h"
 #include "PolyMeshActor.h"
 #include "Scene/SceneSubsystemFunctions.h"
@@ -57,7 +57,6 @@ bool UCreateConeAction::Execute_Implementation(bool bEmitRecord)
 	RETURN_ACTIONSUBMIT_ISVALIDACTOR(PolyMeshActor)
 }
 
-// ToDo: @tpott: Convert code to template function to reduce code repetition
 bool UCreateDirectionalLightAction::Execute_Implementation(bool bEmitRecord)
 {
 	ADirectionalLight* LightActor;

@@ -138,7 +138,7 @@ void AGizmoBaseActor::Scale_TransformEnded_Implementation(bool bEnded, FTransfor
 {
 }
 
-void AGizmoBaseActor::Select_Finished_Implementation(UActorSelectionRequest* Request, bool bSuccess)
+void AGizmoBaseActor::Select_Finished_Implementation(USelectionRequest* Request, bool bSuccess)
 {
 	USelectorSubsystem* SelectorSubsystem = UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>();
 	ASelectorBase* Selector;
@@ -148,7 +148,7 @@ void AGizmoBaseActor::Select_Finished_Implementation(UActorSelectionRequest* Req
 	if (bSuccess)
 	{
 		this->UpdatePivot(true, true);
-		TArray<AActor*> Actors = this->SelectCore->GetSelection();
+		TArray<UPolySelection*> Actors = this->SelectCore->GetPolySelection();
 		Selector->ReplaceAll(Actors);
 	}
 	else
@@ -156,19 +156,19 @@ void AGizmoBaseActor::Select_Finished_Implementation(UActorSelectionRequest* Req
 		Selector->ClearSelection();
 	}
 	// update pivot transform
-	// ToDo: @tpott: Cleanup ElementCore.Selections and only keep those actors in there, which are also selcted by SelectCore
+	// ToDo: @tpott: Cleanup ElementCore.Selections and only keep those actors in there, which are also selected by SelectCore
 }
 
 
 void AGizmoBaseActor::Elements_Finished_Implementation(AElementsGizmo* Core)
 {
 	bool bSuccess = false;
-	TMap<AActor*, FGeometryScriptMeshSelection> Selections = Core->GetSelections();
+	TArray<UPolyMeshSelection*> Selections = Core->GetPolySelections();
 	if (!Selections.IsEmpty())
 	{
-		for (auto KvPair : Selections)
+		for (auto Selection : Selections)
 		{
-			if (KvPair.Value.GetNumSelected() > 0)
+			if (Selection->GetMeshElementsSelection().GetNumSelected() > 0)
 			{
 				bSuccess = true;
 				break;
@@ -302,16 +302,16 @@ FVector AGizmoBaseActor::GetPivotLocationFromSelection()
 		else if (this->PivotSelectionSource == EGizmoPivotSelectionSource::PSS_Elements
 			&& bHasElementSelection)
 		{
-			TMap<AActor*, FGeometryScriptMeshSelection> Selections = this->ElementsCore->GetSelections();
+			TArray<UPolyMeshSelection*> Selections = this->ElementsCore->GetPolySelections();
 			int Count = 0;
 			FVector SelectionCenter;
 
 			// ToDo: Refine this to determine 'median' position from selection (bounds will shift location to selection 3D center
 			//			Create method to get median location of mesh elements (tri & polygroups use tri-barycentric center, vertices use vertex position)
-			for (auto KvPair : Selections)
+			for (auto Selection : Selections)
 			{
 				FVector Center;
-				if (UPoly_MeshSelectionFunctions::GetSelectionCenterOfBoundsFromActor(KvPair.Key, KvPair.Value, Center))
+				if (UPoly_MeshSelectionFunctions::GetSelectionCenterOfBounds(Selection->GetSelectedMesh(), Selection->GetMeshElementsSelection(), Center))
 				{
 					SelectionCenter = SelectionCenter + Center;
 					Count++;

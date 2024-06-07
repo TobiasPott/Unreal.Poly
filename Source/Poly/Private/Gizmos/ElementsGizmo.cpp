@@ -3,10 +3,15 @@
 
 #include "Gizmos/ElementsGizmo.h"
 #include "Functions/Poly_UIFunctions.h"
-#include "Functions/Poly_SelectionFunctions.h"
+//#include "Functions/Poly_SelectorFunctions.h"
+#include "Functions/Poly_MeshSelectionFunctions.h"
+#include "Functions/Poly_UIFunctions.h"
 #include "Functions/Poly_ActorFunctions.h"
+#include "Selection/SelectorSubsystem.h"
+#include "Selection/SelectorBase.h"
 #include "UI/PolyHUD.h"
 #include "Kismet/GameplayStatics.h"
+#include "UDynamicMesh.h"
 #include "Components/BaseDynamicMeshComponent.h"
 #include "GeometryScript/MeshPrimitiveFunctions.h"
 #include "GeometryScript/MeshSelectionFunctions.h"
@@ -15,10 +20,11 @@
 #include "GeometryScript/MeshTransformFunctions.h"
 #include "GeometryScript/MeshBasicEditFunctions.h"
 #include "GeometryScript/MeshSpatialFunctions.h"
+#include "GeometryScript/MeshQueryFunctions.h"
 
 
-// ToDo: @tpott: Consider using a SplineComponent to render selected edges
-// ToDo: @tpott: Cosider a structure to store Edge selection (will require custom FEdge type to track VertexIDs and TriangleIDs
+// ToDo: CONSIDER: @tpott: Consider using a SplineComponent to render selected edges
+// ToDo: CONSIDER: @tpott: Consider a structure to store Edge selection (will require custom FEdge type to track VertexIDs and TriangleIDs
 
 // Sets default values
 AElementsGizmo::AElementsGizmo()
@@ -128,22 +134,48 @@ void AElementsGizmo::SetGizmoHidden(const bool bHiddenInGame)
 void AElementsGizmo::SetTargets(const TArray<AActor*>& Targets)
 {
 	this->Selections.Reset();
+	this->PolySelections.Reset();
 	for (int i = 0; i < Targets.Num(); i++)
 	{
 		AActor* Target = Targets[i];
 		UBaseDynamicMeshComponent* BaseDMC = Target->GetComponentByClass<UBaseDynamicMeshComponent>();
 		if (IsValid(BaseDMC))
+		{
 			this->Selections.Add(Target, FGeometryScriptMeshSelection());
+		}
+	}
+
+	// remove poly selections for actors no longer selected
+	for (int i = this->PolySelections.Num() - 1; i >= 0; i--)
+	{
+		if (!this->Selections.Contains(this->PolySelections[i]->GetSelectedActor()))
+			this->PolySelections.RemoveAt(i);
+	}
+	// add new poly selection instances for selected actors (reuse existing ones)
+	for (int i = 0; i < Targets.Num(); i++)
+	{
+		AActor* Target = Targets[i];
+		UPolySelection::AddByActorT<UPolyMeshSelection>(this->PolySelections, Target);
 	}
 
 	// Reset selection mesh
 	this->SelectionDynamicMeshComponent->GetDynamicMesh()->Reset();
+	this->InstancedStaticMeshComponent->ClearInstances();
+
+	// Add poly mesh selection to selector 'Elements'
+	ASelectorBase* Selector;
+	if (UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>()->GetSelector(this, USelectorNames::Elements, Selector))
+	{
+		Selector->ReplaceAllT(this->PolySelections);
+	}
 }
 
 void AElementsGizmo::SetSelectionType(EGeometryScriptMeshSelectionType InSelectionType)
 {
 	this->SelectionType = InSelectionType;
-	// ToDo: @tpott: Add changes to DynamicMeshComponent and InstancedStaticMeshComponent visibility based on the selection type
+	// set visualiser components hidden based on current selection type
+	this->SelectionDynamicMeshComponent->SetHiddenInGame(this->SelectionType == EGeometryScriptMeshSelectionType::Vertices);
+	this->InstancedStaticMeshComponent->SetHiddenInGame(this->SelectionType != EGeometryScriptMeshSelectionType::Vertices);
 }
 void AElementsGizmo::SetSelectionMode(EPolySelectionMode InSelectionMode)
 {
@@ -199,7 +231,6 @@ void AElementsGizmo::UpdateSelectionMesh(const FVector2D FirstScreenPoint, const
 
 void AElementsGizmo::UpdateSelection()
 {
-	const FGeometryScriptAppendMeshOptions AppendOptions = { EGeometryScriptCombineAttributesMode::EnableAllMatching };
 	const FGeometryScriptSpatialQueryOptions QueryOptions = { 0, false, this->WindingThreshold };
 
 	FGeometryScriptDynamicMeshBVH TargetBVH;
@@ -209,16 +240,10 @@ void AElementsGizmo::UpdateSelection()
 	TArray<AActor*> Keys;
 	Selections.GetKeys(Keys);
 
-	// reset selection mesh
-	UDynamicMesh* SelectionMesh = this->SelectionDynamicMeshComponent->GetDynamicMesh();
-	SelectionMesh->Reset();
-	this->SelectionDynamicMeshComponent->SetWorldTransform(FTransform::Identity);
 
 	FVector RayOrigin, RayDir;
 	UPoly_UIFunctions::GetScreenRay(this, this->PlayerIndex, this->SecondPoint, RayOrigin, RayDir);
 
-	// check selection type (only triangles and poly groups use mesh to display)
-	UDynamicMesh* TempMesh = Pool->RequestMesh();
 	//for (auto& KvPair : Selections)
 	for (int i = 0; i < Keys.Num(); i++)
 	{
@@ -231,6 +256,7 @@ void AElementsGizmo::UpdateSelection()
 			continue;
 
 		const FTransform TargetTransform = Target->GetActorTransform();
+		const FQuat TargetRotation = TargetTransform.GetRotation();
 		const FTransform InvTargetTransform = TargetTransform.Inverse();
 		UDynamicMesh* TargetMesh = DMC->GetDynamicMesh();
 		FGeometryScriptMeshSelection Selection;
@@ -262,7 +288,7 @@ void AElementsGizmo::UpdateSelection()
 				this->SelectionType, this->bInvert, 0.0, this->WindingThreshold, this->MinTrianglePoints);
 			// ! ! ! !
 			// DEBUG Output
-			UPoly_SelectionFunctions::LogSelectionInfo("Vertices: ", Selection);
+			//UPoly_SelectionFunctions::LogSelectionInfo("Vertices: ", Selection);
 		}
 
 		if (this->SelectionType != EGeometryScriptMeshSelectionType::Vertices)
@@ -319,20 +345,76 @@ void AElementsGizmo::UpdateSelection()
 
 		// place updated selection back into selection map
 		Selections.Emplace(Target, Selection);
-
-
-		if (Selection.GetSelectionType() != EGeometryScriptMeshSelectionType::Vertices && Selection.GetNumSelected() > 0)
+		// get poly selection instance for target and assign current geo script selection to it
+		UPolyMeshSelection* PolySelection = *this->PolySelections.FindByPredicate([Target](UPolyMeshSelection* Item) { return Item->IsSelectedActor(Target); });
+		if (IsValid(PolySelection))
 		{
-			// get selection of all before append
-			UGeometryScriptLibrary_MeshDecompositionFunctions::CopyMeshSelectionToMesh(TargetMesh, TempMesh, Selection, TempMesh, false);
-			UGeometryScriptLibrary_MeshBasicEditFunctions::AppendMesh(SelectionMesh, TempMesh, TargetTransform, false, AppendOptions);
+			PolySelection->LocalToWorld = Target->GetTransform();
+			PolySelection->Selection = Selection;
 		}
 
-
 	}
+
+
+}
+
+void AElementsGizmo::UpdateSelectionVisuals()
+{
+	const FGeometryScriptAppendMeshOptions AppendOptions = { EGeometryScriptCombineAttributesMode::EnableAllMatching };
+
+	// reset selection mesh
+	UDynamicMesh* SelectionMesh = this->SelectionDynamicMeshComponent->GetDynamicMesh();
+	SelectionMesh->Reset();
+	this->SelectionDynamicMeshComponent->SetWorldTransform(FTransform::Identity);
+
+	// check selection type (only triangles and poly groups use mesh to display)
+	UDynamicMesh* TempMesh = Pool->RequestMesh();
+
+	const FVector VertexScale = FVector(0.05, 0.05, 0.05);
+	TArray<FTransform> InstancesArray;
+	for (auto PolySelection : PolySelections)
+	{
+		AActor* Target = PolySelection->GetSelectedActor();
+		UDynamicMesh* TargetMesh = PolySelection->GetSelectedMesh();
+		FGeometryScriptMeshSelection TargetSelection = PolySelection->GetMeshElementsSelection();
+		const FTransform TargetTransform = Target->GetActorTransform();
+		const FQuat TargetRotation = TargetTransform.GetRotation();
+
+		// ToDo: @tpott: Move this to own function to run afterwards when all selections are queried/build (use the poly selections for this!)
+		EGeometryScriptMeshSelectionType TypeOfSelection = TargetSelection.GetSelectionType();
+		if (TargetSelection.GetNumSelected() > 0)
+		{
+			if (TypeOfSelection != EGeometryScriptMeshSelectionType::Vertices)
+			{
+				// get selection of all before append
+				UGeometryScriptLibrary_MeshDecompositionFunctions::CopyMeshSelectionToMesh(TargetMesh, TempMesh, TargetSelection, TempMesh, false);
+				UGeometryScriptLibrary_MeshBasicEditFunctions::AppendMesh(SelectionMesh, TempMesh, TargetTransform, false, AppendOptions);
+			}
+			else if (TypeOfSelection == EGeometryScriptMeshSelectionType::Vertices)
+			{
+				// get vertices for selection and add transform to instannces array
+				TArray<int32> IndexArray;
+				EGeometryScriptMeshSelectionType OutType;
+				UGeometryScriptLibrary_MeshSelectionFunctions::ConvertMeshSelectionToIndexArray(TargetMesh, TargetSelection, IndexArray, OutType);
+
+				for (int vI = 0; vI < IndexArray.Num(); vI++)
+				{
+					bool bIsValid = false;
+					const FVector Location = TargetTransform.TransformPosition(UGeometryScriptLibrary_MeshQueryFunctions::GetVertexPosition(TargetMesh, IndexArray[vI], bIsValid));
+					InstancesArray.Add(FTransform(TargetRotation, Location, VertexScale));
+				}
+			}
+		}
+	}
+
+	// Add vertices to instanced static mesh component
+	InstancedStaticMeshComponent->ClearInstances();
+	if (!InstancesArray.IsEmpty())
+		InstancedStaticMeshComponent->AddInstances(InstancesArray, false, true, false);
+
+
 	// return temp mesh
 	Pool->ReturnMesh(TempMesh);
-
 }
 
 
@@ -373,6 +455,7 @@ void AElementsGizmo::OnInputKey_Released(FKey InKey)
 		this->UpdateSelectionMesh(this->FirstPoint, this->SecondPoint);
 		// update actual selection from targets and selection mesh
 		this->UpdateSelection();
+		this->UpdateSelectionVisuals();
 
 
 		Request->Submit();
@@ -410,5 +493,6 @@ void AElementsGizmo::OnFinished()
 void AElementsGizmo::Clear()
 {
 	this->Selections.Reset();
+	this->PolySelections.Reset();
 	this->Request = nullptr;
 }
