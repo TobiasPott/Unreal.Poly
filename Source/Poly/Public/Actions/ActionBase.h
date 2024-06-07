@@ -50,6 +50,13 @@ public:
 	virtual UActionRef* GetUnique();
 
 
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Default", meta = (WorldContext = "WorldContext"))
+	static void CreateActionCollection(UObject* WorldContext, const FString InShortName, const FString InDescription, UPARAM(ref) TArray<UActionBase*>& InActions, UActionCollection*& OutCollection);
+
+
+
 public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Default")
