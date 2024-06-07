@@ -57,8 +57,8 @@ bool UDeleteSelectedElementsAction::Execute_Implementation(bool bEmitRecord)
 					UDynamicMesh* TargetMesh = Target->GetSelectedMesh();
 					int NumDeleted;
 					UGeometryScriptLibrary_MeshBasicEditFunctions::DeleteSelectedTrianglesFromMesh(TargetMesh, Selection, NumDeleted);
-
 				}
+				// ToDo: @tpott: add deletion of vertices from mesh, based on selection converted to index list,see: UGeometryScriptLibrary_MeshBasicEditFunctions::DeleteVerticesFromMesh()
 
 			}
 		}
