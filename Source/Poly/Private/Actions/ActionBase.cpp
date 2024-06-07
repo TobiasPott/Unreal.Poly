@@ -21,13 +21,14 @@ void UActionBase::CreateActionCollection(UObject* WorldContext, const FString In
 
 void UActionBase::CreateEditMeshCollection(UObject* WorldContext, UActionCollection*& OutCollection)
 {
-	UDeleteMeshElementsAction* DeleteMeshElementsAction = NewObject<UDeleteMeshElementsAction>(WorldContext);
-	UCreatePolygonsAction* CreatePolygonsAction = NewObject<UCreatePolygonsAction>(WorldContext);
-	UFlipNormalsAction* FlipNormalsAction = NewObject<UFlipNormalsAction>(WorldContext);
-	USubdivideMeshAction* SubdivideMeshAction = NewObject<USubdivideMeshAction>(WorldContext);
-	UInsetOutsetFacesAction* InsetOutsetFacesAction = NewObject<UInsetOutsetFacesAction>(WorldContext);
-
-	TArray<UActionBase*> Actions = { DeleteMeshElementsAction, CreatePolygonsAction, FlipNormalsAction, SubdivideMeshAction, InsetOutsetFacesAction };
+	TArray<UActionBase*> Actions = {
+		NewObject<UDeleteMeshElementsAction>(WorldContext),
+		NewObject<UCreatePolygonsAction>(WorldContext),
+		NewObject<UFlipNormalsAction>(WorldContext),
+		NewObject<USubdivideMeshAction>(WorldContext),
+		NewObject<UTessellateMeshAction>(WorldContext),
+		NewObject<UInsetOutsetFacesAction>(WorldContext),
+	};
 	CreateActionCollection(WorldContext, "poly.EditMesh", "Edit Mesh action collection", Actions, OutCollection);
 }
 

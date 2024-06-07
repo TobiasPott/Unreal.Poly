@@ -79,16 +79,39 @@ public:
 	// Members
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	FName SelectorName = USelectorNames::Elements;
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true", ClampMin = 1, ClampMax = 8)) // limit max tesellation level to 8 on spawn
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true", ClampMin = 1, ClampMax = 8))
+	// limit max tesellation level to 8 on spawn
 	int TessellationLevel = 1;
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
-	ESelectiveTessellatePatternType PatternType = ESelectiveTessellatePatternType::ConcentricRings;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	EGeometryScriptEmptySelectionBehavior EmptySelectionBehavior = EGeometryScriptEmptySelectionBehavior::FullMeshSelection;
 
 public:
 	bool Execute_Implementation(bool bEmitRecord) override;
 };
+
+UCLASS(Blueprintable)
+class POLY_API UTessellateMeshAction : public UActionBase
+{
+	GENERATED_BODY()
+
+public:
+	// Ctor
+	UTessellateMeshAction() : UActionBase("poly.TessellateMesh", "Tessellate Mesh") {}
+
+	// Members
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
+	FName SelectorName = USelectorNames::Elements;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true", ClampMin = 1, ClampMax = 8))
+	// limit max tesellation level to 8 on spawn
+	int TessellationLevel = 1;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
+	EGeometryScriptEmptySelectionBehavior EmptySelectionBehavior = EGeometryScriptEmptySelectionBehavior::FullMeshSelection;
+
+public:
+	bool Execute_Implementation(bool bEmitRecord) override;
+};
+
 
 UCLASS(Blueprintable)
 class POLY_API UInsetOutsetFacesAction : public UActionBase
@@ -104,6 +127,8 @@ public:
 	FName SelectorName = USelectorNames::Elements;
 
 	// ToDo: @tpott: add further members which should be exposed from the FGeometryScriptMeshInsetOutsetFacesOptions struct (e.g. distance etc.)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
+	float Distance = 10.0;
 
 public:
 	bool Execute_Implementation(bool bEmitRecord) override;
