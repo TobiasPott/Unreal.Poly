@@ -1,8 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actions/Categories/SelectionActions.h"
+#include "Actions/Categories/EditMeshActions.h"
 #include "Selection/SelectorSubsystem.h"
+#include "Modeling/PolyMeshSelection.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/BaseDynamicMeshComponent.h"
 #include "GeometryScript/MeshBasicEditFunctions.h"
@@ -13,31 +14,7 @@
 #include "GeometryScript/MeshDecompositionFunctions.h"
 
 
-bool UDestroySelectedActorsAction::Execute_Implementation(bool bEmitRecord)
-{
-	USelectorSubsystem* SelectorSubsystem = UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>();
-	ASelectorBase* Selector;
-	if (SelectorSubsystem->GetSelector(this, this->SelectorName, Selector))
-	{
-		TArray<UPolySelection*> SelectedActors = Selector->Selection;
-		for (int i = 0; i < SelectedActors.Num(); i++)
-		{
-			UPolySelection* Selected = SelectedActors[i];
-			bool IsSelected;
-			Selector->Deselect(Selected, IsSelected);
-			// destroy actor
-			if (IsValid(Selected->GetSelectedActor()))
-				Selected->GetSelectedActor()->Destroy();
-		}
-		this->Submit();
-		return true;
-	}
-
-	this->Discard();
-	return false;
-}
-
-bool UDeleteSelectedElementsAction::Execute_Implementation(bool bEmitRecord)
+bool UDeleteMeshElementsAction::Execute_Implementation(bool bEmitRecord)
 {
 	USelectorSubsystem* SelectorSubsystem = UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>();
 	ASelectorBase* Selector;
@@ -72,7 +49,7 @@ bool UDeleteSelectedElementsAction::Execute_Implementation(bool bEmitRecord)
 	return false;
 }
 
-bool UFillPolygonAction::Execute_Implementation(bool bEmitRecord)
+bool UCreatePolygonsAction::Execute_Implementation(bool bEmitRecord)
 {
 	const FGeometryScriptPrimitiveOptions PrimitiveOptions = { EGeometryScriptPrimitivePolygroupMode::SingleGroup, false, EGeometryScriptPrimitiveUVMode::Uniform };
 
@@ -117,7 +94,7 @@ bool UFillPolygonAction::Execute_Implementation(bool bEmitRecord)
 						FVector RefVector = (Center - Positions[0]).GetUnsafeNormal();
 						FVector RefNormal = FVector::CrossProduct((Positions[0] - Center).GetUnsafeNormal(), (Positions[1] - Center).GetUnsafeNormal());
 						//UE_LOG(LogTemp, Warning, TEXT("Normal: %s"), *RefNormal.ToString());
-						
+
 						Positions.Sort([Center, RefVector, RefNormal](const FVector& Pos0, const FVector& Pos1)
 							{
 								const float Dot = Pos0.X * Pos1.X + Pos0.Y * Pos1.Y + Pos0.Z * Pos1.Z;
@@ -142,7 +119,7 @@ bool UFillPolygonAction::Execute_Implementation(bool bEmitRecord)
 	return false;
 }
 
-bool UFlipPolygonAction::Execute_Implementation(bool bEmitRecord)
+bool UFlipNormalsAction::Execute_Implementation(bool bEmitRecord)
 {
 	USelectorSubsystem* SelectorSubsystem = UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>();
 	ASelectorBase* Selector;

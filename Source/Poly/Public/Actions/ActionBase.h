@@ -17,6 +17,17 @@ class POLY_API UActionBase : public UObject
 	GENERATED_BODY()
 
 protected:
+	// Ctors
+	UActionBase()
+	{
+		Description = "poly.ActionBase";
+		ShortName = "<ActionBase>";
+	}
+	UActionBase(const FString& InDescription, const FString& InShortName)
+	{
+		Description = InDescription;
+		ShortName = InShortName;
+	}
 
 	UPROPERTY(VisibleAnywhere, Category = "Default")
 	FString Description = "poly.Action";
