@@ -14,6 +14,7 @@
 #include "GeometryScript/MeshPrimitiveFunctions.h"
 #include "GeometryScript/MeshNormalsFunctions.h"
 #include "GeometryScript/MeshDecompositionFunctions.h"
+#include "GeometryScript/MeshSubdivideFunctions.h"
 
 
 bool UDeleteMeshElementsAction::Execute_Implementation(bool bEmitRecord)
@@ -166,6 +167,29 @@ bool UFlipNormalsAction::Execute_Implementation(bool bEmitRecord)
 
 bool USubdivideMeshAction::Execute_Implementation(bool bEmitRecord)
 {
-	UE_LOG(LogPoly, Warning, TEXT("SubdivieMesh action is not implemented yet."))
-	return Super::Execute_Implementation(bEmitRecord);
+	const FGeometryScriptSelectiveTessellateOptions Options = { true, EmptySelectionBehavior };
+
+	USelectorSubsystem* SelectorSubsystem = UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>();
+	ASelectorBase* Selector;
+	if (SelectorSubsystem->GetSelector(this, this->SelectorName, Selector))
+	{
+		TArray<UPolySelection*> Selected = Selector->Selection;
+		for (int i = 0; i < Selected.Num(); i++)
+		{
+			UPolyMeshSelection* Target = Cast<UPolyMeshSelection>(Selected[i]);
+			if (IsValid(Target))
+			{
+				FGeometryScriptMeshSelection Selection = Target->GetMeshElementsSelection();
+				UDynamicMesh* TargetMesh = Target->GetSelectedMesh();
+				UGeometryScriptLibrary_MeshSubdivideFunctions::ApplySelectiveTessellation(TargetMesh, Selection, Options, TessellationLevel, PatternType);
+			}
+		}
+		if (Selected.Num() > 0)
+		{
+			this->Submit();
+			return true;
+		}
+	}
+	this->Discard();
+	return false;
 }
