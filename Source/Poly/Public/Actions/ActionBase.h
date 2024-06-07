@@ -55,6 +55,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Default", meta = (WorldContext = "WorldContext"))
 	static void CreateActionCollection(UObject* WorldContext, const FString InShortName, const FString InDescription, UPARAM(ref) TArray<UActionBase*>& InActions, UActionCollection*& OutCollection);
 
+	UFUNCTION(BlueprintCallable, Category = "Default", meta = (WorldContext = "WorldContext"))
+	static void CreateEditMeshCollection(UObject* WorldContext, UActionCollection*& OutCollection);
 
 
 public:

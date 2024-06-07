@@ -3,6 +3,7 @@
 #include "Actions/ActionBase.h"
 #include "Actions/ActionRef.h"
 #include "Actions/ActionCollection.h"
+#include "Actions/Categories/EditMeshActions.h"
 
 UActionRef* UActionBase::GetUnique()
 {
@@ -18,4 +19,15 @@ void UActionBase::CreateActionCollection(UObject* WorldContext, const FString In
 	OutCollection->AddItems(InActions);
 }
 
+void UActionBase::CreateEditMeshCollection(UObject* WorldContext, UActionCollection*& OutCollection)
+{
+	UDeleteMeshElementsAction* DeleteMeshElementsAction = NewObject<UDeleteMeshElementsAction>(WorldContext);
+	UCreatePolygonsAction* CreatePolygonsAction = NewObject<UCreatePolygonsAction>(WorldContext);
+	UFlipNormalsAction* FlipNormalsAction = NewObject<UFlipNormalsAction>(WorldContext);
+	USubdivideMeshAction* SubdivideMeshAction = NewObject<USubdivideMeshAction>(WorldContext);
+	UInsetOutsetFacesAction* InsetOutsetFacesAction = NewObject<UInsetOutsetFacesAction>(WorldContext);
+
+	TArray<UActionBase*> Actions = { DeleteMeshElementsAction, CreatePolygonsAction, FlipNormalsAction, SubdivideMeshAction, InsetOutsetFacesAction };
+	CreateActionCollection(WorldContext, "poly.EditMesh", "Edit Mesh action collection", Actions, OutCollection);
+}
 

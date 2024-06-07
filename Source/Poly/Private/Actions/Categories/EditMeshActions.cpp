@@ -15,6 +15,7 @@
 #include "GeometryScript/MeshNormalsFunctions.h"
 #include "GeometryScript/MeshDecompositionFunctions.h"
 #include "GeometryScript/MeshSubdivideFunctions.h"
+#include "GeometryScript/MeshModelingFunctions.h"
 
 
 bool UDeleteMeshElementsAction::Execute_Implementation(bool bEmitRecord)
@@ -182,6 +183,42 @@ bool USubdivideMeshAction::Execute_Implementation(bool bEmitRecord)
 				FGeometryScriptMeshSelection Selection = Target->GetMeshElementsSelection();
 				UDynamicMesh* TargetMesh = Target->GetSelectedMesh();
 				UGeometryScriptLibrary_MeshSubdivideFunctions::ApplySelectiveTessellation(TargetMesh, Selection, Options, TessellationLevel, PatternType);
+			}
+		}
+		if (Selected.Num() > 0)
+		{
+			this->Submit();
+			return true;
+		}
+	}
+	this->Discard();
+	return false;
+}
+
+bool UInsetOutsetFacesAction::Execute_Implementation(bool bEmitRecord)
+{
+	//UE_LOG(LogPoly, Warning, TEXT("UInsetOutsetFacesAction is not implemented yet."))
+	//return Super::Execute_Implementation(bEmitRecord);
+
+	const FGeometryScriptMeshInsetOutsetFacesOptions Options = { 1.0, true, false, 0.0f, 1.0,
+		EGeometryScriptPolyOperationArea::EntireSelection, FGeometryScriptMeshEditPolygroupOptions(), 1.0 };
+
+	USelectorSubsystem* SelectorSubsystem = UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>();
+	ASelectorBase* Selector;
+	if (SelectorSubsystem->GetSelector(this, this->SelectorName, Selector))
+	{
+		TArray<UPolySelection*> Selected = Selector->Selection;
+		for (int i = 0; i < Selected.Num(); i++)
+		{
+			UPolyMeshSelection* Target = Cast<UPolyMeshSelection>(Selected[i]);
+			if (IsValid(Target))
+			{
+				UDynamicMesh* TargetMesh = Target->GetSelectedMesh();
+				FGeometryScriptMeshSelection Selection = Target->GetMeshElementsSelection();
+				if (Selection.GetNumSelected() > 0 && Selection.GetSelectionType() != EGeometryScriptMeshSelectionType::Vertices)
+				{
+					UGeometryScriptLibrary_MeshModelingFunctions::ApplyMeshInsetOutsetFaces(TargetMesh, Options, Selection);
+				}
 			}
 		}
 		if (Selected.Num() > 0)

@@ -89,3 +89,22 @@ public:
 public:
 	bool Execute_Implementation(bool bEmitRecord) override;
 };
+
+UCLASS(Blueprintable)
+class POLY_API UInsetOutsetFacesAction : public UActionBase
+{
+	GENERATED_BODY()
+
+public:
+	// Ctor
+	UInsetOutsetFacesAction() : UActionBase("poly.InsetOutsetFaces", "Inset Outset Faces") {}
+
+	// Members
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
+	FName SelectorName = USelectorNames::Elements;
+
+	// ToDo: @tpott: add further members which should be exposed from the FGeometryScriptMeshInsetOutsetFacesOptions struct (e.g. distance etc.)
+
+public:
+	bool Execute_Implementation(bool bEmitRecord) override;
+};
