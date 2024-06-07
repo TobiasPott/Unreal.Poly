@@ -8,7 +8,8 @@
 #include "Components/InstancedStaticMeshComponent.h"
 #include "GeometryScript/GeometryScriptTypes.h"
 #include "GeometryScript/GeometryScriptSelectionTypes.h"
-#include "UI/SelectionRequestBase.h"
+#include "Selection/SelectionRequestBase.h"
+#include "Modeling/PolyMeshSelection.h"
 #include "Gizmos/GizmoCore.h"
 #include "ElementsGizmo.generated.h"
 
@@ -30,7 +31,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	class UDynamicMeshComponent* SelectionDynamicMeshComponent;
 
-	/** Please add a variable description */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Default")
 	TObjectPtr<UInstancedStaticMeshComponent> InstancedStaticMeshComponent;
 
@@ -77,8 +77,12 @@ protected:
 
 
 protected:
+	//  ToDo: @tpott: Remove internal 'Selections' member (move to PolySelection instead)
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Selection")
 	TMap<AActor*, FGeometryScriptMeshSelection> Selections;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Selection")
+	TArray<UPolyMeshSelection*> PolySelections;
 
 	UPROPERTY()
 	TObjectPtr<UDynamicMeshPool> Pool;
@@ -108,8 +112,10 @@ public:
 	void UpdateSelectionMesh(const FVector2D FirstScreenPoint, const FVector2D SecondScreenPoint);
 
 	void UpdateSelection();
+	void UpdateSelectionVisuals();
 
-	TMap<AActor*, FGeometryScriptMeshSelection> GetSelections() { return this->Selections; };
+
+	TArray<UPolyMeshSelection*> GetPolySelections() { return this->PolySelections; };
 
 
 protected:

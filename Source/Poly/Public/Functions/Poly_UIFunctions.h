@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
-#include "UI/ActorSelectionRequest.h"
-#include "UI/SelectionRequestBase.h"
+#include "Selection/SelectionRequest.h"
+#include "Selection/SelectionRequestBase.h"
 #include "Poly_UIFunctions.generated.h"
 
 /**
@@ -49,7 +49,7 @@ public:
 
 
 	UFUNCTION(BlueprintCallable, Category = "Poly|UI")
-	static void SelectWithSelectionRequest(UActorSelectionRequest* Request, AHUD* HUD);
+	static void SelectWithSelectionRequest(USelectionRequest* Request, AHUD* HUD);
 
 	UFUNCTION(BlueprintCallable, Category = "Poly|UI")
 	static void DrawRequest(USelectionRequestBase* Request, AHUD* HUD, const FLinearColor& RectColor = FLinearColor(1, 1, 1, 0.25));

@@ -3,6 +3,9 @@
 
 #include "Gizmos/SelectGizmo.h"
 #include "Functions/Poly_UIFunctions.h"
+#include "Functions/Poly_MeshSelectionFunctions.h"
+#include "Selection/SelectorSubsystem.h"
+#include "Selection/SelectorBase.h"
 #include "UI/PolyHUD.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -20,7 +23,7 @@ void ASelectGizmo::BeginPlay()
 	Super::BeginPlay();
 
 	// create new request if none is available yet
-	Request = NewObject<UActorSelectionRequest>(this);
+	Request = NewObject<USelectionRequest>(this);
 
 
 }
@@ -84,7 +87,7 @@ void ASelectGizmo::SetEnabled(const bool bInEnable)
 	bIsEnabled = bInEnable;
 }
 
-void ASelectGizmo::SetGizmoHidden(const bool bHiddenInGame)
+void ASelectGizmo::SetGizmoHidden(bool bHiddenInGame)
 {
 	Super::SetGizmoHidden(bHiddenInGame);
 	this->SetEnabled(!bHiddenInGame);
@@ -102,13 +105,19 @@ void ASelectGizmo::UpdateSelection()
 	case EPolySelectionMode::Deselect:
 	{
 		for (AActor* Actor : this->Request->Actors)
-		{ this->Selection.Remove(Actor); }
+		{
+			this->Selection.Remove(Actor);
+			UPolySelection::RemoveByT(this->PolySelection, Actor);
+		}
 		break;
 	}
 	case EPolySelectionMode::Select:
 	{
 		for (AActor* Actor : this->Request->Actors)
-		{ this->Selection.AddUnique(Actor); }
+		{
+			this->Selection.AddUnique(Actor);
+			UPolySelection::AddByActorT(this->PolySelection, Actor);
+		}
 		break;
 	}
 	case EPolySelectionMode::Replace:
@@ -116,8 +125,18 @@ void ASelectGizmo::UpdateSelection()
 	{
 		this->Selection.Reset(this->Request->Count());
 		this->Selection.Append(this->Request->Actors);
+
+		this->PolySelection.Reset(0);
+		UPolySelection::AddByActorsT(this->PolySelection, this->Selection);
 		break;
 	}
+	}
+
+	// Add poly selection to selector 'Actors'
+	ASelectorBase* Selector;
+	if (UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>()->GetSelector(this, USelectorNames::Actors, Selector))
+	{
+		Selector->ReplaceAll(this->PolySelection);
 	}
 
 }
@@ -128,7 +147,7 @@ void ASelectGizmo::OnInputKey_Pressed(FKey InKey)
 	UPoly_UIFunctions::GetMousePosition(this, PlayerIndex, FirstPoint);
 	SecondPoint = FirstPoint;
 
-	Request = NewObject<UActorSelectionRequest>(this);
+	Request = NewObject<USelectionRequest>(this);
 	Request->Init(MarqueeMode, FirstPoint, FirstPoint, FilterClass, bIncludeNonCollider, bIncludeOnlyEnclosed);
 
 	APolyHUD* Hud = Cast<APolyHUD>(UGameplayStatics::GetPlayerController(this, PlayerIndex)->GetHUD());
@@ -176,7 +195,7 @@ void ASelectGizmo::OnMouse2D(FVector AxisValue)
 	}
 }
 
-void ASelectGizmo::OnRequestFinished(UActorSelectionRequest* InRequest, bool bSuccess)
+void ASelectGizmo::OnRequestFinished(USelectionRequest* InRequest, bool bSuccess)
 {
 	Request->Finished.RemoveDynamic(this, &ASelectGizmo::OnRequestFinished);
 	if (bSuccess)

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
-#include "UI/ActorSelectionRequest.h"
+#include "Selection/SelectionRequest.h"
 #include "Poly_BaseFunctions.generated.h"
 
 /**

@@ -1,9 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "Selection/SelectionRequest.h"
 
-#include "UI/ActorSelectionRequest.h"
-
-void UActorSelectionRequest::Init(const ESelectionRequestMode InMode, const FVector2D& InFirstPoint, const FVector2D& InSecondPoint, TSubclassOf<AActor> InFilterClass, bool bInIncludeNonCollider, bool bInOnlyEnclosed)
+void USelectionRequest::Init(const ESelectionRequestMode InMode, const FVector2D& InFirstPoint, const FVector2D& InSecondPoint, TSubclassOf<AActor> InFilterClass, bool bInIncludeNonCollider, bool bInOnlyEnclosed)
 {
 	this->Actors.Reset(0);
 	this->Mode = InMode;
@@ -14,20 +13,20 @@ void UActorSelectionRequest::Init(const ESelectionRequestMode InMode, const FVec
 	this->FilterClass = InFilterClass.Get();
 }
 
-void UActorSelectionRequest::OnFinished()
+void USelectionRequest::OnFinished()
 {
 	if (Finished.IsBound())
 		Finished.Broadcast(this, !Actors.IsEmpty());
 }
 
-void UActorSelectionRequest::SetActors(TArray<AActor*> InActors)
+void USelectionRequest::SetActors(TArray<AActor*> InActors)
 {
 	Actors.Reset(InActors.Num());
 	for (int i = 0; i < InActors.Num(); i++)
 		Actors.Add(InActors[i]);
 }
 
-void UActorSelectionRequest::SetActor(AActor* InActor)
+void USelectionRequest::SetActor(AActor* InActor)
 {
 	Actors.Reset(1);
 	Actors.Add(InActor);

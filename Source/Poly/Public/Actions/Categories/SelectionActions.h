@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Actions/ActionBase.h"
 #include "Selection/SelectorTypes.h"
+#include "Modeling/PolyMeshSelection.h"
 #include "GeometryScript/GeometryScriptSelectionTypes.h"
 #include "SelectionActions.generated.h"
 
@@ -13,20 +14,20 @@
  * 
  */
 UCLASS(Blueprintable)
-class POLY_API UDestroySelectedAction : public UActionBase
+class POLY_API UDestroySelectedActorsAction : public UActionBase
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
-	UDestroySelectedAction()
+	UDestroySelectedActorsAction()
 	{
-		Description = "poly.DestroySelected";
-		ShortName = "Destroy Selected";
+		Description = "poly.DestroySelectedActors";
+		ShortName = "Destroy Selected Actors";
 	}
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Actions|Selection", meta = (ExposeOnSpawn = "true"))
-	FName SelectorName = USelectorNames::Default;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
+	FName SelectorName = USelectorNames::Actors;
 
 public:
 	bool Execute_Implementation(bool bEmitRecord) override;
@@ -45,14 +46,51 @@ public:
 		ShortName = "Delete Selected Elements";
 	}
 
-	UPROPERTY()
-	AActor* Target;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
+	FName SelectorName = USelectorNames::Elements;
 
-	UPROPERTY()
-	FGeometryScriptMeshSelection Selection;
+public:
+	bool Execute_Implementation(bool bEmitRecord) override;
+};
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Actions|Selection", meta = (ExposeOnSpawn = "true"))
-	bool bCompact = false;
+
+UCLASS(Blueprintable)
+class POLY_API UFillPolygonAction : public UActionBase
+{
+	GENERATED_BODY()
+
+public:
+	// Sets default values for this actor's properties
+	UFillPolygonAction()
+	{
+		Description = "poly.FillPolygon";
+		ShortName = "Fill Polygon";
+	}
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
+	FName SelectorName = USelectorNames::Elements;
+
+public:
+	bool Execute_Implementation(bool bEmitRecord) override;
+};
+
+
+
+UCLASS(Blueprintable)
+class POLY_API UFlipPolygonAction : public UActionBase
+{
+	GENERATED_BODY()
+
+public:
+	// Sets default values for this actor's properties
+	UFlipPolygonAction()
+	{
+		Description = "poly.FlipPolygon";
+		ShortName = "Flip Polygon";
+	}
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
+	FName SelectorName = USelectorNames::Elements;
 
 public:
 	bool Execute_Implementation(bool bEmitRecord) override;

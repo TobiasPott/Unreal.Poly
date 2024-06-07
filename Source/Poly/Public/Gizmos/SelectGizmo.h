@@ -4,7 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "UI/ActorSelectionRequest.h"
+#include "Selection/SelectionRequest.h"
+#include "Modeling/PolySelection.h"
 #include "Gizmos/GizmoCore.h"
 #include "SelectGizmo.generated.h"
 
@@ -37,7 +38,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
 	FHitResult HitResult;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
-	UActorSelectionRequest* Request = nullptr;
+	USelectionRequest* Request = nullptr;
 
 
 	// Filter values
@@ -55,7 +56,8 @@ protected:
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Selection")
 	TArray<AActor*> Selection;
-
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Selection")
+	TArray<UPolySelection*> PolySelection;
 
 
 protected:
@@ -70,7 +72,7 @@ public:
 
 	void SetEnabled(const bool bInEnable);
 
-	virtual void SetGizmoHidden(const bool bHiddenInGame = false) override;
+	virtual void SetGizmoHidden(bool bHiddenInGame = false) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SetSelectionMode(EPolySelectionMode InSelectionMode = EPolySelectionMode::Replace);
@@ -80,6 +82,7 @@ public:
 	void UpdateSelection();
 
 	TArray<AActor*> GetSelection() { return this->Selection; };
+	TArray<UPolySelection*> GetPolySelection() { return this->PolySelection; };
 
 	bool IsEmpty() { return this->Selection.IsEmpty(); };
 	bool IsNotEmpty() { return !this->Selection.IsEmpty(); };
@@ -103,7 +106,7 @@ protected:
 
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
-	virtual void OnRequestFinished(UActorSelectionRequest* InRequest, bool bSuccess);
+	virtual void OnRequestFinished(USelectionRequest* InRequest, bool bSuccess);
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	virtual void OnFinished();
@@ -115,7 +118,7 @@ protected:
 public:
 
 	UPROPERTY(BlueprintAssignable, EditDefaultsOnly, Category = "Default")
-	FActorSelectionRequestFinished Finished;
+	FSelectionRequestFinished Finished;
 
 
 };

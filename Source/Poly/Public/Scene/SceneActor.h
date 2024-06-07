@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "IdentifierComponent.h"
 #include "SceneActor.generated.h"
 
 
@@ -15,14 +16,22 @@ class POLY_API ASceneActor : public AActor
 {
 	GENERATED_BODY()
 
-protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TObjectPtr<USceneComponent> DefaultSceneRoot;
-
 
 public:	
 	// Sets default values for this actor's properties
 	ASceneActor();
+
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<USceneComponent> DefaultSceneRoot;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	class UIdentifierComponent* IdentifierComponent;
+
+
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Scene")
 	FName Name = FName("NewScene");

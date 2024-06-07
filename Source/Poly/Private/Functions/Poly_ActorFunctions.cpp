@@ -48,3 +48,12 @@ FRotator UPoly_ActorFunctions::GetRotation(AActor* TargetActor, const ETransform
 	}
 	return FRotator::ZeroRotator;
 }
+
+bool UPoly_ActorFunctions::IsAttached(AActor* TargetActor)
+{
+	if (IsValid(TargetActor))
+	{
+		return (IsValid(TargetActor->GetAttachParentActor()) || IsValid(TargetActor->GetParentActor()));
+	}
+	return false;
+}

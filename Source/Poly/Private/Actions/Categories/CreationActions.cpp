@@ -57,7 +57,6 @@ bool UCreateConeAction::Execute_Implementation(bool bEmitRecord)
 	RETURN_ACTIONSUBMIT_ISVALIDACTOR(PolyMeshActor)
 }
 
-// ToDo: @tpott: Convert code to template function to reduce code repetition
 bool UCreateDirectionalLightAction::Execute_Implementation(bool bEmitRecord)
 {
 	ADirectionalLight* LightActor;

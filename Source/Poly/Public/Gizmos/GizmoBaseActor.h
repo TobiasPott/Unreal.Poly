@@ -73,7 +73,7 @@ protected:
 	void Scale_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform) override;
 
 	/** Please add a function description */
-	void Select_Finished_Implementation(UActorSelectionRequest* Request, bool bSuccess) override;
+	void Select_Finished_Implementation(USelectionRequest* Request, bool bSuccess) override;
 	void Elements_Finished_Implementation(AElementsGizmo* Core) override;
 
 
