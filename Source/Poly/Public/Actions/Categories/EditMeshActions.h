@@ -64,3 +64,21 @@ public:
 public:
 	bool Execute_Implementation(bool bEmitRecord) override;
 };
+
+
+UCLASS(Blueprintable)
+class POLY_API USubdivideMeshAction : public UActionBase
+{
+	GENERATED_BODY()
+
+public:
+	// Ctor
+	USubdivideMeshAction() : UActionBase("poly.SubdivideMesh", "Subdivide Mesh") {}
+
+	// Members
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
+	FName SelectorName = USelectorNames::Elements;
+
+public:
+	bool Execute_Implementation(bool bEmitRecord) override;
+};

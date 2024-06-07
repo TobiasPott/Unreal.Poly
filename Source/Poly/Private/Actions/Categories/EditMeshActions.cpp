@@ -2,6 +2,8 @@
 
 
 #include "Actions/Categories/EditMeshActions.h"
+
+#include "EnumTypes.h"
 #include "Selection/SelectorSubsystem.h"
 #include "Modeling/PolyMeshSelection.h"
 #include "Kismet/GameplayStatics.h"
@@ -73,7 +75,7 @@ bool UCreatePolygonsAction::Execute_Implementation(bool bEmitRecord)
 					&& Selection.GetSelectionType() == EGeometryScriptMeshSelectionType::Vertices)
 				{
 					Positions.Reset(NumSelected);
-					// ToDo: @tpott: check for polygroup selection type and convert selection temporarily to triangles and delete afterwards
+
 					UDynamicMesh* TargetMesh = Target->GetSelectedMesh();
 					Selection.ConvertToMeshIndexArray(TargetMesh->GetMeshRef(), VertexIndices, EGeometryScriptIndexType::Vertex);
 					FVector Center = FVector::ZeroVector;
@@ -93,15 +95,13 @@ bool UCreatePolygonsAction::Execute_Implementation(bool bEmitRecord)
 						Center /= Positions.Num();
 						FVector RefVector = (Center - Positions[0]).GetUnsafeNormal();
 						FVector RefNormal = FVector::CrossProduct((Positions[0] - Center).GetUnsafeNormal(), (Positions[1] - Center).GetUnsafeNormal());
-						//UE_LOG(LogTemp, Warning, TEXT("Normal: %s"), *RefNormal.ToString());
 
 						Positions.Sort([Center, RefVector, RefNormal](const FVector& Pos0, const FVector& Pos1)
 							{
 								const float Dot = Pos0.X * Pos1.X + Pos0.Y * Pos1.Y + Pos0.Z * Pos1.Z;
 								const float Det = FVector::DotProduct(RefNormal, FVector::CrossProduct(Pos0, Pos1));
 								const float Angle = FMath::RadiansToDegrees(FMath::Atan2(Det, Dot));
-								//UE_LOG(LogTemp, Warning, TEXT("\tAngle: %f"), Angle);
-								return Angle < 0;
+								return Angle <= 0;
 							});
 						UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendTriangulatedPolygon3D(TargetMesh, PrimitiveOptions, FTransform::Identity, Positions);
 					}
@@ -161,4 +161,11 @@ bool UFlipNormalsAction::Execute_Implementation(bool bEmitRecord)
 	this->Discard();
 	Pool->ReturnMesh(TempMesh);
 	return false;
+}
+
+
+bool USubdivideMeshAction::Execute_Implementation(bool bEmitRecord)
+{
+	UE_LOG(LogPoly, Warning, TEXT("SubdivieMesh action is not implemented yet."))
+	return Super::Execute_Implementation(bEmitRecord);
 }

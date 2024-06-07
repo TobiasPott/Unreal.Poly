@@ -13,13 +13,13 @@
  *
  */
 UCLASS(Blueprintable)
-class POLY_API UDestroySelectedActorsAction : public UActionBase
+class POLY_API UDestroyActorsAction : public UActionBase
 {
 	GENERATED_BODY()
 
 public:
 	// Ctor
-	UDestroySelectedActorsAction() : UActionBase("poly.DestroySelectedActors", "Destroy Selected Actors") {}
+	UDestroyActorsAction() : UActionBase("poly.DestroyActors", "Destroy Actors") {}
 
 	// Members
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))

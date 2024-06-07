@@ -6,7 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 
 
-bool UDestroySelectedActorsAction::Execute_Implementation(bool bEmitRecord)
+bool UDestroyActorsAction::Execute_Implementation(bool bEmitRecord)
 {
 	USelectorSubsystem* SelectorSubsystem = UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>();
 	ASelectorBase* Selector;
