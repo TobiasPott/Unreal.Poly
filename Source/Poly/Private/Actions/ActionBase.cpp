@@ -4,6 +4,7 @@
 #include "Actions/ActionRef.h"
 #include "Actions/ActionCollection.h"
 #include "Actions/Categories/EditMeshActions.h"
+#include "Actions/Categories/CreateShapeActions.h"
 
 UActionRef* UActionBase::GetUnique()
 {
@@ -30,5 +31,16 @@ void UActionBase::CreateEditMeshCollection(UObject* WorldContext, UActionCollect
 		NewObject<UInsetOutsetFacesAction>(WorldContext),
 	};
 	CreateActionCollection(WorldContext, "poly.EditMesh", "Edit Mesh action collection", Actions, OutCollection);
+}
+
+void UActionBase::CreateShapeCollection(UObject* WorldContext, UActionCollection*& OutCollection)
+{
+	TArray<UActionBase*> Actions = {
+		NewObject<UCreateBoxAction>(WorldContext),
+		NewObject<UCreateSphereAction>(WorldContext),
+		NewObject<UCreateCylinderAction>(WorldContext),
+		NewObject<UCreateConeAction>(WorldContext),
+	};
+	CreateActionCollection(WorldContext, "poly.Shapes", "Shapes action collection", Actions, OutCollection);
 }
 

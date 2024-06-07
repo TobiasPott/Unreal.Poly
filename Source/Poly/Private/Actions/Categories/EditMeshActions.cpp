@@ -243,9 +243,6 @@ bool UTessellateMeshAction::Execute_Implementation(bool bEmitRecord)
 
 bool UInsetOutsetFacesAction::Execute_Implementation(bool bEmitRecord)
 {
-	//UE_LOG(LogPoly, Warning, TEXT("UInsetOutsetFacesAction is not implemented yet."))
-	//return Super::Execute_Implementation(bEmitRecord);
-
 	const FGeometryScriptMeshInsetOutsetFacesOptions Options = { Distance, true, false, 0.0f, 1.0,
 		EGeometryScriptPolyOperationArea::EntireSelection, FGeometryScriptMeshEditPolygroupOptions(), 1.0 };
 
