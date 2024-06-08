@@ -18,7 +18,7 @@
 #include "GeometryScript/MeshModelingFunctions.h"
 
 
-bool UDeleteMeshElementsAction::Execute_Implementation(bool bEmitRecord)
+bool UDeleteElementsAction::Execute_Implementation(bool bEmitRecord)
 {
 	USelectorSubsystem* SelectorSubsystem = UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>();
 	ASelectorBase* Selector;
@@ -165,86 +165,10 @@ bool UFlipNormalsAction::Execute_Implementation(bool bEmitRecord)
 	return false;
 }
 
-
-bool USubdivideMeshAction::Execute_Implementation(bool bEmitRecord)
-{
-	const FGeometryScriptSelectiveTessellateOptions Options = { true, EmptySelectionBehavior };
-
-	USelectorSubsystem* SelectorSubsystem = UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>();
-	ASelectorBase* Selector;
-	if (SelectorSubsystem->GetSelector(this, this->SelectorName, Selector))
-	{
-		TArray<UPolySelection*> Selected = Selector->Selection;
-		for (int i = 0; i < Selected.Num(); i++)
-		{
-			UPolyMeshSelection* Target = Cast<UPolyMeshSelection>(Selected[i]);
-			if (IsValid(Target))
-			{
-				FGeometryScriptMeshSelection Selection = Target->GetMeshElementsSelection();
-				UDynamicMesh* TargetMesh = Target->GetSelectedMesh();
-				UGeometryScriptLibrary_MeshSubdivideFunctions::ApplySelectiveTessellation(TargetMesh, Selection, Options, TessellationLevel);
-			}
-		}
-		if (Selected.Num() > 0)
-		{
-			this->Submit();
-			return true;
-		}
-	}
-	this->Discard();
-	return false;
-}
-
-bool UTessellateMeshAction::Execute_Implementation(bool bEmitRecord)
-{
-	USelectorSubsystem* SelectorSubsystem = UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>();
-	ASelectorBase* Selector;
-
-	UDynamicMeshPool* Pool = NewObject<UDynamicMeshPool>(UDynamicMeshPool::StaticClass());
-	UDynamicMesh* TempMesh = Pool->RequestMesh();
-
-	if (SelectorSubsystem->GetSelector(this, this->SelectorName, Selector))
-	{
-		TArray<UPolySelection*> Selected = Selector->Selection;
-		for (int i = 0; i < Selected.Num(); i++)
-		{
-			UPolyMeshSelection* Target = Cast<UPolyMeshSelection>(Selected[i]);
-			if (IsValid(Target))
-			{
-				FGeometryScriptMeshSelection Selection = Target->GetMeshElementsSelection();
-				// ToDo: @tpott: Transfer 'EGeometryScriptEmptySelectionBehavior EmptySelectionBehavior' from SubdivideMesh
-				//				and create 'all' selection if necessary
-				if (Selection.GetNumSelected() > 0
-					&& Selection.GetSelectionType() == EGeometryScriptMeshSelectionType::Triangles)
-				{
-					UDynamicMesh* TargetMesh = Target->GetSelectedMesh();
-					UGeometryScriptLibrary_MeshDecompositionFunctions::CopyMeshSelectionToMesh(TargetMesh, TempMesh, Selection, TempMesh, false, true);
-					int NumDeleted;
-					UGeometryScriptLibrary_MeshBasicEditFunctions::DeleteSelectedTrianglesFromMesh(TargetMesh, Selection, NumDeleted);
-					UGeometryScriptLibrary_MeshSubdivideFunctions::ApplyUniformTessellation(TempMesh, TessellationLevel);
-
-					FGeometryScriptMeshSelection AllSelection;
-					UGeometryScriptLibrary_MeshSelectionFunctions::CreateSelectAllMeshSelection(TempMesh, AllSelection, EGeometryScriptMeshSelectionType::Triangles);
-					UGeometryScriptLibrary_MeshDecompositionFunctions::CopyMeshSelectionToMesh(TempMesh, TargetMesh, AllSelection, TargetMesh, true, true);
-				}
-			}
-		}
-		if (Selected.Num() > 0)
-		{
-			this->Submit();
-			Pool->ReturnMesh(TempMesh);
-			return true;
-		}
-	}
-	this->Discard();
-	Pool->ReturnMesh(TempMesh);
-	return false;
-}
-
 bool UInsetOutsetFacesAction::Execute_Implementation(bool bEmitRecord)
 {
-	const FGeometryScriptMeshInsetOutsetFacesOptions Options = { Distance, true, false, 0.0f, 1.0,
-		EGeometryScriptPolyOperationArea::EntireSelection, FGeometryScriptMeshEditPolygroupOptions(), 1.0 };
+	const FGeometryScriptMeshInsetOutsetFacesOptions Options = { Distance, bReproject, bBoundaryOnly, Softness, AreaScale,
+		AreaMode, FGeometryScriptMeshEditPolygroupOptions(GroupMode, ConstantGroup), UVScale };
 
 	USelectorSubsystem* SelectorSubsystem = UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>();
 	ASelectorBase* Selector;
@@ -271,5 +195,107 @@ bool UInsetOutsetFacesAction::Execute_Implementation(bool bEmitRecord)
 		}
 	}
 	this->Discard();
+	return false;
+}
+
+bool UTessellateMeshActionBase::Execute_Implementation(bool bEmitRecord)
+{
+	switch (this->TessellateMeshMode)
+	{
+	case EPolyTessellateMeshActionMode::Uniform:
+	{
+		if (TessellateSelection_Uniform())
+		{
+			this->Submit();
+			return true;
+		}
+		break;
+	}
+	case EPolyTessellateMeshActionMode::Concentric:
+	{
+		if (TessellateSelection_Concentric())
+		{
+			this->Submit();
+			return true;
+		}
+		break;
+	}
+	}
+	this->Discard();
+	return false;
+}
+
+bool UTessellateMeshActionBase::TessellateSelection_Uniform()
+{
+	USelectorSubsystem* SelectorSubsystem = UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>();
+	ASelectorBase* Selector;
+
+	UDynamicMeshPool* Pool = NewObject<UDynamicMeshPool>(UDynamicMeshPool::StaticClass());
+	UDynamicMesh* TempMesh = Pool->RequestMesh();
+
+	if (SelectorSubsystem->GetSelector(this, this->SelectorName, Selector))
+	{
+		TArray<UPolySelection*> Selected = Selector->Selection;
+		for (int i = 0; i < Selected.Num(); i++)
+		{
+			UPolyMeshSelection* Target = Cast<UPolyMeshSelection>(Selected[i]);
+			if (IsValid(Target))
+			{
+				FGeometryScriptMeshSelection Selection = Target->GetMeshElementsSelection();
+				UDynamicMesh* TargetMesh = Target->GetSelectedMesh();
+
+				// check if selection is empty, if empty selection behaviour is full mesh selection, create all mesh selection
+				// continue with next otherwise (empty selection and behaviour is empty selection too).
+				if (Selection.GetNumSelected() <= 0)
+				{
+					if (this->EmptySelectionBehavior == EGeometryScriptEmptySelectionBehavior::FullMeshSelection)
+						UGeometryScriptLibrary_MeshSelectionFunctions::CreateSelectAllMeshSelection(TargetMesh, Selection, EGeometryScriptMeshSelectionType::Polygroups);
+					else continue;
+				}
+
+				UGeometryScriptLibrary_MeshDecompositionFunctions::CopyMeshSelectionToMesh(TargetMesh, TempMesh, Selection, TempMesh, false, true);
+				int NumDeleted;
+				UGeometryScriptLibrary_MeshBasicEditFunctions::DeleteSelectedTrianglesFromMesh(TargetMesh, Selection, NumDeleted);
+				UGeometryScriptLibrary_MeshSubdivideFunctions::ApplyUniformTessellation(TempMesh, TessellationLevel);
+
+				FGeometryScriptMeshSelection AllSelection;
+				UGeometryScriptLibrary_MeshSelectionFunctions::CreateSelectAllMeshSelection(TempMesh, AllSelection, EGeometryScriptMeshSelectionType::Polygroups);
+				UGeometryScriptLibrary_MeshDecompositionFunctions::CopyMeshSelectionToMesh(TempMesh, TargetMesh, AllSelection, TargetMesh, true, true);
+			}
+		}
+		if (Selected.Num() > 0)
+		{
+			Pool->ReturnMesh(TempMesh);
+			return true;
+		}
+	}
+	Pool->ReturnMesh(TempMesh);
+	return false;
+}
+
+bool UTessellateMeshActionBase::TessellateSelection_Concentric()
+{
+	const FGeometryScriptSelectiveTessellateOptions Options = { true, EmptySelectionBehavior };
+
+	USelectorSubsystem* SelectorSubsystem = UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>();
+	ASelectorBase* Selector;
+	if (SelectorSubsystem->GetSelector(this, this->SelectorName, Selector))
+	{
+		TArray<UPolySelection*> Selected = Selector->Selection;
+		for (int i = 0; i < Selected.Num(); i++)
+		{
+			UPolyMeshSelection* Target = Cast<UPolyMeshSelection>(Selected[i]);
+			if (IsValid(Target))
+			{
+				FGeometryScriptMeshSelection Selection = Target->GetMeshElementsSelection();
+				UDynamicMesh* TargetMesh = Target->GetSelectedMesh();
+				UGeometryScriptLibrary_MeshSubdivideFunctions::ApplySelectiveTessellation(TargetMesh, Selection, Options, TessellationLevel);
+			}
+		}
+		if (Selected.Num() > 0)
+		{
+			return true;
+		}
+	}
 	return false;
 }

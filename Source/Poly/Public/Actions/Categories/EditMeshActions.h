@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Actions/ActionBase.h"
+#include "GeometryScript/MeshModelingFunctions.h"
 #include "GeometryScript/MeshSubdivideFunctions.h"
 #include "Selection/SelectorTypes.h"
 #include "EditMeshActions.generated.h"
@@ -13,13 +14,13 @@
  *
  */
 UCLASS(Blueprintable)
-class POLY_API UDeleteMeshElementsAction : public UActionBase
+class POLY_API UDeleteElementsAction : public UActionBase
 {
 	GENERATED_BODY()
 
 public:
 	// Ctor
-	UDeleteMeshElementsAction() : UActionBase("poly.DeleteMeshElements", "Delete Mesh Elements") {}
+	UDeleteElementsAction() : UActionBase("poly.DeleteElements", "Delete Elements") {}
 
 	// Members
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
@@ -68,52 +69,6 @@ public:
 
 
 UCLASS(Blueprintable)
-class POLY_API USubdivideMeshAction : public UActionBase
-{
-	GENERATED_BODY()
-
-public:
-	// Ctor
-	USubdivideMeshAction() : UActionBase("poly.SubdivideMesh", "Subdivide Mesh") {}
-
-	// Members
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
-	FName SelectorName = USelectorNames::Elements;
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true", ClampMin = 1, ClampMax = 8))
-	// limit max tesellation level to 8 on spawn
-	int TessellationLevel = 1;
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
-	EGeometryScriptEmptySelectionBehavior EmptySelectionBehavior = EGeometryScriptEmptySelectionBehavior::FullMeshSelection;
-
-public:
-	bool Execute_Implementation(bool bEmitRecord) override;
-};
-
-UCLASS(Blueprintable)
-class POLY_API UTessellateMeshAction : public UActionBase
-{
-	GENERATED_BODY()
-
-public:
-	// Ctor
-	UTessellateMeshAction() : UActionBase("poly.TessellateMesh", "Tessellate Mesh") {}
-
-	// Members
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
-	FName SelectorName = USelectorNames::Elements;
-
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true", ClampMin = 1, ClampMax = 8))
-	// limit max tesellation level to 8 on spawn
-	int TessellationLevel = 1;
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
-	EGeometryScriptEmptySelectionBehavior EmptySelectionBehavior = EGeometryScriptEmptySelectionBehavior::FullMeshSelection;
-
-public:
-	bool Execute_Implementation(bool bEmitRecord) override;
-};
-
-
-UCLASS(Blueprintable)
 class POLY_API UInsetOutsetFacesAction : public UActionBase
 {
 	GENERATED_BODY()
@@ -127,9 +82,89 @@ public:
 	FName SelectorName = USelectorNames::Elements;
 
 	// ToDo: @tpott: add further members which should be exposed from the FGeometryScriptMeshInsetOutsetFacesOptions struct (e.g. distance etc.)
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
-	float Distance = 10.0;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Default, meta = (ExposeOnSpawn = "true"))
+	float Distance = 10.0f;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Default, meta = (ExposeOnSpawn = "true"))
+	bool bReproject = false;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Default, meta = (ExposeOnSpawn = "true"))
+	bool bBoundaryOnly = false; // ToDo: @tpott: Don't know what this member actually affects in the InsetOutsetFaces function
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Default, meta = (ExposeOnSpawn = "true"))
+	float Softness = 0.0f;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Default, meta = (ExposeOnSpawn = "true"))
+	float AreaScale = 1.0;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Default, meta = (ExposeOnSpawn = "true"))
+	EGeometryScriptPolyOperationArea AreaMode = EGeometryScriptPolyOperationArea::EntireSelection;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Default, meta = (ExposeOnSpawn = "true"))
+	EGeometryScriptMeshEditPolygroupMode GroupMode = EGeometryScriptMeshEditPolygroupMode::PreserveExisting;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Default, meta = (ExposeOnSpawn = "true"))
+	int ConstantGroup = 0;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Default, meta = (ExposeOnSpawn = "true"))
+	float UVScale = 1.0;
 
 public:
 	bool Execute_Implementation(bool bEmitRecord) override;
+};
+
+
+/**
+ * Behavior of tessellate mesh actions when applied to a mesh or mesh selection
+ */
+UENUM(BlueprintType)
+enum class EPolyTessellateMeshActionMode : uint8
+{
+	Uniform = 0,		// uses the MeshSubdivideFunctions::ApplyUniformTessellation
+	Concentric = 1,		// uses the MeshSubdivideFunctions::ApplySelectiveTessellation
+};
+
+UCLASS(Blueprintable)
+class POLY_API UTessellateMeshActionBase : public UActionBase
+{
+	GENERATED_BODY()
+
+public:
+	// Ctor
+	UTessellateMeshActionBase() : UActionBase("poly.UTessellateMeshActionBase", "<UTessellateMeshActionBase>") {}
+	UTessellateMeshActionBase(const FString& InDescription, const FString& InShortName) : UActionBase(InDescription, InShortName) { }
+
+
+	// Members
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true", ClampMin = 1, ClampMax = 8))
+	EPolyTessellateMeshActionMode TessellateMeshMode = EPolyTessellateMeshActionMode::Uniform;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
+	FName SelectorName = USelectorNames::Elements;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true", ClampMin = 1, ClampMax = 8))
+	int TessellationLevel = 1;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
+	EGeometryScriptEmptySelectionBehavior EmptySelectionBehavior = EGeometryScriptEmptySelectionBehavior::FullMeshSelection;
+
+public:
+	bool Execute_Implementation(bool bEmitRecord) override;
+
+protected:
+	bool TessellateSelection_Uniform();
+	bool TessellateSelection_Concentric();
+};
+
+
+
+UCLASS(Blueprintable)
+class POLY_API UTessellateMeshConcentricAction : public UTessellateMeshActionBase
+{
+	GENERATED_BODY()
+public:
+	// Ctor
+	UTessellateMeshConcentricAction() : UTessellateMeshActionBase("poly.TessellateMeshConcentric", "Tessellate Mesh (Concentric)") { this->TessellateMeshMode = EPolyTessellateMeshActionMode::Concentric; }
+	// Members
+};
+
+UCLASS(Blueprintable)
+class POLY_API UTessellateMeshUniformAction : public UTessellateMeshActionBase
+{
+	GENERATED_BODY()
+public:
+	// Ctor
+	UTessellateMeshUniformAction() : UTessellateMeshActionBase("poly.TessellateMeshUniform", "Tessellate Mesh (Uniform)") { this->TessellateMeshMode = EPolyTessellateMeshActionMode::Uniform; }
+	// Members
 };

@@ -3,6 +3,7 @@
 #include "Actions/ActionBase.h"
 #include "Actions/ActionRef.h"
 #include "Actions/ActionCollection.h"
+#include "Actions/Categories/CreateLightActions.h"
 #include "Actions/Categories/EditMeshActions.h"
 #include "Actions/Categories/CreateShapeActions.h"
 
@@ -23,11 +24,11 @@ void UActionBase::CreateActionCollection(UObject* WorldContext, const FString In
 void UActionBase::CreateEditMeshCollection(UObject* WorldContext, UActionCollection*& OutCollection)
 {
 	TArray<UActionBase*> Actions = {
-		NewObject<UDeleteMeshElementsAction>(WorldContext),
+		NewObject<UDeleteElementsAction>(WorldContext),
 		NewObject<UCreatePolygonsAction>(WorldContext),
 		NewObject<UFlipNormalsAction>(WorldContext),
-		NewObject<USubdivideMeshAction>(WorldContext),
-		NewObject<UTessellateMeshAction>(WorldContext),
+		NewObject<UTessellateMeshConcentricAction>(WorldContext),
+		NewObject<UTessellateMeshUniformAction>(WorldContext),
 		NewObject<UInsetOutsetFacesAction>(WorldContext),
 	};
 	CreateActionCollection(WorldContext, "poly.EditMesh", "Edit Mesh action collection", Actions, OutCollection);
@@ -42,5 +43,15 @@ void UActionBase::CreateShapeCollection(UObject* WorldContext, UActionCollection
 		NewObject<UCreateConeAction>(WorldContext),
 	};
 	CreateActionCollection(WorldContext, "poly.Shapes", "Shapes action collection", Actions, OutCollection);
+}
+
+void UActionBase::CreateLightCollection(UObject* WorldContext, UActionCollection*& OutCollection)
+{
+	TArray<UActionBase*> Actions = {
+		NewObject<UCreateDirectionalLightAction>(WorldContext),
+		NewObject<UCreatePointLightAction>(WorldContext),
+		NewObject<UCreateSpotLightAction>(WorldContext),
+	};
+	CreateActionCollection(WorldContext, "poly.Lights", "Lights action collection", Actions, OutCollection);
 }
 
