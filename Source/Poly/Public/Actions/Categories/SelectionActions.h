@@ -31,4 +31,30 @@ public:
 
 public:
 	bool Execute_Implementation(bool bEmitRecord) override;
+
+
+	//UFUNCTION(BlueprintCallable, Category = "Selection")
+
+	/**
+	 * Documentation missing (@tpott).
+	 * @param	Array
+	 * @param	Actor
+	 */
+	template<class TPolySelectionType>
+	void SetupWith(FName InName, const TArray<TPolySelectionType*> InPolySelection)
+	{
+		this->SelectorName = InName;
+		this->Ids.Empty(InPolySelection.Num());
+		for (int i = 0; i < InPolySelection.Num(); i++)
+		{
+			this->Ids.Add(InPolySelection[i]->TargetId);
+		}
+	}
+	//SetSelectionAction->SelectorName = USelectorNames::Actors;
+	//for (int i = 0; i < this->PolySelection.Num(); i++)
+	//{
+	//	SetSelectionAction->Ids.Add(this->PolySelection[i]->TargetId);
+	//}
+
+
 };

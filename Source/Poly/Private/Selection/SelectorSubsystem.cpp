@@ -42,6 +42,17 @@ bool USelectorSubsystem::HasSelector(FName Name)
 	return this->Selectors.Contains(Name);
 }
 
+bool USelectorSubsystem::IsEmpty(FName Name)
+{
+	ASelectorBase* Selector;
+	if (GetSelector(this, Name, Selector))
+	{
+		return Selector->IsEmpty();
+	}
+	// no selector means emtpy selection
+	return true;
+}
+
 ASelectorBase* USelectorSubsystem::AddSelector(FName Name, uint8 Stencil)
 {
 	if (!this->Selectors.Contains(Name))
