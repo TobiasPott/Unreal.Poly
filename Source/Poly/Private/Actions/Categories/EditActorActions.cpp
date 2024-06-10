@@ -4,6 +4,7 @@
 #include "Actions/Categories/EditActorActions.h"
 #include "Selection/SelectorSubsystem.h"
 #include "Kismet/GameplayStatics.h"
+#include "EnumTypes.h"
 
 
 bool UDestroyActorsAction::Execute_Implementation(bool bEmitRecord)
@@ -13,6 +14,7 @@ bool UDestroyActorsAction::Execute_Implementation(bool bEmitRecord)
 	if (SelectorSubsystem->GetSelector(this, this->SelectorName, Selector))
 	{
 		TArray<UPolySelection*> SelectedActors = Selector->Selection;
+		UE_LOG(LogPolyTemp, Warning, TEXT("Destroy Selected: %d"), SelectedActors.Num());
 		for (int i = 0; i < SelectedActors.Num(); i++)
 		{
 			UPolySelection* Selected = SelectedActors[i];

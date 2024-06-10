@@ -7,7 +7,11 @@
 #include "Selection/SelectorSubsystem.h"
 #include "Selection/SelectorBase.h"
 #include "UI/PolyHUD.h"
+#include "EnumTypes.h"
 #include "Kismet/GameplayStatics.h"
+#include "Actions/Categories/SelectionActions.h"
+#include "Actions/ActionRunner.h"
+#include "Functions/Poly_BaseFunctions.h"
 
 // Sets default values
 ASelectGizmo::ASelectGizmo()
@@ -132,12 +136,23 @@ void ASelectGizmo::UpdateSelection()
 	}
 	}
 
-	// Add poly selection to selector 'Actors'
-	ASelectorBase* Selector;
-	if (UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>()->GetSelector(this, USelectorNames::Actors, Selector))
-	{
-		Selector->ReplaceAll(this->PolySelection);
-	}
+	//UE_LOG(LogPolyTemp, Warning, TEXT("UpdateSelection()..."))
+	//	USetSelectionAction* SetSelectionAction = NewObject<USetSelectionAction>(this);
+	//SetSelectionAction->SelectorName = USelectorNames::Actors;
+	//UPolySelection::AddIdsTo(this->PolySelection, SetSelectionAction->Ids, true);
+	//// ToDo: @tpott: Consolidate this to allow C++ to run action with static functionn which uses GetOrCreate to get a runner
+	////				May consider adding a static instance and cache it (though this would break use of existing GetOrCreate of action runners
+	//AActor* ActionRunnerActor;
+	//UPoly_BaseFunctions::GetOrCreateActor(this, AActionRunner::StaticClass(), ActionRunnerActor);
+	//AActionRunner* ActionRunner = Cast<AActionRunner>(ActionRunnerActor);
+	//ActionRunner->Run(SetSelectionAction);
+	//// ToDo: @tpott: insert use of setselectionaction here
+	//// Add poly selection to selector 'Actors'
+	//ASelectorBase* Selector;
+	//if (UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>()->GetSelector(this, USelectorNames::Actors, Selector))
+	//{
+	//	Selector->ReplaceAll(this->PolySelection);
+	//}
 
 }
 
@@ -202,6 +217,40 @@ void ASelectGizmo::OnRequestFinished(USelectionRequest* InRequest, bool bSuccess
 	{
 		this->UpdateSelection();
 	}
+
+	// ToDo: @tpott: check for empty selection in case nothing was selected and skip creating new action
+	UE_LOG(LogPolyTemp, Warning, TEXT("OnRequestFinished()..."));
+	USetSelectionAction* SetSelectionAction = NewObject<USetSelectionAction>(this);
+	SetSelectionAction->SelectorName = USelectorNames::Actors;
+	//UPolySelection::AddIdsTo(this->PolySelection, SetSelectionAction->Ids, true);
+	for (int i = 0; i < this->PolySelection.Num(); i++)
+	{
+		SetSelectionAction->Ids.Add(this->PolySelection[i]->TargetId);
+	}
+
+	UE_LOG(LogPolyTemp, Warning, TEXT("OnRequestFinished.1: %d/%d"), this->PolySelection.Num(), SetSelectionAction->Ids.Num());
+	// ToDo: @tpott: Consolidate this to allow C++ to run action with static functionn which uses GetOrCreate to get a runner
+	//				May consider adding a static instance and cache it (though this would break use of existing GetOrCreate of action runners
+	AActor* ActionRunnerActor;
+	UPoly_BaseFunctions::GetOrCreateActor(this, AActionRunner::StaticClass(), ActionRunnerActor);
+	AActionRunner* ActionRunner = Cast<AActionRunner>(ActionRunnerActor);
+	ActionRunner->Run(SetSelectionAction);
+
+
+	USelectorSubsystem* SelectorSubsystem = UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>();
+	ASelectorBase* Selector;
+	if (SelectorSubsystem->GetSelector(this, SetSelectionAction->SelectorName, Selector))
+	{
+		UE_LOG(LogPolyTemp, Warning, TEXT("OnRequestFinished.End: %d/%d"), this->PolySelection.Num(), SetSelectionAction->Ids.Num());
+	}
+	//// ToDo: @tpott: insert use of setselectionaction here
+	//// Add poly selection to selector 'Actors'
+	//ASelectorBase* Selector;
+	//if (UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>()->GetSelector(this, USelectorNames::Actors, Selector))
+	//{
+	//	Selector->ReplaceAll(this->PolySelection);
+	//}
+	
 
 	this->OnFinished();
 }
