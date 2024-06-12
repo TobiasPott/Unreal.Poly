@@ -154,7 +154,7 @@ public:
 	static int32 RemoveByT(TArray<TPolySelectionType*>& Array, TSelectedByType SelectedBy)
 	{
 		int32 NumRemoved = 0;
-		for (int i = Array.Num() - 1; i > 0; i--)
+		for (int i = Array.Num() - 1; i >= 0; i--)
 		{
 			TPolySelectionType* Selection = Array[i];
 			if (Selection->IsSelected(SelectedBy))

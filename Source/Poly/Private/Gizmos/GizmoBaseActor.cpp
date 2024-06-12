@@ -203,12 +203,12 @@ void AGizmoBaseActor::SetupCores()
 
 void AGizmoBaseActor::TransformSelection(FTransform DeltaTransform, bool bInLocalSpace)
 {
-	TArray<AActor*> ActiveSelection = this->SelectCore->GetSelection();
+	TArray<UPolySelection*> ActiveSelection = this->SelectCore->GetPolySelection();
 	if (bInLocalSpace)
 	{
 		for (int i = 0; i < ActiveSelection.Num(); i++)
 		{
-			AActor* Selected = ActiveSelection[i];
+			AActor* Selected = ActiveSelection[i]->GetSelectedActor();
 			Selected->AddActorLocalOffset(DeltaTransform.GetLocation());
 			Selected->AddActorLocalRotation(DeltaTransform.GetRotation());
 			Selected->SetActorRelativeScale3D(Selected->GetActorRelativeScale3D() + DeltaTransform.GetScale3D());
@@ -218,7 +218,7 @@ void AGizmoBaseActor::TransformSelection(FTransform DeltaTransform, bool bInLoca
 	{
 		for (int i = 0; i < ActiveSelection.Num(); i++)
 		{
-			AActor* Selected = ActiveSelection[i];
+			AActor* Selected = ActiveSelection[i]->GetSelectedActor();
 			Selected->AddActorWorldOffset(DeltaTransform.GetLocation());
 			Selected->AddActorWorldRotation(DeltaTransform.GetRotation());
 			Selected->SetActorScale3D(Selected->GetActorScale3D() + DeltaTransform.GetScale3D());
@@ -296,6 +296,7 @@ FVector AGizmoBaseActor::GetPivotLocationFromSelection()
 		{
 			// ToDo: @tpott: Add branch for 'Elements' PivotSelectionSource to determine position from selection
 			FVector SelectionCenter, SelectionExtents;
+			// ToDo: @tpott: Add replacement to derive bounds from PolySelection array
 			UGameplayStatics::GetActorArrayBounds(this->SelectCore->GetSelection(), false, SelectionCenter, SelectionExtents);
 			return SelectionCenter;
 		}

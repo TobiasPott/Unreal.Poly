@@ -7,6 +7,21 @@
 #include "Kismet/GameplayStatics.h"
 #include "EnumTypes.h"
 
+
+bool UClearSelectionAction::Execute_Implementation(bool bEmitRecord)
+{
+	ASelectorBase* Selector;
+	if (UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>()->GetSelector(this, this->SelectorName, Selector))
+	{
+		Selector->ClearSelection();
+		UE_LOG(LogPolyTemp, Warning, TEXT("UClearSelectionAction::Execute_Implementation."));
+		this->Submit();
+		return true;
+	}
+	this->Discard();
+	return false;
+}
+
 bool USetSelectionAction::Execute_Implementation(bool bEmitRecord)
 {
 	// Add poly selection to selector 'Actors'
@@ -27,3 +42,4 @@ bool USetSelectionAction::Execute_Implementation(bool bEmitRecord)
 	this->Discard();
 	return false;
 }
+

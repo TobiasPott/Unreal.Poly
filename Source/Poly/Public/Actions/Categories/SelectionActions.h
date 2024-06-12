@@ -14,6 +14,29 @@
  *
  */
 UCLASS(Blueprintable)
+class POLY_API UClearSelectionAction : public UActionBase
+{
+	GENERATED_BODY()
+
+public:
+	// Ctor
+	UClearSelectionAction() : UActionBase("poly.ClearSelection", "Clear Selection") {}
+
+	// Members
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
+	FName SelectorName = USelectorNames::Actors;
+
+public:
+	bool Execute_Implementation(bool bEmitRecord) override;
+
+
+	void SetupWith(FName InName)
+	{
+		this->SelectorName = InName;
+	}
+};
+
+UCLASS(Blueprintable)
 class POLY_API USetSelectionAction : public UActionBase
 {
 	GENERATED_BODY()

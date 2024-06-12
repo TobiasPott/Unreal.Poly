@@ -84,11 +84,11 @@ public:
 	TArray<AActor*> GetSelection() { return this->Selection; };
 	TArray<UPolySelection*> GetPolySelection() { return this->PolySelection; };
 
-	bool IsEmpty() { return this->Selection.IsEmpty(); };
-	bool IsNotEmpty() { return !this->Selection.IsEmpty(); };
+	bool IsEmpty() { return this->PolySelection.IsEmpty(); };
+	bool IsNotEmpty() { return !this->PolySelection.IsEmpty(); };
 
-	AActor* GetFirstSelected() { return this->Selection.Num() > 0 ? this->Selection[0] : nullptr; };
-	AActor* GetLastSelected() { return this->Selection.Num() > 0 ? this->Selection[this->Selection.Num() - 1] : nullptr; };
+	AActor* GetFirstSelected() { return this->PolySelection.Num() > 0 ? this->PolySelection[0]->GetSelectedActor() : nullptr; };
+	AActor* GetLastSelected() { return this->PolySelection.Num() > 0 ? this->PolySelection[this->PolySelection.Num() - 1]->GetSelectedActor() : nullptr; };
 
 protected:
 

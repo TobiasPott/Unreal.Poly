@@ -104,6 +104,7 @@ void ASelectGizmo::SetSelectionMode(EPolySelectionMode InSelectionMode)
 
 void ASelectGizmo::UpdateSelection()
 {
+
 	switch (this->SelectionMode)
 	{
 	case EPolySelectionMode::Deselect:
@@ -113,6 +114,8 @@ void ASelectGizmo::UpdateSelection()
 			this->Selection.Remove(Actor);
 			UPolySelection::RemoveByT(this->PolySelection, Actor);
 		}
+		//this->PolySelection.Reset(0);
+		//UPolySelection::AddByActorsT(this->PolySelection, this->Selection);
 		break;
 	}
 	case EPolySelectionMode::Select:
@@ -122,13 +125,16 @@ void ASelectGizmo::UpdateSelection()
 			this->Selection.AddUnique(Actor);
 			UPolySelection::AddByActorT(this->PolySelection, Actor);
 		}
+		//this->PolySelection.Reset(0);
+		//UPolySelection::AddByActorsT(this->PolySelection, this->Selection);
 		break;
 	}
 	case EPolySelectionMode::Replace:
 	default:
 	{
 		this->Selection.Reset(this->Request->Count());
-		this->Selection.Append(this->Request->Actors);
+		if (this->Request->Count() > 0)
+			this->Selection.Append(this->Request->Actors);
 
 		this->PolySelection.Reset(0);
 		UPolySelection::AddByActorsT(this->PolySelection, this->Selection);
@@ -136,24 +142,7 @@ void ASelectGizmo::UpdateSelection()
 	}
 	}
 
-	//UE_LOG(LogPolyTemp, Warning, TEXT("UpdateSelection()..."))
-	//	USetSelectionAction* SetSelectionAction = NewObject<USetSelectionAction>(this);
-	//SetSelectionAction->SelectorName = USelectorNames::Actors;
-	//UPolySelection::AddIdsTo(this->PolySelection, SetSelectionAction->Ids, true);
-	//// ToDo: @tpott: Consolidate this to allow C++ to run action with static functionn which uses GetOrCreate to get a runner
-	////				May consider adding a static instance and cache it (though this would break use of existing GetOrCreate of action runners
-	//AActor* ActionRunnerActor;
-	//UPoly_BaseFunctions::GetOrCreateActor(this, AActionRunner::StaticClass(), ActionRunnerActor);
-	//AActionRunner* ActionRunner = Cast<AActionRunner>(ActionRunnerActor);
-	//ActionRunner->Run(SetSelectionAction);
-	//// ToDo: @tpott: insert use of setselectionaction here
-	//// Add poly selection to selector 'Actors'
-	//ASelectorBase* Selector;
-	//if (UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>()->GetSelector(this, USelectorNames::Actors, Selector))
-	//{
-	//	Selector->ReplaceAll(this->PolySelection);
-	//}
-
+	UE_LOG(LogPolyTemp, Warning, TEXT("UpdateSelection(). %s %d / %d"), *UEnum::GetValueAsString(this->SelectionMode), this->Selection.Num(), this->PolySelection.Num());
 }
 
 
@@ -213,18 +202,16 @@ void ASelectGizmo::OnMouse2D(FVector AxisValue)
 void ASelectGizmo::OnRequestFinished(USelectionRequest* InRequest, bool bSuccess)
 {
 	Request->Finished.RemoveDynamic(this, &ASelectGizmo::OnRequestFinished);
-	if (bSuccess)
-	{
-		this->UpdateSelection();
-	}
+	this->UpdateSelection();
 
-	bool bIsEmpty = this->PolySelection.IsEmpty() && UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>()->IsEmpty(USelectorNames::Actors);
-	//if (!bIsEmpty)
+	FName SelectorName = USelectorNames::Actors;
+	bool bIsEmpty = this->PolySelection.IsEmpty(); // && UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>()->IsEmpty(USelectorNames::Actors);
+	if (!bIsEmpty)
 	{
 		// ToDo: @tpott: check for empty selection in case nothing was selected and skip creating new action
-		UE_LOG(LogPolyTemp, Warning, TEXT("OnRequestFinished()..."));
+		UE_LOG(LogPolyTemp, Warning, TEXT("OnRequestFinished(). SetSelection"));
 		USetSelectionAction* SetSelectionAction = NewObject<USetSelectionAction>(this);
-		SetSelectionAction->SetupWith(USelectorNames::Actors, this->PolySelection);
+		SetSelectionAction->SetupWith(SelectorName, this->PolySelection);
 
 		// ToDo: @tpott: Consolidate this to allow C++ to run action with static functionn which uses GetOrCreate to get a runner
 		//				May consider adding a static instance and cache it (though this would break use of existing GetOrCreate of action runners
@@ -232,16 +219,22 @@ void ASelectGizmo::OnRequestFinished(USelectionRequest* InRequest, bool bSuccess
 		UPoly_BaseFunctions::GetOrCreateActor(this, AActionRunner::StaticClass(), ActionRunnerActor);
 		AActionRunner* ActionRunner = Cast<AActionRunner>(ActionRunnerActor);
 		ActionRunner->Run(SetSelectionAction);
-
-
-		//USelectorSubsystem* SelectorSubsystem = UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>();
-		//ASelectorBase* Selector;
-		//if (SelectorSubsystem->GetSelector(this, SetSelectionAction->SelectorName, Selector))
-		//{
-		//	UE_LOG(LogPolyTemp, Warning, TEXT("OnRequestFinished.End: %d/%d"), this->PolySelection.Num(), SetSelectionAction->Ids.Num());
-		//}
 	}
-	
+	else
+	{
+		if (!UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>()->IsEmpty(SelectorName))
+		{
+			UE_LOG(LogPolyTemp, Warning, TEXT("OnRequestFinished(). ClearSelection"));
+			UClearSelectionAction* ClearSelectionAction = NewObject<UClearSelectionAction>(this);
+			ClearSelectionAction->SetupWith(SelectorName);
+
+			AActor* ActionRunnerActor;
+			UPoly_BaseFunctions::GetOrCreateActor(this, AActionRunner::StaticClass(), ActionRunnerActor);
+			AActionRunner* ActionRunner = Cast<AActionRunner>(ActionRunnerActor);
+			ActionRunner->Run(ClearSelectionAction);
+		}
+	}
+
 
 	this->OnFinished();
 }
