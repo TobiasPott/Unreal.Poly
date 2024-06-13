@@ -36,7 +36,7 @@ public:
 
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Selector")
-	TObjectPtr<UClass> VisualiserClass = ASelectorVisualiserBase::StaticClass();
+	TObjectPtr<UClass> VisualiserClass = nullptr; // ASelectorVisualiserBase::StaticClass();
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	bool IsEmpty() { return Selection.IsEmpty(); }
@@ -165,7 +165,7 @@ public:
 
 
 
-protected:
+public:
 	UFUNCTION()
 	void SetVisualiser(TSubclassOf<ASelectorVisualiserBase> NewVisualiserClass);
 

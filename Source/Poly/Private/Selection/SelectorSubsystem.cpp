@@ -28,11 +28,15 @@ void USelectorSubsystem::Init(const UObject* WorldContext)
 		SubsystemRoot = WorldContext->GetWorld()->SpawnActor<ASelectorSubsystemRoot>(ASelectorSubsystemRoot::StaticClass());
 	}
 
-	TArray<FName> SelectorNames = { USelectorNames::Default, USelectorNames::Second, USelectorNames::Third, USelectorNames::Fourth, USelectorNames::Actors, USelectorNames::Elements };
+	TArray<FName> SelectorNames = { USelectorNames::Default, USelectorNames::Second, USelectorNames::Third, USelectorNames::Fourth,
+									USelectorNames::Actors, USelectorNames::Elements };
 	for (int i = 0; i < SelectorNames.Num(); i++)
 	{
 		// Add selector (using index as stencil (starting with 1 (i+1))
-		AddSelector(SelectorNames[i], static_cast<uint8>(i + 1));
+		ASelectorBase* Selector = AddSelector(SelectorNames[i], static_cast<uint8>(i + 1));
+		// set default (outline post process) viualiser for all selectors except 'Elements'
+		if (i != 5)
+			Selector->SetVisualiser(ASelectorVisualiserBase::StaticClass());
 	}
 
 }
