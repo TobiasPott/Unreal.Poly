@@ -13,8 +13,8 @@ bool UClearSelectionAction::Execute_Implementation(bool bEmitRecord)
 	ASelectorBase* Selector;
 	if (UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>()->GetSelector(this, this->SelectorName, Selector))
 	{
+		UE_LOG(LogPolyTemp, Warning, TEXT("UClearSelectionAction::Execute_Implementation (%s)."), *this->SelectorName.ToString());
 		Selector->ClearSelection();
-		UE_LOG(LogPolyTemp, Warning, TEXT("UClearSelectionAction::Execute_Implementation."));
 		this->Submit();
 		return true;
 	}
@@ -34,8 +34,8 @@ bool USetSelectionAction::Execute_Implementation(bool bEmitRecord)
 		{
 			UPolySelection::AddByIdT(Selection, Id);
 		}
+		UE_LOG(LogPolyTemp, Warning, TEXT("USetSelectionAction::Execute_Implementation: %d/%d (%s)"), Ids.Num(), Selection.Num(), *this->SelectorName.ToString());
 		Selector->ReplaceAllT(Selection);
-		UE_LOG(LogPolyTemp, Warning, TEXT("USetSelectionAction::Execute_Implementation: %d/%d"), Ids.Num(), Selection.Num());
 		this->Submit();
 		return true;
 	}

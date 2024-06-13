@@ -67,7 +67,7 @@ public:
 	void SetupWith(FName InName, const TArray<TPolySelectionType*> InPolySelection)
 	{
 		this->SelectorName = InName;
-		this->Ids.Empty(InPolySelection.Num());
+		this->Ids.Empty(0);
 		for (int i = 0; i < InPolySelection.Num(); i++)
 		{
 			this->Ids.Add(InPolySelection[i]->TargetId);

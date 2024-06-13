@@ -111,38 +111,29 @@ void ASelectGizmo::UpdateSelection()
 	{
 		for (AActor* Actor : this->Request->Actors)
 		{
-			this->Selection.Remove(Actor);
 			UPolySelection::RemoveByT(this->PolySelection, Actor);
 		}
-		//this->PolySelection.Reset(0);
-		//UPolySelection::AddByActorsT(this->PolySelection, this->Selection);
 		break;
 	}
 	case EPolySelectionMode::Select:
 	{
 		for (AActor* Actor : this->Request->Actors)
 		{
-			this->Selection.AddUnique(Actor);
 			UPolySelection::AddByActorT(this->PolySelection, Actor);
 		}
-		//this->PolySelection.Reset(0);
-		//UPolySelection::AddByActorsT(this->PolySelection, this->Selection);
 		break;
 	}
 	case EPolySelectionMode::Replace:
 	default:
 	{
-		this->Selection.Reset(this->Request->Count());
-		if (this->Request->Count() > 0)
-			this->Selection.Append(this->Request->Actors);
-
 		this->PolySelection.Reset(0);
-		UPolySelection::AddByActorsT(this->PolySelection, this->Selection);
+		if (this->Request->Count() > 0)
+			UPolySelection::AddByActorsT(this->PolySelection, this->Request->Actors);
 		break;
 	}
 	}
 
-	UE_LOG(LogPolyTemp, Warning, TEXT("UpdateSelection(). %s %d / %d"), *UEnum::GetValueAsString(this->SelectionMode), this->Selection.Num(), this->PolySelection.Num());
+	UE_LOG(LogPolyTemp, Warning, TEXT("UpdateSelection(). %s %d / %d"), *UEnum::GetValueAsString(this->SelectionMode), this->Request->Actors.Num(), this->PolySelection.Num());
 }
 
 
@@ -177,6 +168,7 @@ void ASelectGizmo::OnInputKey_Released(FKey InKey)
 		UPoly_UIFunctions::GetMousePosition(this, PlayerIndex, SecondPoint);
 		Request->UpdateSecondPoint(SecondPoint);
 
+		Request->Actors.Empty();
 		Request->Submit();
 		Request->Finished.AddDynamic(this, &ASelectGizmo::OnRequestFinished);
 	}
@@ -209,7 +201,7 @@ void ASelectGizmo::OnRequestFinished(USelectionRequest* InRequest, bool bSuccess
 	if (!bIsEmpty)
 	{
 		// ToDo: @tpott: check for empty selection in case nothing was selected and skip creating new action
-		UE_LOG(LogPolyTemp, Warning, TEXT("OnRequestFinished(). SetSelection"));
+		//UE_LOG(LogPolyTemp, Warning, TEXT("OnRequestFinished(). SetSelection"));
 		USetSelectionAction* SetSelectionAction = NewObject<USetSelectionAction>(this);
 		SetSelectionAction->SetupWith(SelectorName, this->PolySelection);
 
@@ -224,7 +216,7 @@ void ASelectGizmo::OnRequestFinished(USelectionRequest* InRequest, bool bSuccess
 	{
 		if (!UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>()->IsEmpty(SelectorName))
 		{
-			UE_LOG(LogPolyTemp, Warning, TEXT("OnRequestFinished(). ClearSelection"));
+			//UE_LOG(LogPolyTemp, Warning, TEXT("OnRequestFinished(). ClearSelection"));
 			UClearSelectionAction* ClearSelectionAction = NewObject<UClearSelectionAction>(this);
 			ClearSelectionAction->SetupWith(SelectorName);
 
@@ -251,6 +243,7 @@ void ASelectGizmo::OnFinished()
 
 void ASelectGizmo::Clear()
 {
-	this->Selection.Reset(this->Request->Count());
+	//this->Selection.Reset(this->Request->Count());
+	this->PolySelection.Reset();
 	this->Request = nullptr;
 }

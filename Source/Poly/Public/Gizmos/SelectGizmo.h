@@ -55,8 +55,6 @@ protected:
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Selection")
-	TArray<AActor*> Selection;
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Selection")
 	TArray<UPolySelection*> PolySelection;
 
 
@@ -81,7 +79,7 @@ public:
 
 	void UpdateSelection();
 
-	TArray<AActor*> GetSelection() { return this->Selection; };
+	//TArray<AActor*> GetSelection() { return TArray<AActor*>(); }; // this->Selection; };
 	TArray<UPolySelection*> GetPolySelection() { return this->PolySelection; };
 
 	bool IsEmpty() { return this->PolySelection.IsEmpty(); };

@@ -140,23 +140,14 @@ void AGizmoBaseActor::Scale_TransformEnded_Implementation(bool bEnded, FTransfor
 
 void AGizmoBaseActor::Select_Finished_Implementation(USelectionRequest* Request, bool bSuccess)
 {
-	USelectorSubsystem* SelectorSubsystem = UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>();
-	ASelectorBase* Selector;
-	SelectorSubsystem->GetSelector(this, this->SelectorName, Selector);
-
 	this->bHasActorSelection = bSuccess;
 	if (bSuccess)
 	{
 		this->UpdatePivot(true, true);
-		TArray<UPolySelection*> Actors = this->SelectCore->GetPolySelection();
-		Selector->ReplaceAll(Actors);
 	}
 	else
 	{
-		Selector->ClearSelection();
 	}
-	// update pivot transform
-	// ToDo: @tpott: Cleanup ElementCore.Selections and only keep those actors in there, which are also selected by SelectCore
 }
 
 
@@ -296,8 +287,12 @@ FVector AGizmoBaseActor::GetPivotLocationFromSelection()
 		{
 			// ToDo: @tpott: Add branch for 'Elements' PivotSelectionSource to determine position from selection
 			FVector SelectionCenter, SelectionExtents;
-			// ToDo: @tpott: Add replacement to derive bounds from PolySelection array
-			UGameplayStatics::GetActorArrayBounds(this->SelectCore->GetSelection(), false, SelectionCenter, SelectionExtents);
+			TArray<UPolySelection*> CurSelection = this->SelectCore->GetPolySelection();
+			TArray<AActor*> Actors;
+			for (auto Sel : CurSelection)
+			{ Actors.AddUnique(Sel->GetSelectedActor()); }
+
+			UGameplayStatics::GetActorArrayBounds(Actors, false, SelectionCenter, SelectionExtents);
 			return SelectionCenter;
 		}
 		else if (this->PivotSelectionSource == EGizmoPivotSelectionSource::PSS_Elements
