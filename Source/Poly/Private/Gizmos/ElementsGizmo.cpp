@@ -133,29 +133,20 @@ void AElementsGizmo::SetGizmoHidden(const bool bHiddenInGame)
 
 void AElementsGizmo::SetTargets(const TArray<AActor*>& Targets)
 {
-	this->Selections.Reset();
-	this->PolySelections.Reset();
-	for (int i = 0; i < Targets.Num(); i++)
-	{
-		AActor* Target = Targets[i];
-		UBaseDynamicMeshComponent* BaseDMC = Target->GetComponentByClass<UBaseDynamicMeshComponent>();
-		if (IsValid(BaseDMC))
-		{
-			this->Selections.Add(Target, FGeometryScriptMeshSelection());
-		}
-	}
-
 	// remove poly selections for actors no longer selected
 	for (int i = this->PolySelections.Num() - 1; i >= 0; i--)
 	{
-		if (!this->Selections.Contains(this->PolySelections[i]->GetSelectedActor()))
+		AActor* Target = this->PolySelections[i]->GetSelectedActor();
+		if (!this->PolySelections.ContainsByPredicate([Target](UPolyMeshSelection* Selection) { return Selection->IsSelectedActor(Target); }))
 			this->PolySelections.RemoveAt(i);
 	}
 	// add new poly selection instances for selected actors (reuse existing ones)
 	for (int i = 0; i < Targets.Num(); i++)
 	{
 		AActor* Target = Targets[i];
-		UPolySelection::AddByActorT<UPolyMeshSelection>(this->PolySelections, Target);
+		UBaseDynamicMeshComponent* BaseDMC = Target->GetComponentByClass<UBaseDynamicMeshComponent>();
+		if (IsValid(BaseDMC))
+			UPolySelection::AddByActorT<UPolyMeshSelection>(this->PolySelections, Target);
 	}
 
 	// Reset selection mesh
@@ -167,6 +158,21 @@ void AElementsGizmo::SetTargets(const TArray<AActor*>& Targets)
 	if (UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>()->GetSelector(this, USelectorNames::Elements, Selector))
 	{
 		Selector->ReplaceAllT(this->PolySelections);
+	}
+}
+
+void AElementsGizmo::ClearTargets()
+{
+	this->PolySelections.Empty();
+	// Reset selection mesh
+	this->SelectionDynamicMeshComponent->GetDynamicMesh()->Reset();
+	this->InstancedStaticMeshComponent->ClearInstances();
+
+	// Add poly mesh selection to selector 'Elements'
+	ASelectorBase* Selector;
+	if (UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>()->GetSelector(this, USelectorNames::Elements, Selector))
+	{
+		Selector->ClearSelection();
 	}
 }
 
@@ -233,21 +239,15 @@ void AElementsGizmo::UpdateSelection()
 {
 	const FGeometryScriptSpatialQueryOptions QueryOptions = { 0, false, this->WindingThreshold };
 
-	FGeometryScriptDynamicMeshBVH TargetBVH;
-
 	UDynamicMesh* SelectByMesh = this->DynamicMeshComponent->GetDynamicMesh();
-	// iterate over targets (in keys of Selections)
-	TArray<AActor*> Keys;
-	Selections.GetKeys(Keys);
 
-
+	FGeometryScriptDynamicMeshBVH TargetBVH;
 	FVector RayOrigin, RayDir;
 	UPoly_UIFunctions::GetScreenRay(this, this->PlayerIndex, this->SecondPoint, RayOrigin, RayDir);
 
-	//for (auto& KvPair : Selections)
-	for (int i = 0; i < Keys.Num(); i++)
+	for(int i = 0; i < PolySelections.Num(); i++)
 	{
-		AActor* Target = Keys[i];
+		AActor* Target = PolySelections[i]->GetSelectedActor();
 		if (!IsValid(Target))
 			continue;
 		// get dynamic mesh component
@@ -321,34 +321,32 @@ void AElementsGizmo::UpdateSelection()
 
 		}
 
-		// perform selection combine for select and deselct modes
-		switch (this->SelectionMode)
-		{
-		case EPolySelectionMode::Select:
-		{
-			FGeometryScriptMeshSelection OldSelection = Selections[Target];
-			OldSelection.CombineSelectionInPlace(Selection, EGeometryScriptCombineSelectionMode::Add);
-			Selection = OldSelection;
-			break;
-		}
-		case EPolySelectionMode::Deselect:
-		{
-			FGeometryScriptMeshSelection OldSelection = Selections[Target];
-			OldSelection.CombineSelectionInPlace(Selection, EGeometryScriptCombineSelectionMode::Subtract);
-			Selection = OldSelection;
-			break;
-		}
-		default:
-		case EPolySelectionMode::Replace:
-			break;
-		}
-
-		// place updated selection back into selection map
-		Selections.Emplace(Target, Selection);
-		// get poly selection instance for target and assign current geo script selection to it
 		UPolyMeshSelection* PolySelection = *this->PolySelections.FindByPredicate([Target](UPolyMeshSelection* Item) { return Item->IsSelectedActor(Target); });
 		if (IsValid(PolySelection))
 		{
+			// perform selection combine for select and deselct modes
+			switch (this->SelectionMode)
+			{
+			case EPolySelectionMode::Select:
+			{
+				FGeometryScriptMeshSelection OldSelection = PolySelection->Selection;
+				OldSelection.CombineSelectionInPlace(Selection, EGeometryScriptCombineSelectionMode::Add);
+				Selection = OldSelection;
+				break;
+			}
+			case EPolySelectionMode::Deselect:
+			{
+				FGeometryScriptMeshSelection OldSelection = PolySelection->Selection;
+				OldSelection.CombineSelectionInPlace(Selection, EGeometryScriptCombineSelectionMode::Subtract);
+				Selection = OldSelection;
+				break;
+			}
+			default:
+			case EPolySelectionMode::Replace:
+				break;
+			}
+
+			// get poly selection instance for target and assign current geo script selection to it
 			PolySelection->LocalToWorld = Target->GetTransform();
 			PolySelection->Selection = Selection;
 		}
@@ -492,7 +490,6 @@ void AElementsGizmo::OnFinished()
 
 void AElementsGizmo::Clear()
 {
-	this->Selections.Reset();
 	this->PolySelections.Reset();
 	this->Request = nullptr;
 }

@@ -77,10 +77,6 @@ protected:
 
 
 protected:
-	//  ToDo: @tpott: Remove internal 'Selections' member (move to PolySelection instead)
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Selection")
-	TMap<AActor*, FGeometryScriptMeshSelection> Selections;
-
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Selection")
 	TArray<UPolyMeshSelection*> PolySelections;
 
@@ -102,6 +98,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SetTargets(const TArray<AActor*>& Targets);
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void ClearTargets();
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SetSelectionMode(EPolySelectionMode InSelectionMode = EPolySelectionMode::Replace);
 	UFUNCTION(BlueprintCallable, Category = "Selection")
