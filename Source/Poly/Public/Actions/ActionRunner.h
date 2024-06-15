@@ -41,6 +41,11 @@ public:
 	bool Run(UActionBase* Action);
 
 
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Actions", meta = (WorldContext = "WorldContext"))
+	static bool RunOnAny(const UObject* WorldContext,UActionBase* InAction);
+
 public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FActionEvent, UActionBase*, Action);
 	UPROPERTY(BlueprintAssignable, EditDefaultsOnly, Category = "Default")

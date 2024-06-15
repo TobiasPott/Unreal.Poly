@@ -197,20 +197,13 @@ void ASelectGizmo::OnRequestFinished(USelectionRequest* InRequest, bool bSuccess
 	this->UpdateSelection();
 
 	FName SelectorName = USelectorNames::Actors;
-	bool bIsEmpty = this->PolySelection.IsEmpty(); // && UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>()->IsEmpty(USelectorNames::Actors);
+	bool bIsEmpty = this->PolySelection.IsEmpty();
 	if (!bIsEmpty)
 	{
-		// ToDo: @tpott: check for empty selection in case nothing was selected and skip creating new action
 		//UE_LOG(LogPolyTemp, Warning, TEXT("OnRequestFinished(). SetSelection"));
 		USetSelectionAction* SetSelectionAction = NewObject<USetSelectionAction>(this);
 		SetSelectionAction->SetupWith(SelectorName, this->PolySelection);
-
-		// ToDo: @tpott: Consolidate this to allow C++ to run action with static functionn which uses GetOrCreate to get a runner
-		//				May consider adding a static instance and cache it (though this would break use of existing GetOrCreate of action runners
-		AActor* ActionRunnerActor;
-		UPoly_BaseFunctions::GetOrCreateActor(this, AActionRunner::StaticClass(), ActionRunnerActor);
-		AActionRunner* ActionRunner = Cast<AActionRunner>(ActionRunnerActor);
-		ActionRunner->Run(SetSelectionAction);
+		AActionRunner::RunOnAny(this, SetSelectionAction);
 	}
 	else
 	{
@@ -219,11 +212,7 @@ void ASelectGizmo::OnRequestFinished(USelectionRequest* InRequest, bool bSuccess
 			//UE_LOG(LogPolyTemp, Warning, TEXT("OnRequestFinished(). ClearSelection"));
 			UClearSelectionAction* ClearSelectionAction = NewObject<UClearSelectionAction>(this);
 			ClearSelectionAction->SetupWith(SelectorName);
-
-			AActor* ActionRunnerActor;
-			UPoly_BaseFunctions::GetOrCreateActor(this, AActionRunner::StaticClass(), ActionRunnerActor);
-			AActionRunner* ActionRunner = Cast<AActionRunner>(ActionRunnerActor);
-			ActionRunner->Run(ClearSelectionAction);
+			AActionRunner::RunOnAny(this, ClearSelectionAction);
 		}
 	}
 
