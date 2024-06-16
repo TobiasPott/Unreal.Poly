@@ -3,12 +3,12 @@
 
 #include "Gizmos/ElementsGizmo.h"
 #include "Functions/Poly_UIFunctions.h"
-//#include "Functions/Poly_SelectorFunctions.h"
 #include "Functions/Poly_MeshSelectionFunctions.h"
 #include "Functions/Poly_UIFunctions.h"
 #include "Functions/Poly_ActorFunctions.h"
 #include "Selection/SelectorSubsystem.h"
 #include "Selection/SelectorBase.h"
+#include "Actions/ActionRunner.h"
 #include "UI/PolyHUD.h"
 #include "Kismet/GameplayStatics.h"
 #include "UDynamicMesh.h"
@@ -22,7 +22,6 @@
 #include "GeometryScript/MeshSpatialFunctions.h"
 #include "GeometryScript/MeshQueryFunctions.h"
 #include "Actions/Categories/SelectionActions.h"
-#include "Actions/ActionRunner.h"
 
 
 // ToDo: CONSIDER: @tpott: Consider using a SplineComponent to render selected edges
@@ -455,6 +454,15 @@ void AElementsGizmo::OnInputKey_Released(FKey InKey)
 		this->UpdateSelection();
 		this->UpdateSelectionVisuals();
 
+
+		bool bIsEmpty = this->PolySelections.IsEmpty();
+		if (!bIsEmpty)
+		{
+			//UE_LOG(LogPolyTemp, Warning, TEXT("OnRequestFinished(). SetSelection"));
+			USetElementsSelectionAction* SetSelectionAction = NewObject<USetElementsSelectionAction>(this);
+			SetSelectionAction->SetupWith(USelectorNames::Elements, this->PolySelections);
+			AActionRunner::RunOnAny(this, SetSelectionAction);
+		}
 
 		Request->Submit();
 		this->OnFinished();
