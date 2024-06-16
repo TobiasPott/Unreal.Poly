@@ -92,9 +92,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void Setup(ESelectionRequestMode InMarqueeMode, const float InDistance = 10000.0, const EGeometryScriptMeshSelectionType InSelectionType = EGeometryScriptMeshSelectionType::Triangles, const bool bInDisableOnFinish = false);
 
-	void SetEnabled(const bool bInEnable);
-
-	virtual void SetGizmoHidden(const bool bHiddenInGame = false) override;
+	virtual void SetEnableConsumeInput(const bool bInEnable) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SetTargets(const TArray<AActor*>& Targets);

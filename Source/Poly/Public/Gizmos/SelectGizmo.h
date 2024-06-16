@@ -68,9 +68,7 @@ public:
 	void Setup(ESelectionRequestMode InMarqueeMode, UClass* InFilterClass, bool bInIncludeNonCollider = false, bool bInIncludeOnlyEnclosed = false,
 		bool bInDisableOnFinish = false);
 
-	void SetEnabled(const bool bInEnable);
-
-	virtual void SetGizmoHidden(bool bHiddenInGame = false) override;
+	virtual void SetEnableConsumeInput(const bool bInEnable) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SetSelectionMode(EPolySelectionMode InSelectionMode = EPolySelectionMode::Replace);

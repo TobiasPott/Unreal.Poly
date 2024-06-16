@@ -79,7 +79,7 @@ void AElementsGizmo::Setup(ESelectionRequestMode InMarqueeMode, const float InDi
 	bDisableOnFinish = bInDisableOnFinish;
 }
 
-void AElementsGizmo::SetEnabled(const bool bInEnable)
+void AElementsGizmo::SetEnableConsumeInput(const bool bInEnable)
 {
 	if (!bIsEnabled && bInEnable)
 	{
@@ -124,12 +124,6 @@ void AElementsGizmo::SetEnabled(const bool bInEnable)
 	}
 
 	bIsEnabled = bInEnable;
-}
-
-void AElementsGizmo::SetGizmoHidden(const bool bHiddenInGame)
-{
-	Super::SetGizmoHidden(bHiddenInGame);
-	this->SetEnabled(!bHiddenInGame);
 }
 
 void AElementsGizmo::SetTargets(const TArray<AActor*>& Targets)
@@ -492,7 +486,7 @@ void AElementsGizmo::OnFinished()
 		this->Finished.Broadcast(this);
 
 	if (bDisableOnFinish)
-		this->SetEnabled(false);
+		this->SetEnableConsumeInput(false);
 	this->Request = nullptr;
 }
 

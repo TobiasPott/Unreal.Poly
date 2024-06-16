@@ -42,7 +42,7 @@ void ASelectGizmo::Setup(ESelectionRequestMode InMarqueeMode, UClass* InFilterCl
 	bDisableOnFinish = bInDisableOnFinish;
 }
 
-void ASelectGizmo::SetEnabled(const bool bInEnable)
+void ASelectGizmo::SetEnableConsumeInput(const bool bInEnable)
 {
 	if (!bIsEnabled && bInEnable)
 	{
@@ -89,12 +89,6 @@ void ASelectGizmo::SetEnabled(const bool bInEnable)
 	}
 
 	bIsEnabled = bInEnable;
-}
-
-void ASelectGizmo::SetGizmoHidden(bool bHiddenInGame)
-{
-	Super::SetGizmoHidden(bHiddenInGame);
-	this->SetEnabled(!bHiddenInGame);
 }
 
 void ASelectGizmo::SetSelectionMode(EPolySelectionMode InSelectionMode)
@@ -226,7 +220,7 @@ void ASelectGizmo::OnFinished()
 		Finished.Broadcast(this->Request, this->Request->IsNotEmpty());
 
 	if (bDisableOnFinish)
-		this->SetEnabled(false);
+		this->SetEnableConsumeInput(false);
 	this->Request = nullptr;
 }
 
