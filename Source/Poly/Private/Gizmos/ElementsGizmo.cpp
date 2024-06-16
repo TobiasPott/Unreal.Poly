@@ -21,6 +21,8 @@
 #include "GeometryScript/MeshBasicEditFunctions.h"
 #include "GeometryScript/MeshSpatialFunctions.h"
 #include "GeometryScript/MeshQueryFunctions.h"
+#include "Actions/Categories/SelectionActions.h"
+#include "Actions/ActionRunner.h"
 
 
 // ToDo: CONSIDER: @tpott: Consider using a SplineComponent to render selected edges
@@ -153,12 +155,11 @@ void AElementsGizmo::SetTargets(const TArray<AActor*>& Targets)
 	this->SelectionDynamicMeshComponent->GetDynamicMesh()->Reset();
 	this->InstancedStaticMeshComponent->ClearInstances();
 
-	// Add poly mesh selection to selector 'Elements'
-	ASelectorBase* Selector;
-	if (UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>()->GetSelector(this, USelectorNames::Elements, Selector))
-	{
-		Selector->ReplaceAllT(this->PolySelections);
-	}
+	// Add poly mesh selection to selector 'Elements' via action
+	//UE_LOG(LogPolyTemp, Warning, TEXT("OnRequestFinished(). SetSelection"));
+	USetSelectionAction* SetSelectionAction = NewObject<USetSelectionAction>(this);
+	SetSelectionAction->SetupWith(USelectorNames::Elements, this->PolySelections);
+	AActionRunner::RunOnAny(this, SetSelectionAction);
 }
 
 void AElementsGizmo::ClearTargets()
@@ -168,12 +169,11 @@ void AElementsGizmo::ClearTargets()
 	this->SelectionDynamicMeshComponent->GetDynamicMesh()->Reset();
 	this->InstancedStaticMeshComponent->ClearInstances();
 
-	// Add poly mesh selection to selector 'Elements'
-	ASelectorBase* Selector;
-	if (UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>()->GetSelector(this, USelectorNames::Elements, Selector))
-	{
-		Selector->ClearSelection();
-	}
+	// clear selector 'Elements' via action
+	//UE_LOG(LogPolyTemp, Warning, TEXT("OnRequestFinished(). ClearSelection"));
+	UClearSelectionAction* ClearSelectionAction = NewObject<UClearSelectionAction>(this);
+	ClearSelectionAction->SetupWith(USelectorNames::Elements);
+	AActionRunner::RunOnAny(this, ClearSelectionAction);
 }
 
 void AElementsGizmo::SetSelectionType(EGeometryScriptMeshSelectionType InSelectionType)
@@ -245,7 +245,7 @@ void AElementsGizmo::UpdateSelection()
 	FVector RayOrigin, RayDir;
 	UPoly_UIFunctions::GetScreenRay(this, this->PlayerIndex, this->SecondPoint, RayOrigin, RayDir);
 
-	for(int i = 0; i < PolySelections.Num(); i++)
+	for (int i = 0; i < PolySelections.Num(); i++)
 	{
 		AActor* Target = PolySelections[i]->GetSelectedActor();
 		if (!IsValid(Target))
