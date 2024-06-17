@@ -93,6 +93,11 @@ void AGizmoBaseActor::Translate_TranslationChanged_Implementation(bool bEnded, F
 	{
 		const FTransform Transform = UPoly_BaseFunctions::Transform_TranslationOnly(DeltaTranslation);
 		this->TransformCore(Transform, false, this->TranslateCore);
+		// ToDo: @tpott: (Actions) add translate selection action
+		//			This is currently transform per frame (by delta) this should only be for preview and reverted
+		//			Revert in 'TransformEnded' and the action will re-apply the abolute transform on the selection
+		//			This 'should' keep the delta transform only temporarily (otherwise I need some better idea for visualisation)
+		//			OR!!! I could just keep the delta and the action is 'run' but without actually transforming again (need to flag those actions somehow)
 		this->TransformSelection(Transform, false);
 	}
 }

@@ -28,3 +28,20 @@ public:
 public:
 	bool Execute_Implementation(bool bEmitRecord) override;
 };
+
+//UCLASS(Blueprintable)
+//class POLY_API UTransformActorsAction : public UActionBase
+//{
+//	GENERATED_BODY()
+//
+//public:
+//	// Ctor
+//	UDestroyActorsAction() : UActionBase("poly.DestroyActors", "Destroy Actors") {}
+//
+//	// Members
+//	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
+//	FName SelectorName = USelectorNames::Actors;
+//
+//public:
+//	bool Execute_Implementation(bool bEmitRecord) override;
+//};
