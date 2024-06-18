@@ -114,7 +114,8 @@ void AGizmoBaseActor::Translate_TransformEnded_Implementation(bool bEnded, FTran
 		// But the reverse transform (to clear the per changed applied delta transforms)
 		// Though shouldn't establish that as a rule for now.
 		TransformAction->DeltaTransform.SetLocation(-DeltaTransform.GetLocation());
-		AActionRunner::RunOnAny(this, TransformAction);
+		TransformAction->Execute();
+		//AActionRunner::RunOnAny(this, TransformAction);
 		TransformAction->DeltaTransform.SetLocation(DeltaTransform.GetLocation());
 		AActionRunner::RunOnAny(this, TransformAction);
 		// ToDo: @tpott: Move the Action related code into 'TransformSelection' and extend it to expect an additional flag if the translation should emit an action/is end transform
