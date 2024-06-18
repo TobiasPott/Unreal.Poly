@@ -31,3 +31,39 @@ bool UDestroyActorsAction::Execute_Implementation(bool bEmitRecord)
 	this->Discard();
 	return false;
 }
+
+
+bool UTransformSelectionAction::Execute_Implementation(bool bEmitRecord)
+{
+	USelectorSubsystem* SelectorSubsystem = UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>();
+	ASelectorBase* Selector;
+	if (SelectorSubsystem->GetSelector(this, this->SelectorName, Selector))
+	{
+		const TArray<UPolySelection*> ActiveSelection = Selector->Selection;
+		if (this->Space == ETransformSpace::TS_Local)
+		{
+			for (int i = 0; i < ActiveSelection.Num(); i++)
+			{
+				AActor* Selected = ActiveSelection[i]->GetSelectedActor();
+				Selected->AddActorLocalOffset(this->DeltaTransform.GetLocation());
+				Selected->AddActorLocalRotation(this->DeltaTransform.GetRotation());
+				Selected->SetActorRelativeScale3D(Selected->GetActorRelativeScale3D() + this->DeltaTransform.GetScale3D());
+			}
+		}
+		else
+		{
+			for (int i = 0; i < ActiveSelection.Num(); i++)
+			{
+				AActor* Selected = ActiveSelection[i]->GetSelectedActor();
+				Selected->AddActorWorldOffset(this->DeltaTransform.GetLocation());
+				Selected->AddActorWorldRotation(this->DeltaTransform.GetRotation());
+				Selected->SetActorScale3D(Selected->GetActorScale3D() + this->DeltaTransform.GetScale3D());
+			}
+		}
+		this->Submit();
+		return true;
+	}
+
+	this->Discard();
+	return false;
+}

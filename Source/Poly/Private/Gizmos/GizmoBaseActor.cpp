@@ -10,6 +10,8 @@
 #include "GeometryScript/MeshSelectionQueryFunctions.h"
 //#include "GeometryScript/GeometryScriptTypes.h"
 #include "GeometryScript/GeometryScriptSelectionTypes.h"
+#include "Actions/Categories/EditActorActions.h"
+#include "Actions/ActionRunner.h"
 
 
 // Sets default values
@@ -93,11 +95,6 @@ void AGizmoBaseActor::Translate_TranslationChanged_Implementation(bool bEnded, F
 	{
 		const FTransform Transform = UPoly_BaseFunctions::Transform_TranslationOnly(DeltaTranslation);
 		this->TransformCore(Transform, false, this->TranslateCore);
-		// ToDo: @tpott: (Actions) add translate selection action
-		//			This is currently transform per frame (by delta) this should only be for preview and reverted
-		//			Revert in 'TransformEnded' and the action will re-apply the abolute transform on the selection
-		//			This 'should' keep the delta transform only temporarily (otherwise I need some better idea for visualisation)
-		//			OR!!! I could just keep the delta and the action is 'run' but without actually transforming again (need to flag those actions somehow)
 		this->TransformSelection(Transform, false);
 	}
 }
@@ -108,6 +105,20 @@ void AGizmoBaseActor::Translate_TransformEnded_Implementation(bool bEnded, FTran
 	{
 		TranslateCore->SetActorRelativeLocation(FVector::ZeroVector);
 		this->AddActorWorldOffset(DeltaTransform.GetLocation());
+
+		UTransformSelectionAction* TransformAction = NewObject<UTransformSelectionAction>(this);
+		TransformAction->SelectorName = USelectorNames::Actors;
+		TransformAction->Space = ETransformSpace::TS_World;
+		// ToDo: @tpott: Resolve Hack.
+		// Using the same action twice with members changed inbetween allows for only one action appearing in the history 
+		// But the reverse transform (to clear the per changed applied delta transforms)
+		// Though shouldn't establish that as a rule for now.
+		TransformAction->DeltaTransform.SetLocation(-DeltaTransform.GetLocation());
+		AActionRunner::RunOnAny(this, TransformAction);
+		TransformAction->DeltaTransform.SetLocation(DeltaTransform.GetLocation());
+		AActionRunner::RunOnAny(this, TransformAction);
+		// ToDo: @tpott: Move the Action related code into 'TransformSelection' and extend it to expect an additional flag if the translation should emit an action/is end transform
+		// ToDo: @tpott: Consider using an action instance and 'collect' (or sum up) the deltas (or replace on end)
 	}
 }
 
