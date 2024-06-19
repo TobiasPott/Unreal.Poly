@@ -255,6 +255,7 @@ void AElementsGizmo::UpdateSelection()
 	FVector RayOrigin, RayDir;
 	UPoly_UIFunctions::GetScreenRay(this, this->PlayerIndex, this->SecondPoint, RayOrigin, RayDir);
 
+	// ToDo: @tpott: (Elements Selection): Selection does somehow/sometimes ignore the scale of a mesh (I should test that case specifically next!)
 	for (int i = 0; i < PolySelections.Num(); i++)
 	{
 		AActor* Target = PolySelections[i]->GetSelectedActor();
@@ -266,7 +267,6 @@ void AElementsGizmo::UpdateSelection()
 			continue;
 
 		const FTransform TargetTransform = Target->GetActorTransform();
-		const FQuat TargetRotation = TargetTransform.GetRotation();
 		const FTransform InvTargetTransform = TargetTransform.Inverse();
 		UDynamicMesh* TargetMesh = DMC->GetDynamicMesh();
 		FGeometryScriptMeshSelection Selection;
