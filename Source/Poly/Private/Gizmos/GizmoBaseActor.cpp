@@ -97,30 +97,23 @@ void AGizmoBaseActor::Translate_TranslationChanged_Implementation(bool bEnded, F
 		this->TransformCore(Transform, false, this->TranslateCore);
 		this->TransformSelection(Transform, false);
 	}
+	else
+	{
+		const FTransform Transform = UPoly_BaseFunctions::Transform_TranslationOnly(DeltaTranslation);
+		TranslateCore->SetActorRelativeLocation(FVector::ZeroVector);
+		this->AddActorWorldOffset(Transform.GetLocation());
+
+		UTransformSelectionAction* Action = NewObject<UTransformSelectionAction>(this);
+		Action->SetupWith(USelectorNames::Actors, ETransformSpace::TS_World, Transform);
+		Action->SetLocation(-Transform.GetLocation());
+		Action->Execute();
+		Action->SetLocation(Transform.GetLocation());
+		AActionRunner::RunOnAny(this, Action);
+	}
 }
 
 void AGizmoBaseActor::Translate_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform)
 {
-	if (bEnded)
-	{
-		TranslateCore->SetActorRelativeLocation(FVector::ZeroVector);
-		this->AddActorWorldOffset(DeltaTransform.GetLocation());
-
-		UTransformSelectionAction* TransformAction = NewObject<UTransformSelectionAction>(this);
-		TransformAction->SelectorName = USelectorNames::Actors;
-		TransformAction->Space = ETransformSpace::TS_World;
-		// ToDo: @tpott: Resolve Hack.
-		// Using the same action twice with members changed inbetween allows for only one action appearing in the history 
-		// But the reverse transform (to clear the per changed applied delta transforms)
-		// Though shouldn't establish that as a rule for now.
-		TransformAction->DeltaTransform.SetLocation(-DeltaTransform.GetLocation());
-		TransformAction->Execute();
-		//AActionRunner::RunOnAny(this, TransformAction);
-		TransformAction->DeltaTransform.SetLocation(DeltaTransform.GetLocation());
-		AActionRunner::RunOnAny(this, TransformAction);
-		// ToDo: @tpott: Move the Action related code into 'TransformSelection' and extend it to expect an additional flag if the translation should emit an action/is end transform
-		// ToDo: @tpott: Consider using an action instance and 'collect' (or sum up) the deltas (or replace on end)
-	}
 }
 
 void AGizmoBaseActor::Rotate_RotationChanged_Implementation(bool bEnded, FRotator DeltaRotation)
@@ -131,30 +124,23 @@ void AGizmoBaseActor::Rotate_RotationChanged_Implementation(bool bEnded, FRotato
 		this->TransformCore(Transform, false, this->RotateCore);
 		this->TransformSelection(Transform, false);
 	}
-}
-
-void AGizmoBaseActor::Rotate_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform)
-{
-	if (bEnded)
+	else
 	{
 		RotateCore->SetActorRelativeRotation(FRotator::ZeroRotator);
 		this->UpdatePivot(false, true);
 
-		UTransformSelectionAction* TransformAction = NewObject<UTransformSelectionAction>(this);
-		TransformAction->SelectorName = USelectorNames::Actors;
-		TransformAction->Space = ETransformSpace::TS_World;
-		// ToDo: @tpott: Resolve Hack.
-		// Using the same action twice with members changed inbetween allows for only one action appearing in the history 
-		// But the reverse transform (to clear the per changed applied delta transforms)
-		// Though shouldn't establish that as a rule for now.
-		TransformAction->DeltaTransform.SetRotation(DeltaTransform.GetRotation().Inverse());
-		TransformAction->Execute();
-		//AActionRunner::RunOnAny(this, TransformAction);
-		TransformAction->DeltaTransform.SetRotation(DeltaTransform.GetRotation());
-		AActionRunner::RunOnAny(this, TransformAction);
-		// ToDo: @tpott: Move the Action related code into 'TransformSelection' and extend it to expect an additional flag if the translation should emit an action/is end transform
-		// ToDo: @tpott: Consider using an action instance and 'collect' (or sum up) the deltas (or replace on end)
+		const FTransform Transform = UPoly_BaseFunctions::Transform_RotationOnly(DeltaRotation);
+		UTransformSelectionAction* Action = NewObject<UTransformSelectionAction>(this);
+		Action->SetupWith(USelectorNames::Actors, ETransformSpace::TS_World, Transform);
+		Action->SetRotation(Transform.GetRotation().Inverse());
+		Action->Execute();
+		Action->SetRotation(Transform.GetRotation());
+		AActionRunner::RunOnAny(this, Action);
 	}
+}
+
+void AGizmoBaseActor::Rotate_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform)
+{
 }
 
 void AGizmoBaseActor::Scale_ScaleChanged_Implementation(bool bEnded, FVector DeltaScale)
@@ -167,26 +153,17 @@ void AGizmoBaseActor::Scale_ScaleChanged_Implementation(bool bEnded, FVector Del
 	else
 	{
 		const FTransform Transform = UPoly_BaseFunctions::Transform_ScaleOnly(DeltaScale);
-		UTransformSelectionAction* TransformAction = NewObject<UTransformSelectionAction>(this);
-		TransformAction->SelectorName = USelectorNames::Actors;
-		TransformAction->Space = ETransformSpace::TS_World;
-		// ToDo: @tpott: Resolve Hack.
-		// Using the same action twice with members changed inbetween allows for only one action appearing in the history 
-		// But the reverse transform (to clear the per changed applied delta transforms)
-		// Though shouldn't establish that as a rule for now.
-		TransformAction->DeltaTransform.SetLocation(-Transform.GetScale3D());
-		TransformAction->Execute();
-		//AActionRunner::RunOnAny(this, TransformAction);
-		TransformAction->DeltaTransform.SetLocation(Transform.GetScale3D());
-		AActionRunner::RunOnAny(this, TransformAction);
-		// ToDo: @tpott: Move the Action related code into 'TransformSelection' and extend it to expect an additional flag if the translation should emit an action/is end transform
-		// ToDo: @tpott: Consider using an action instance and 'collect' (or sum up) the deltas (or replace on end)
+		UTransformSelectionAction* Action = NewObject<UTransformSelectionAction>(this);
+		Action->SetupWith(USelectorNames::Actors, ETransformSpace::TS_World, Transform);
+		Action->SetScale3D(-Transform.GetScale3D());
+		Action->Execute();
+		Action->SetScale3D(Transform.GetScale3D());
+		AActionRunner::RunOnAny(this, Action);
 	}
 }
 
 void AGizmoBaseActor::Scale_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Scale_TransformEnded_Implementation"));
 }
 
 void AGizmoBaseActor::Select_Finished_Implementation(USelectionRequest* Request, bool bSuccess)
@@ -341,7 +318,9 @@ FVector AGizmoBaseActor::GetPivotLocationFromSelection()
 			TArray<UPolySelection*> CurSelection = this->SelectCore->GetPolySelection();
 			TArray<AActor*> Actors;
 			for (auto Sel : CurSelection)
-			{ Actors.AddUnique(Sel->GetSelectedActor()); }
+			{
+				Actors.AddUnique(Sel->GetSelectedActor());
+			}
 
 			UGameplayStatics::GetActorArrayBounds(Actors, false, SelectionCenter, SelectionExtents);
 			return SelectionCenter;

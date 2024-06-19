@@ -67,3 +67,24 @@ bool UTransformSelectionAction::Execute_Implementation(bool bEmitRecord)
 	this->Discard();
 	return false;
 }
+
+inline void UTransformSelectionAction::SetLocation(FVector InLocation, bool bClearTransform)
+{
+	if (bClearTransform)
+		this->DeltaTransform = FTransform(FRotator::ZeroRotator, FVector::ZeroVector, FVector::ZeroVector);
+	this->DeltaTransform.SetLocation(InLocation);
+}
+
+inline void UTransformSelectionAction::SetRotation(FQuat InRotation, bool bClearTransform)
+{
+	if (bClearTransform)
+		this->DeltaTransform = FTransform(FRotator::ZeroRotator, FVector::ZeroVector, FVector::ZeroVector);
+	this->DeltaTransform.SetRotation(InRotation);
+}
+
+inline void UTransformSelectionAction::SetScale3D(FVector InScale, bool bClearTransform)
+{
+	if (bClearTransform)
+		this->DeltaTransform = FTransform(FRotator::ZeroRotator, FVector::ZeroVector, FVector::ZeroVector);
+	this->DeltaTransform.SetScale3D(InScale);
+}
