@@ -169,6 +169,23 @@ void AElementsGizmo::ClearTargets()
 	AActionRunner::RunOnAny(this, ClearSelectionAction);
 }
 
+void AElementsGizmo::ClearSelections()
+{
+	for(auto Selection: this->PolySelections)
+	{
+		Selection->Selection.ClearSelection();
+	}
+	// Reset selection mesh
+	this->SelectionDynamicMeshComponent->GetDynamicMesh()->Reset();
+	this->InstancedStaticMeshComponent->ClearInstances();
+
+	// Add poly mesh selection to selector 'Elements' via action
+	//UE_LOG(LogPolyTemp, Warning, TEXT("OnRequestFinished(). SetSelection"));
+	USetSelectionAction* SetSelectionAction = NewObject<USetSelectionAction>(this);
+	SetSelectionAction->SetupWith(USelectorNames::Elements, this->PolySelections);
+	AActionRunner::RunOnAny(this, SetSelectionAction);
+}
+
 void AElementsGizmo::SetSelectionType(EGeometryScriptMeshSelectionType InSelectionType)
 {
 	this->SelectionType = InSelectionType;

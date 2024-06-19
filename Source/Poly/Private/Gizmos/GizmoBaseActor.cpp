@@ -330,8 +330,11 @@ FVector AGizmoBaseActor::GetPivotLocationFromSelection()
 		{
 			TArray<UPolyMeshSelection*> Selections = this->ElementsCore->GetPolySelections();
 			int Count = 0;
-			FVector SelectionCenter;
 
+			FVector SelectionCenter = FVector::ZeroVector;
+
+			// ToDo: @tpott: (Mesh Element Selection): Need to  finish center determination based on actors of selection if all selections are empty (elements)
+			// 
 			// ToDo: Refine this to determine 'median' position from selection (bounds will shift location to selection 3D center
 			//			Create method to get median location of mesh elements (tri & polygroups use tri-barycentric center, vertices use vertex position)
 			for (auto Selection : Selections)
@@ -344,9 +347,17 @@ FVector AGizmoBaseActor::GetPivotLocationFromSelection()
 				}
 			}
 
-			SelectionCenter = SelectionCenter / Count;
-			UE_LOG(LogTemp, Warning, TEXT("Elements: %d / %d (%s)"), Count, Selections.Num(), *SelectionCenter.ToString());
-			return SelectionCenter;
+			if (Count > 0)
+			{
+				SelectionCenter = SelectionCenter / Count;
+				UE_LOG(LogTemp, Warning, TEXT("Elements: %d / %d (%s)"), Count, Selections.Num(), *SelectionCenter.ToString());
+				return SelectionCenter;
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Elements: %d / %d (%s)"), Count, Selections.Num(), *SelectionCenter.ToString());
+				return SelectionCenter;
+			}
 		}
 	}
 

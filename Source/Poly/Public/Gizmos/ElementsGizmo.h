@@ -99,6 +99,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void ClearTargets();
 	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void ClearSelections();
+	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SetSelectionMode(EPolySelectionMode InSelectionMode = EPolySelectionMode::Replace);
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SetSelectionType(EGeometryScriptMeshSelectionType InSelectionType = EGeometryScriptMeshSelectionType::Triangles);
