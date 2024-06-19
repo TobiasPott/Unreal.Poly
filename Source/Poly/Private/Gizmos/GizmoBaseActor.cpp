@@ -139,6 +139,21 @@ void AGizmoBaseActor::Rotate_TransformEnded_Implementation(bool bEnded, FTransfo
 	{
 		RotateCore->SetActorRelativeRotation(FRotator::ZeroRotator);
 		this->UpdatePivot(false, true);
+
+		UTransformSelectionAction* TransformAction = NewObject<UTransformSelectionAction>(this);
+		TransformAction->SelectorName = USelectorNames::Actors;
+		TransformAction->Space = ETransformSpace::TS_World;
+		// ToDo: @tpott: Resolve Hack.
+		// Using the same action twice with members changed inbetween allows for only one action appearing in the history 
+		// But the reverse transform (to clear the per changed applied delta transforms)
+		// Though shouldn't establish that as a rule for now.
+		TransformAction->DeltaTransform.SetRotation(DeltaTransform.GetRotation().Inverse());
+		TransformAction->Execute();
+		//AActionRunner::RunOnAny(this, TransformAction);
+		TransformAction->DeltaTransform.SetRotation(DeltaTransform.GetRotation());
+		AActionRunner::RunOnAny(this, TransformAction);
+		// ToDo: @tpott: Move the Action related code into 'TransformSelection' and extend it to expect an additional flag if the translation should emit an action/is end transform
+		// ToDo: @tpott: Consider using an action instance and 'collect' (or sum up) the deltas (or replace on end)
 	}
 }
 
@@ -149,10 +164,29 @@ void AGizmoBaseActor::Scale_ScaleChanged_Implementation(bool bEnded, FVector Del
 		const FTransform Transform = UPoly_BaseFunctions::Transform_ScaleOnly(DeltaScale);
 		this->TransformSelection(Transform, false);
 	}
+	else
+	{
+		const FTransform Transform = UPoly_BaseFunctions::Transform_ScaleOnly(DeltaScale);
+		UTransformSelectionAction* TransformAction = NewObject<UTransformSelectionAction>(this);
+		TransformAction->SelectorName = USelectorNames::Actors;
+		TransformAction->Space = ETransformSpace::TS_World;
+		// ToDo: @tpott: Resolve Hack.
+		// Using the same action twice with members changed inbetween allows for only one action appearing in the history 
+		// But the reverse transform (to clear the per changed applied delta transforms)
+		// Though shouldn't establish that as a rule for now.
+		TransformAction->DeltaTransform.SetLocation(-Transform.GetScale3D());
+		TransformAction->Execute();
+		//AActionRunner::RunOnAny(this, TransformAction);
+		TransformAction->DeltaTransform.SetLocation(Transform.GetScale3D());
+		AActionRunner::RunOnAny(this, TransformAction);
+		// ToDo: @tpott: Move the Action related code into 'TransformSelection' and extend it to expect an additional flag if the translation should emit an action/is end transform
+		// ToDo: @tpott: Consider using an action instance and 'collect' (or sum up) the deltas (or replace on end)
+	}
 }
 
 void AGizmoBaseActor::Scale_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Scale_TransformEnded_Implementation"));
 }
 
 void AGizmoBaseActor::Select_Finished_Implementation(USelectionRequest* Request, bool bSuccess)
