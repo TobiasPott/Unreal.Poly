@@ -23,10 +23,10 @@ public:
 
 	/**
 	 * Create a component or subobject that will be instanced inside all instances of this class.
-	 * @param	TargetActor					
+	 * @param	TargetActor
 	 * @param	TReturnType					Class of return type, all overrides must be of this type
 	 * @param	SubobjectName				Name of the new component
-	 * @param	Mobility					
+	 * @param	Mobility
 	 * @param	bTransient					True if the component is being assigned to a transient property. This does not make the component itself transient, but does stop it from inheriting parent defaults
 	 */
 	template<class TReturnType>
@@ -56,4 +56,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Actor")
 	static bool IsAttached(AActor* TargetActor);
+
+
+
+
+	static void AddActorTransform(AActor* Actor, FVector InOffset, FQuat InRotation, FVector InScale, ETransformSpace Space = ETransformSpace::TS_World);
+	static void AddActorTransform(AActor* Actor, FTransform InTransform, ETransformSpace Space = ETransformSpace::TS_World);
+	static void AddTransforms(const TArray<AActor*> Actors, FTransform InTransform, ETransformSpace Space = ETransformSpace::TS_World);
+
 };
