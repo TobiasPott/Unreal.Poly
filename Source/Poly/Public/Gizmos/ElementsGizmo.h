@@ -113,6 +113,7 @@ public:
 	void UpdateSelectionVisuals();
 
 
+	bool IsEmptySelection() const;
 	TArray<UPolyMeshSelection*> GetPolySelections() { return this->PolySelections; };
 
 

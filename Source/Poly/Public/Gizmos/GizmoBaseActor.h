@@ -60,19 +60,10 @@ protected:
 	void CreateElementsCore_Implementation(AElementsGizmo*& OutElementsCore) override;
 
 
-	/** Please add a function description */
 	void Translate_TranslationChanged_Implementation(bool bEnded, FVector DeltaTranslation) override;
-	void Translate_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform) override;
-
-	/** Please add a function description */
 	void Rotate_RotationChanged_Implementation(bool bEnded, FRotator DeltaRotation) override;
-	void Rotate_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform) override;
-
-	/** Please add a function description */
 	void Scale_ScaleChanged_Implementation(bool bEnded, FVector DeltaScale) override;
-	void Scale_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform) override;
-
-	/** Please add a function description */
+	
 	void Select_Finished_Implementation(USelectionRequest* Request, bool bSuccess) override;
 	void Elements_Finished_Implementation(AElementsGizmo* Core) override;
 

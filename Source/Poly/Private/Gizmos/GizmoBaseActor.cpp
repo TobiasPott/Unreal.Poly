@@ -34,7 +34,6 @@ void AGizmoBaseActor::CreateTranslateCore_Implementation(ATranslateGizmo*& OutTr
 	OutTranslateCore = this->TranslateCore;
 
 	OutTranslateCore->TranslationChanged.AddDynamic(this, &AGizmoBaseActor::Translate_TranslationChanged);
-	OutTranslateCore->TransformEnded.AddDynamic(this, &AGizmoBaseActor::Translate_TransformEnded);
 }
 
 void AGizmoBaseActor::CreateRotateCore_Implementation(ARotateGizmo*& OutRotateCore)
@@ -46,7 +45,6 @@ void AGizmoBaseActor::CreateRotateCore_Implementation(ARotateGizmo*& OutRotateCo
 	OutRotateCore = this->RotateCore;
 
 	OutRotateCore->RotationChanged.AddDynamic(this, &AGizmoBaseActor::Rotate_RotationChanged);
-	OutRotateCore->TransformEnded.AddDynamic(this, &AGizmoBaseActor::Rotate_TransformEnded);
 }
 
 void AGizmoBaseActor::CreateScaleCore_Implementation(AScaleGizmo*& OutScaleCore)
@@ -58,7 +56,6 @@ void AGizmoBaseActor::CreateScaleCore_Implementation(AScaleGizmo*& OutScaleCore)
 	OutScaleCore = this->ScaleCore;
 
 	OutScaleCore->ScaleChanged.AddDynamic(this, &AGizmoBaseActor::Scale_ScaleChanged);
-	OutScaleCore->TransformEnded.AddDynamic(this, &AGizmoBaseActor::Scale_TransformEnded);
 }
 
 void AGizmoBaseActor::CreateSelectCore_Implementation(ASelectGizmo*& OutSelectCore)
@@ -99,21 +96,20 @@ void AGizmoBaseActor::Translate_TranslationChanged_Implementation(bool bEnded, F
 	}
 	else
 	{
-		const FTransform Transform = UPoly_BaseFunctions::Transform_TranslationOnly(DeltaTranslation);
-		TranslateCore->SetActorRelativeLocation(FVector::ZeroVector);
-		this->AddActorWorldOffset(Transform.GetLocation());
+		if (ElementsCore->IsEmptySelection())
+		{
+			const FTransform Transform = UPoly_BaseFunctions::Transform_TranslationOnly(DeltaTranslation);
+			TranslateCore->SetActorRelativeLocation(FVector::ZeroVector);
+			this->AddActorWorldOffset(Transform.GetLocation());
 
-		UTransformSelectionAction* Action = NewObject<UTransformSelectionAction>(this);
-		Action->SetupWith(USelectorNames::Actors, ETransformSpace::TS_World, Transform);
-		Action->SetLocation(-Transform.GetLocation());
-		Action->Execute();
-		Action->SetLocation(Transform.GetLocation());
-		AActionRunner::RunOnAny(this, Action);
+			UTransformSelectionAction* Action = NewObject<UTransformSelectionAction>(this);
+			Action->SetupWith(USelectorNames::Actors, ETransformSpace::TS_World, Transform);
+			Action->SetLocation(-Transform.GetLocation());
+			Action->Execute();
+			Action->SetLocation(Transform.GetLocation());
+			AActionRunner::RunOnAny(this, Action);
+		}
 	}
-}
-
-void AGizmoBaseActor::Translate_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform)
-{
 }
 
 void AGizmoBaseActor::Rotate_RotationChanged_Implementation(bool bEnded, FRotator DeltaRotation)
@@ -126,21 +122,20 @@ void AGizmoBaseActor::Rotate_RotationChanged_Implementation(bool bEnded, FRotato
 	}
 	else
 	{
-		RotateCore->SetActorRelativeRotation(FRotator::ZeroRotator);
-		this->UpdatePivot(false, true);
+		if (ElementsCore->IsEmptySelection())
+		{
+			RotateCore->SetActorRelativeRotation(FRotator::ZeroRotator);
+			this->UpdatePivot(false, true);
 
-		const FTransform Transform = UPoly_BaseFunctions::Transform_RotationOnly(DeltaRotation);
-		UTransformSelectionAction* Action = NewObject<UTransformSelectionAction>(this);
-		Action->SetupWith(USelectorNames::Actors, ETransformSpace::TS_World, Transform);
-		Action->SetRotation(Transform.GetRotation().Inverse());
-		Action->Execute();
-		Action->SetRotation(Transform.GetRotation());
-		AActionRunner::RunOnAny(this, Action);
+			const FTransform Transform = UPoly_BaseFunctions::Transform_RotationOnly(DeltaRotation);
+			UTransformSelectionAction* Action = NewObject<UTransformSelectionAction>(this);
+			Action->SetupWith(USelectorNames::Actors, ETransformSpace::TS_World, Transform);
+			Action->SetRotation(Transform.GetRotation().Inverse());
+			Action->Execute();
+			Action->SetRotation(Transform.GetRotation());
+			AActionRunner::RunOnAny(this, Action);
+		}
 	}
-}
-
-void AGizmoBaseActor::Rotate_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform)
-{
 }
 
 void AGizmoBaseActor::Scale_ScaleChanged_Implementation(bool bEnded, FVector DeltaScale)
@@ -152,18 +147,17 @@ void AGizmoBaseActor::Scale_ScaleChanged_Implementation(bool bEnded, FVector Del
 	}
 	else
 	{
-		const FTransform Transform = UPoly_BaseFunctions::Transform_ScaleOnly(DeltaScale);
-		UTransformSelectionAction* Action = NewObject<UTransformSelectionAction>(this);
-		Action->SetupWith(USelectorNames::Actors, ETransformSpace::TS_World, Transform);
-		Action->SetScale3D(-Transform.GetScale3D());
-		Action->Execute();
-		Action->SetScale3D(Transform.GetScale3D());
-		AActionRunner::RunOnAny(this, Action);
+		if (ElementsCore->IsEmptySelection())
+		{
+			const FTransform Transform = UPoly_BaseFunctions::Transform_ScaleOnly(DeltaScale);
+			UTransformSelectionAction* Action = NewObject<UTransformSelectionAction>(this);
+			Action->SetupWith(USelectorNames::Actors, ETransformSpace::TS_World, Transform);
+			Action->SetScale3D(-Transform.GetScale3D());
+			Action->Execute();
+			Action->SetScale3D(Transform.GetScale3D());
+			AActionRunner::RunOnAny(this, Action);
+		}
 	}
-}
-
-void AGizmoBaseActor::Scale_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform)
-{
 }
 
 void AGizmoBaseActor::Select_Finished_Implementation(USelectionRequest* Request, bool bSuccess)
@@ -222,25 +216,22 @@ void AGizmoBaseActor::SetupCores()
 
 void AGizmoBaseActor::TransformSelection(FTransform DeltaTransform, bool bInLocalSpace)
 {
-	TArray<UPolySelection*> ActiveSelection = this->SelectCore->GetPolySelection();
-	if (bInLocalSpace)
+	if (ElementsCore->IsEmptySelection())
 	{
+		const ETransformSpace Space = bInLocalSpace ? ETransformSpace::TS_Local : ETransformSpace::TS_World;
+		TArray<UPolySelection*> ActiveSelection = this->SelectCore->GetPolySelection();
 		for (int i = 0; i < ActiveSelection.Num(); i++)
 		{
-			AActor* Selected = ActiveSelection[i]->GetSelectedActor();
-			Selected->AddActorLocalOffset(DeltaTransform.GetLocation());
-			Selected->AddActorLocalRotation(DeltaTransform.GetRotation());
-			Selected->SetActorRelativeScale3D(Selected->GetActorRelativeScale3D() + DeltaTransform.GetScale3D());
+			UPoly_ActorFunctions::AddActorTransform(ActiveSelection[i]->GetSelectedActor(), DeltaTransform, Space);
 		}
 	}
 	else
 	{
+		const ETransformSpace Space = bInLocalSpace ? ETransformSpace::TS_Local : ETransformSpace::TS_World;
+		TArray<UPolyMeshSelection*> ActiveSelection = this->ElementsCore->GetPolySelections();
 		for (int i = 0; i < ActiveSelection.Num(); i++)
 		{
-			AActor* Selected = ActiveSelection[i]->GetSelectedActor();
-			Selected->AddActorWorldOffset(DeltaTransform.GetLocation());
-			Selected->AddActorWorldRotation(DeltaTransform.GetRotation());
-			Selected->SetActorScale3D(Selected->GetActorScale3D() + DeltaTransform.GetScale3D());
+			//UPoly_ActorFunctions::AddActorTransform(ActiveSelection[i]->GetSelectedActor(), DeltaTransform, Space);
 		}
 	}
 }

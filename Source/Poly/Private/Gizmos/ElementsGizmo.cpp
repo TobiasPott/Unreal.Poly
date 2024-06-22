@@ -171,7 +171,7 @@ void AElementsGizmo::ClearTargets()
 
 void AElementsGizmo::ClearSelections()
 {
-	for(auto Selection: this->PolySelections)
+	for (auto Selection : this->PolySelections)
 	{
 		Selection->Selection.ClearSelection();
 	}
@@ -425,6 +425,21 @@ void AElementsGizmo::UpdateSelectionVisuals()
 	Pool->ReturnMesh(TempMesh);
 }
 
+bool AElementsGizmo::IsEmptySelection() const
+{
+	if (this->PolySelections.Num() == 0)
+		return true;
+	else
+	{
+		bool bHasElementsSelection = false;
+		for (UPolyMeshSelection* Sel : this->PolySelections)
+		{
+			if (Sel->IsNotEmpty())
+				return false;
+		}
+	}
+	return true;
+}
 
 void AElementsGizmo::OnInputKey_Pressed(FKey InKey)
 {
