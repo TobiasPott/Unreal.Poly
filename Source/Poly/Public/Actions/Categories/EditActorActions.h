@@ -58,6 +58,6 @@ public:
 	}	
 	void SetLocation(FVector InLocation, bool bClearTransform = false);
 	void SetRotation(FQuat InRotation, bool bClearTransform = false);
-	void SetRotation(FRotator InRotation, bool bClearTransform = false) { SetRotation(InRotation.Quaternion(), bClearTransform); }
+	void SetRotation(FRotator InRotation, bool bClearTransform = false);
 	void SetScale3D(FVector InScale, bool bClearTransform = false);
 };

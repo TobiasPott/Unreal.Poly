@@ -5,6 +5,7 @@
 #include "Selection/SelectorSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "EnumTypes.h"
+#include "Functions/Poly_ActorFunctions.h"
 
 
 bool UDestroyActorsAction::Execute_Implementation(bool bEmitRecord)
@@ -40,26 +41,11 @@ bool UTransformSelectionAction::Execute_Implementation(bool bEmitRecord)
 	if (SelectorSubsystem->GetSelector(this, this->SelectorName, Selector))
 	{
 		const TArray<UPolySelection*> ActiveSelection = Selector->Selection;
-		if (this->Space == ETransformSpace::TS_Local)
+		for (int i = 0; i < ActiveSelection.Num(); i++)
 		{
-			for (int i = 0; i < ActiveSelection.Num(); i++)
-			{
-				AActor* Selected = ActiveSelection[i]->GetSelectedActor();
-				Selected->AddActorLocalOffset(this->DeltaTransform.GetLocation());
-				Selected->AddActorLocalRotation(this->DeltaTransform.GetRotation());
-				Selected->SetActorRelativeScale3D(Selected->GetActorRelativeScale3D() + this->DeltaTransform.GetScale3D());
-			}
+			UPoly_ActorFunctions::AddActorTransform(ActiveSelection[i]->GetSelectedActor(), DeltaTransform, this->Space);
 		}
-		else
-		{
-			for (int i = 0; i < ActiveSelection.Num(); i++)
-			{
-				AActor* Selected = ActiveSelection[i]->GetSelectedActor();
-				Selected->AddActorWorldOffset(this->DeltaTransform.GetLocation());
-				Selected->AddActorWorldRotation(this->DeltaTransform.GetRotation());
-				Selected->SetActorScale3D(Selected->GetActorScale3D() + this->DeltaTransform.GetScale3D());
-			}
-		}
+
 		this->Submit();
 		return true;
 	}
@@ -68,21 +54,26 @@ bool UTransformSelectionAction::Execute_Implementation(bool bEmitRecord)
 	return false;
 }
 
-inline void UTransformSelectionAction::SetLocation(FVector InLocation, bool bClearTransform)
+void UTransformSelectionAction::SetLocation(FVector InLocation, bool bClearTransform)
 {
 	if (bClearTransform)
 		this->DeltaTransform = FTransform(FRotator::ZeroRotator, FVector::ZeroVector, FVector::ZeroVector);
 	this->DeltaTransform.SetLocation(InLocation);
 }
 
-inline void UTransformSelectionAction::SetRotation(FQuat InRotation, bool bClearTransform)
+void UTransformSelectionAction::SetRotation(FQuat InRotation, bool bClearTransform)
 {
 	if (bClearTransform)
 		this->DeltaTransform = FTransform(FRotator::ZeroRotator, FVector::ZeroVector, FVector::ZeroVector);
 	this->DeltaTransform.SetRotation(InRotation);
 }
 
-inline void UTransformSelectionAction::SetScale3D(FVector InScale, bool bClearTransform)
+void UTransformSelectionAction::SetRotation(FRotator InRotation, bool bClearTransform)
+{
+	SetRotation(InRotation.Quaternion(), bClearTransform);
+}
+
+void UTransformSelectionAction::SetScale3D(FVector InScale, bool bClearTransform)
 {
 	if (bClearTransform)
 		this->DeltaTransform = FTransform(FRotator::ZeroRotator, FVector::ZeroVector, FVector::ZeroVector);
