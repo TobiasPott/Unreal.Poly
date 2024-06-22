@@ -307,8 +307,7 @@ bool UTransformElementsSelectionAction::Execute_Implementation(bool bEmitRecord)
 	ASelectorBase* Selector;
 	if (SelectorSubsystem->GetSelector(this, this->SelectorName, Selector))
 	{
-
-		//const TArray<UPolySelection*> ActiveSelection = Selector->Selection;
+		const TArray<UPolySelection*> ActiveSelection = Selector->Selection;
 		//if (this->Space == ETransformSpace::TS_Local)
 		//{
 		//	for (int i = 0; i < ActiveSelection.Num(); i++)
@@ -320,15 +319,19 @@ bool UTransformElementsSelectionAction::Execute_Implementation(bool bEmitRecord)
 		//	}
 		//}
 		//else
-		//{
-		//	for (int i = 0; i < ActiveSelection.Num(); i++)
-		//	{
-		//		AActor* Selected = ActiveSelection[i]->GetSelectedActor();
-		//		Selected->AddActorWorldOffset(this->DeltaTransform.GetLocation());
-		//		Selected->AddActorWorldRotation(this->DeltaTransform.GetRotation());
-		//		Selected->SetActorScale3D(Selected->GetActorScale3D() + this->DeltaTransform.GetScale3D());
-		//	}
-		//}
+		{
+			for (int i = 0; i < ActiveSelection.Num(); i++)
+			{
+				UPolyMeshSelection* Selection = Cast<UPolyMeshSelection>(ActiveSelection[i]);
+				UDynamicMesh* TargetMesh = Selection->GetSelectedMesh();
+				FGeometryScriptMeshSelection MeshSelection = Selection->GetMeshElementsSelection();
+
+				//AActor* Selected = ActiveSelection[i]->GetSelectedActor();
+				//Selected->AddActorWorldOffset(this->DeltaTransform.GetLocation());
+				//Selected->AddActorWorldRotation(this->DeltaTransform.GetRotation());
+				//Selected->SetActorScale3D(Selected->GetActorScale3D() + this->DeltaTransform.GetScale3D());
+			}
+		}
 		this->Submit();
 		return true;
 	}
