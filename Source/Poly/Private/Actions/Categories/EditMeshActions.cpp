@@ -16,6 +16,7 @@
 #include "GeometryScript/MeshDecompositionFunctions.h"
 #include "GeometryScript/MeshSubdivideFunctions.h"
 #include "GeometryScript/MeshModelingFunctions.h"
+#include "GeometryScript/MeshTransformFunctions.h"
 
 
 bool UDeleteElementsAction::Execute_Implementation(bool bEmitRecord)
@@ -326,6 +327,7 @@ bool UTransformElementsSelectionAction::Execute_Implementation(bool bEmitRecord)
 				UDynamicMesh* TargetMesh = Selection->GetSelectedMesh();
 				FGeometryScriptMeshSelection MeshSelection = Selection->GetMeshElementsSelection();
 
+				UGeometryScriptLibrary_MeshTransformFunctions::TransformMeshSelection(TargetMesh, MeshSelection, this->DeltaTransform);
 				//AActor* Selected = ActiveSelection[i]->GetSelectedActor();
 				//Selected->AddActorWorldOffset(this->DeltaTransform.GetLocation());
 				//Selected->AddActorWorldRotation(this->DeltaTransform.GetRotation());

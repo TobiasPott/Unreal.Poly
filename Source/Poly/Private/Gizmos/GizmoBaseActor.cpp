@@ -7,8 +7,8 @@
 #include "Selection/SelectorSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "GeometryScript/MeshSelectionFunctions.h"
+#include "GeometryScript/MeshTransformFunctions.h"
 #include "GeometryScript/MeshSelectionQueryFunctions.h"
-//#include "GeometryScript/GeometryScriptTypes.h"
 #include "GeometryScript/GeometryScriptSelectionTypes.h"
 #include "Actions/Categories/EditActorActions.h"
 #include "Actions/ActionRunner.h"
@@ -231,6 +231,16 @@ void AGizmoBaseActor::TransformSelection(FTransform DeltaTransform, bool bInLoca
 		TArray<UPolyMeshSelection*> ActiveSelection = this->ElementsCore->GetPolySelections();
 		for (int i = 0; i < ActiveSelection.Num(); i++)
 		{
+			UPolyMeshSelection* Selection = Cast<UPolyMeshSelection>(ActiveSelection[i]);
+			UDynamicMesh* TargetMesh = Selection->GetSelectedMesh();
+			FGeometryScriptMeshSelection MeshSelection = Selection->GetMeshElementsSelection();
+			if (IsValid(TargetMesh) && MeshSelection.GetNumSelected() > 0)
+			{
+				// ToDo: @tpott: remove hard scale override to 1,1,1 with a better default or a more valid saveguard (adding 1,1,1)?!
+				DeltaTransform.SetScale3D(DeltaTransform.GetScale3D() + FVector::OneVector);
+				UGeometryScriptLibrary_MeshTransformFunctions::TransformMeshSelection(TargetMesh, MeshSelection, DeltaTransform);
+				// ToDo: @tpott: Add update of ElementsCore visuals after transform was applied (only update on mouse released)
+			}
 			//UPoly_ActorFunctions::AddActorTransform(ActiveSelection[i]->GetSelectedActor(), DeltaTransform, Space);
 		}
 	}
