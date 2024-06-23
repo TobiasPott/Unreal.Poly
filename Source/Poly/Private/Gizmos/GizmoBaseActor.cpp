@@ -2,6 +2,7 @@
 
 #include "Gizmos/GizmoBaseActor.h"
 #include "Functions/Poly_BaseFunctions.h"
+#include "Functions/Poly_MeshEditFunctions.h"
 #include "Functions/Poly_ActorFunctions.h"
 #include "Functions/Poly_MeshSelectionFunctions.h"
 #include "Selection/SelectorSubsystem.h"
@@ -227,6 +228,7 @@ void AGizmoBaseActor::TransformSelection(FTransform DeltaTransform, bool bInLoca
 	}
 	else
 	{
+		DeltaTransform.SetScale3D(DeltaTransform.GetScale3D() + FVector::OneVector);
 		const ETransformSpace Space = bInLocalSpace ? ETransformSpace::TS_Local : ETransformSpace::TS_World;
 		TArray<UPolyMeshSelection*> ActiveSelection = this->ElementsCore->GetPolySelections();
 		for (int i = 0; i < ActiveSelection.Num(); i++)
@@ -234,14 +236,15 @@ void AGizmoBaseActor::TransformSelection(FTransform DeltaTransform, bool bInLoca
 			UPolyMeshSelection* Selection = Cast<UPolyMeshSelection>(ActiveSelection[i]);
 			UDynamicMesh* TargetMesh = Selection->GetSelectedMesh();
 			FGeometryScriptMeshSelection MeshSelection = Selection->GetMeshElementsSelection();
-			if (IsValid(TargetMesh) && MeshSelection.GetNumSelected() > 0)
-			{
-				// ToDo: @tpott: remove hard scale override to 1,1,1 with a better default or a more valid saveguard (adding 1,1,1)?!
-				DeltaTransform.SetScale3D(DeltaTransform.GetScale3D() + FVector::OneVector);
-				UGeometryScriptLibrary_MeshTransformFunctions::TransformMeshSelection(TargetMesh, MeshSelection, DeltaTransform);
-				// ToDo: @tpott: Add update of ElementsCore visuals after transform was applied (only update on mouse released)
-			}
-			//UPoly_ActorFunctions::AddActorTransform(ActiveSelection[i]->GetSelectedActor(), DeltaTransform, Space);
+
+			UPoly_MeshEditFunctions::AddMeshElementsTransform(TargetMesh, MeshSelection, DeltaTransform, Space);
+			//if (IsValid(TargetMesh) && MeshSelection.GetNumSelected() > 0)
+			//{
+			//	// ToDo: @tpott: remove hard scale override to 1,1,1 with a better default or a more valid saveguard (adding 1,1,1)?!
+			//	DeltaTransform.SetScale3D(DeltaTransform.GetScale3D() + FVector::OneVector);
+			//	UGeometryScriptLibrary_MeshTransformFunctions::TransformMeshSelection(TargetMesh, MeshSelection, DeltaTransform);
+			//	// ToDo: @tpott: Add update of ElementsCore visuals after transform was applied (only update on mouse released)
+			//}
 		}
 	}
 }
