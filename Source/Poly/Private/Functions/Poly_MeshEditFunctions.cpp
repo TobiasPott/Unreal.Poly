@@ -8,22 +8,10 @@
 
 
 
-//void UPoly_MeshEditFunctions::AddMeshElementsTransform(AActor* Actor, FVector InOffset, FQuat InRotation, FVector InScale, ETransformSpace Space)
-//{
-//	if (IsValid(Actor))
-//		if (Space == ETransformSpace::TS_Local)
-//		{
-//			Actor->AddActorLocalOffset(InOffset);
-//			Actor->AddActorLocalRotation(InRotation);
-//			Actor->SetActorRelativeScale3D(Actor->GetActorRelativeScale3D() + InScale);
-//		}
-//		else
-//		{
-//			Actor->AddActorWorldOffset(InOffset);
-//			Actor->AddActorWorldRotation(InRotation);
-//			Actor->SetActorScale3D(Actor->GetActorScale3D() + InScale);
-//		}
-//}
+void UPoly_MeshEditFunctions::AddMeshElementsTransform(UDynamicMesh* TargetMesh, FGeometryScriptMeshSelection Selection, FVector InOffset, FQuat InRotation, FVector InScale, ETransformSpace Space)
+{
+	AddMeshElementsTransform(TargetMesh, Selection, FTransform(InRotation, InOffset, InScale));
+}
 
 void UPoly_MeshEditFunctions::AddMeshElementsTransform(UDynamicMesh* TargetMesh, FGeometryScriptMeshSelection Selection, FTransform InTransform, ETransformSpace Space)
 {

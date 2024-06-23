@@ -18,7 +18,7 @@ class POLY_API UPoly_MeshEditFunctions : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 	
 public: 
-	//static void AddMeshElementsTransform(AActor* Actor, FVector InOffset, FQuat InRotation, FVector InScale, ETransformSpace Space = ETransformSpace::TS_World);
+	static void AddMeshElementsTransform(UDynamicMesh* TargetMesh, FGeometryScriptMeshSelection Selection, FVector InOffset, FQuat InRotation, FVector InScale, ETransformSpace Space = ETransformSpace::TS_World);
 	static void AddMeshElementsTransform(UDynamicMesh* TargetMesh, FGeometryScriptMeshSelection Selection, FTransform InTransform, ETransformSpace Space = ETransformSpace::TS_World);
 	//static void AddTransforms(const TArray<AActor*> Actors, FTransform InTransform, ETransformSpace Space = ETransformSpace::TS_World);
 
