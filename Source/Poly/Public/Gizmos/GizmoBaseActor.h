@@ -31,12 +31,14 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditInstanceOnly, Category = "Default")
 	FGizmoPivot Pivot = FGizmoPivot();
 
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Default")
+	EGizmoPivotSource PivotSource = EGizmoPivotSource::PS_All;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
 	EGizmoPivotSelectionSource PivotSelectionSource = EGizmoPivotSelectionSource::PSS_Actor;
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Default")
-	EGizmoPivotSource PivotLocationSource = EGizmoPivotSource::PS_Center;
+	EGizmoPivotAggregation PivotLocationAggregation = EGizmoPivotAggregation::PA_CenterMedian;
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Default")
-	EGizmoPivotSource PivotOrientationSource = EGizmoPivotSource::PS_Identity;
+	EGizmoPivotAggregation PivotOrientationAggregation = EGizmoPivotAggregation::PA_CenterMedian;
 
 
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Default")
@@ -63,7 +65,7 @@ protected:
 	void Translate_TranslationChanged_Implementation(bool bEnded, FVector DeltaTranslation) override;
 	void Rotate_RotationChanged_Implementation(bool bEnded, FRotator DeltaRotation) override;
 	void Scale_ScaleChanged_Implementation(bool bEnded, FVector DeltaScale) override;
-	
+
 	void Select_Finished_Implementation(USelectionRequest* Request, bool bSuccess) override;
 	void Elements_Finished_Implementation(AElementsGizmo* Core) override;
 
@@ -85,26 +87,26 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Intern")
 	void UpdatePivot(bool bRefreshLocation = true, bool bRefreshOrientation = true);
 	UFUNCTION(BlueprintCallable, Category = "Intern")
-	EGizmoPivotSelectionSource GetPivotSelectionSource();
+	FVector GetPivotLocation();
 	UFUNCTION(BlueprintCallable, Category = "Intern")
-	FVector GetPivotLocationFromSelection();
-	UFUNCTION(BlueprintCallable, Category = "Intern")
-	FRotator GetPivotOrientationFromSelection();	
+	FRotator GetPivotOrientation();
 
 	UFUNCTION(BlueprintCallable, Category = "Intern")
-	void SetPivotSelectionSource(const EGizmoPivotSelectionSource InPivotSelectionSource) {
-		this->PivotSelectionSource = InPivotSelectionSource;
+	void SetPivotBehaviour(const EGizmoPivotSource InSource = EGizmoPivotSource::PS_Keep,
+		const EGizmoPivotSelectionSource InSelectionSource = EGizmoPivotSelectionSource::PSS_Keep,
+		const EGizmoPivotAggregation InLocationAggregation = EGizmoPivotAggregation::PA_Keep,
+		const EGizmoPivotAggregation InOrientationAggregation = EGizmoPivotAggregation::PA_Keep)
+	{
+		if (InSource != EGizmoPivotSource::PS_Keep)
+			this->PivotSource = InSource;
+		if (InSelectionSource != EGizmoPivotSelectionSource::PSS_Keep)
+			this->PivotSelectionSource = InSelectionSource;
+		if (InLocationAggregation != EGizmoPivotAggregation::PA_Keep)
+			this->PivotLocationAggregation = InLocationAggregation;
+		if (InOrientationAggregation != EGizmoPivotAggregation::PA_Keep)
+			this->PivotOrientationAggregation = InOrientationAggregation;
 		this->UpdatePivot(true, true);
 	};
-	UFUNCTION(BlueprintCallable, Category = "Intern")
-	void SetPivotLocationSource(const EGizmoPivotSource InLocationSource) {
-		this->PivotLocationSource = InLocationSource;
-	};
-	UFUNCTION(BlueprintCallable, Category = "Intern")
-	void SetPivotOrientationSource(const EGizmoPivotSource InOrientationSource) {
-		this->PivotOrientationSource = InOrientationSource;
-	};
-
 
 public:
 	/** Please add a variable description */

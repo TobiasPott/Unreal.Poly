@@ -60,13 +60,14 @@ enum class EGizmoDomain : uint8
 UENUM(BlueprintType)
 enum class EGizmoPivotSelectionSource : uint8
 {
-	PSS_NONE = 0				UMETA(DisplayName = "None"),
+	PSS_None = 0			UMETA(DisplayName = "None"),
 	PSS_Actor = 1			UMETA(DisplayName = "Actors"),
-	PSS_Elements = 2			UMETA(DisplayName = "Elements"),
+	PSS_Elements = 2		UMETA(DisplayName = "Elements"),
+	PSS_Keep = 3			UMETA(DisplayName = "Keep Value"),
 };
 
 UENUM(BlueprintType)
-enum class EGizmoPivotSource : uint8
+enum class EGizmoPivotSource_OLD : uint8
 {
 	//PS_NONE = 0				UMETA(Hidden),
 	PS_Identity = 0			UMETA(DisplayName = "Identity"),
@@ -75,6 +76,25 @@ enum class EGizmoPivotSource : uint8
 	PS_Last = 3				UMETA(DisplayName = "Last (of selection)"), // defaults to identity of unsupported
 	PS_Center = 4			UMETA(DisplayName = "Center (of selection)"), // defaults to identity of unsupported
 	PS_Custom = 5			UMETA(DisplayName = "Custom"), // defaults to set pivot of unsupported
+};
+UENUM(BlueprintType)
+enum class EGizmoPivotSource : uint8
+{
+	//PS_NONE = 0				UMETA(Hidden),
+	PS_First = 0			UMETA(DisplayName = "First (of selection)"),
+	PS_Last = 1				UMETA(DisplayName = "Last (of selection)"),
+	PS_All = 2				UMETA(DisplayName = "All"),
+	PS_Gizmo = 3			UMETA(DisplayName = "Gizmo (Self)"),
+	PS_Keep = 255			UMETA(DisplayName = "Keep Value"),
+};
+UENUM(BlueprintType)
+enum class EGizmoPivotAggregation : uint8
+{
+	//PS_NONE = 0				UMETA(Hidden),
+	PA_Identity = 0			UMETA(DisplayName = "Identity"),
+	PA_CenterMedian = 1		UMETA(DisplayName = "Center/Median"),
+	PA_Custom = 2			UMETA(DisplayName = "Explicit"), // uses explicit TRS values, defaults to FTransform::Identity
+	PA_Keep = 255			UMETA(DisplayName = "Keep Value"),
 };
 //ENUM_CLASS_FLAGS(EGizmoPivotSource);
 

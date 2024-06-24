@@ -129,11 +129,11 @@ void AElementsGizmo::SetEnableConsumeInput(const bool bInEnable)
 void AElementsGizmo::SetTargets(const TArray<AActor*>& Targets)
 {
 	// remove poly selections for actors no longer selected
-	for (int i = this->PolySelections.Num() - 1; i >= 0; i--)
+	for (int i = this->PolySelection.Num() - 1; i >= 0; i--)
 	{
-		AActor* Target = this->PolySelections[i]->GetSelectedActor();
-		if (!this->PolySelections.ContainsByPredicate([Target](UPolyMeshSelection* Selection) { return Selection->IsSelectedActor(Target); }))
-			this->PolySelections.RemoveAt(i);
+		AActor* Target = this->PolySelection[i]->GetSelectedActor();
+		if (!this->PolySelection.ContainsByPredicate([Target](UPolyMeshSelection* Selection) { return Selection->IsSelectedActor(Target); }))
+			this->PolySelection.RemoveAt(i);
 	}
 	// add new poly selection instances for selected actors (reuse existing ones)
 	for (int i = 0; i < Targets.Num(); i++)
@@ -141,7 +141,7 @@ void AElementsGizmo::SetTargets(const TArray<AActor*>& Targets)
 		AActor* Target = Targets[i];
 		UBaseDynamicMeshComponent* BaseDMC = Target->GetComponentByClass<UBaseDynamicMeshComponent>();
 		if (IsValid(BaseDMC))
-			UPolySelection::AddByActorT<UPolyMeshSelection>(this->PolySelections, Target);
+			UPolySelection::AddByActorT<UPolyMeshSelection>(this->PolySelection, Target);
 	}
 
 	// Reset selection mesh
@@ -151,13 +151,13 @@ void AElementsGizmo::SetTargets(const TArray<AActor*>& Targets)
 	// Add poly mesh selection to selector 'Elements' via action
 	//UE_LOG(LogPolyTemp, Warning, TEXT("OnRequestFinished(). SetSelection"));
 	USetSelectionAction* SetSelectionAction = NewObject<USetSelectionAction>(this);
-	SetSelectionAction->SetupWith(USelectorNames::Elements, this->PolySelections);
+	SetSelectionAction->SetupWith(USelectorNames::Elements, this->PolySelection);
 	AActionRunner::RunOnAny(this, SetSelectionAction);
 }
 
 void AElementsGizmo::ClearTargets()
 {
-	this->PolySelections.Empty();
+	this->PolySelection.Empty();
 	// Reset selection mesh
 	this->SelectionDynamicMeshComponent->GetDynamicMesh()->Reset();
 	this->InstancedStaticMeshComponent->ClearInstances();
@@ -171,7 +171,7 @@ void AElementsGizmo::ClearTargets()
 
 void AElementsGizmo::ClearSelections()
 {
-	for (auto Selection : this->PolySelections)
+	for (auto Selection : this->PolySelection)
 	{
 		Selection->Selection.ClearSelection();
 	}
@@ -182,7 +182,7 @@ void AElementsGizmo::ClearSelections()
 	// Add poly mesh selection to selector 'Elements' via action
 	//UE_LOG(LogPolyTemp, Warning, TEXT("OnRequestFinished(). SetSelection"));
 	USetSelectionAction* SetSelectionAction = NewObject<USetSelectionAction>(this);
-	SetSelectionAction->SetupWith(USelectorNames::Elements, this->PolySelections);
+	SetSelectionAction->SetupWith(USelectorNames::Elements, this->PolySelection);
 	AActionRunner::RunOnAny(this, SetSelectionAction);
 }
 
@@ -256,9 +256,9 @@ void AElementsGizmo::UpdateSelection()
 	UPoly_UIFunctions::GetScreenRay(this, this->PlayerIndex, this->SecondPoint, RayOrigin, RayDir);
 
 	// ToDo: @tpott: (Elements Selection): Selection does somehow/sometimes ignore the scale of a mesh (I should test that case specifically next!)
-	for (int i = 0; i < PolySelections.Num(); i++)
+	for (int i = 0; i < PolySelection.Num(); i++)
 	{
-		AActor* Target = PolySelections[i]->GetSelectedActor();
+		AActor* Target = PolySelection[i]->GetSelectedActor();
 		if (!IsValid(Target))
 			continue;
 		// get dynamic mesh component
@@ -331,22 +331,22 @@ void AElementsGizmo::UpdateSelection()
 
 		}
 
-		UPolyMeshSelection* PolySelection = *this->PolySelections.FindByPredicate([Target](UPolyMeshSelection* Item) { return Item->IsSelectedActor(Target); });
-		if (IsValid(PolySelection))
+		UPolyMeshSelection* PolySelectionForActor = *this->PolySelection.FindByPredicate([Target](UPolyMeshSelection* Item) { return Item->IsSelectedActor(Target); });
+		if (IsValid(PolySelectionForActor))
 		{
 			// perform selection combine for select and deselct modes
 			switch (this->SelectionMode)
 			{
 			case EPolySelectionMode::Select:
 			{
-				FGeometryScriptMeshSelection OldSelection = PolySelection->Selection;
+				FGeometryScriptMeshSelection OldSelection = PolySelectionForActor->Selection;
 				OldSelection.CombineSelectionInPlace(Selection, EGeometryScriptCombineSelectionMode::Add);
 				Selection = OldSelection;
 				break;
 			}
 			case EPolySelectionMode::Deselect:
 			{
-				FGeometryScriptMeshSelection OldSelection = PolySelection->Selection;
+				FGeometryScriptMeshSelection OldSelection = PolySelectionForActor->Selection;
 				OldSelection.CombineSelectionInPlace(Selection, EGeometryScriptCombineSelectionMode::Subtract);
 				Selection = OldSelection;
 				break;
@@ -357,8 +357,8 @@ void AElementsGizmo::UpdateSelection()
 			}
 
 			// get poly selection instance for target and assign current geo script selection to it
-			PolySelection->LocalToWorld = Target->GetTransform();
-			PolySelection->Selection = Selection;
+			PolySelectionForActor->LocalToWorld = Target->GetTransform();
+			PolySelectionForActor->Selection = Selection;
 		}
 
 	}
@@ -380,11 +380,11 @@ void AElementsGizmo::UpdateSelectionVisuals()
 
 	const FVector VertexScale = FVector(0.05, 0.05, 0.05);
 	TArray<FTransform> InstancesArray;
-	for (auto PolySelection : PolySelections)
+	for (auto SelectionEntry : this->PolySelection)
 	{
-		AActor* Target = PolySelection->GetSelectedActor();
-		UDynamicMesh* TargetMesh = PolySelection->GetSelectedMesh();
-		FGeometryScriptMeshSelection TargetSelection = PolySelection->GetMeshElementsSelection();
+		AActor* Target = SelectionEntry->GetSelectedActor();
+		UDynamicMesh* TargetMesh = SelectionEntry->GetSelectedMesh();
+		FGeometryScriptMeshSelection TargetSelection = SelectionEntry->GetMeshElementsSelection();
 		const FTransform TargetTransform = Target->GetActorTransform();
 		const FQuat TargetRotation = TargetTransform.GetRotation();
 
@@ -427,12 +427,11 @@ void AElementsGizmo::UpdateSelectionVisuals()
 
 bool AElementsGizmo::IsEmptySelection() const
 {
-	if (this->PolySelections.Num() == 0)
+	if (this->PolySelection.Num() == 0)
 		return true;
 	else
 	{
-		bool bHasElementsSelection = false;
-		for (UPolyMeshSelection* Sel : this->PolySelections)
+		for (UPolyMeshSelection* Sel : this->PolySelection)
 		{
 			if (Sel->IsNotEmpty())
 				return false;
@@ -481,12 +480,12 @@ void AElementsGizmo::OnInputKey_Released(FKey InKey)
 		this->UpdateSelectionVisuals();
 
 
-		bool bIsEmpty = this->PolySelections.IsEmpty();
+		bool bIsEmpty = this->PolySelection.IsEmpty();
 		if (!bIsEmpty)
 		{
 			//UE_LOG(LogPolyTemp, Warning, TEXT("OnRequestFinished(). SetSelection"));
 			USetElementsSelectionAction* SetSelectionAction = NewObject<USetElementsSelectionAction>(this);
-			SetSelectionAction->SetupWith(USelectorNames::Elements, this->PolySelections);
+			SetSelectionAction->SetupWith(USelectorNames::Elements, this->PolySelection);
 			AActionRunner::RunOnAny(this, SetSelectionAction);
 		}
 
@@ -524,6 +523,6 @@ void AElementsGizmo::OnFinished()
 
 void AElementsGizmo::Clear()
 {
-	this->PolySelections.Reset();
+	this->PolySelection.Reset();
 	this->Request = nullptr;
 }

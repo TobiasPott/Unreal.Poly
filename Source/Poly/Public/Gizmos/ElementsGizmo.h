@@ -78,7 +78,7 @@ protected:
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Selection")
-	TArray<UPolyMeshSelection*> PolySelections;
+	TArray<UPolyMeshSelection*> PolySelection;
 
 	UPROPERTY()
 	TObjectPtr<UDynamicMeshPool> Pool;
@@ -114,7 +114,9 @@ public:
 
 
 	bool IsEmptySelection() const;
-	TArray<UPolyMeshSelection*> GetPolySelections() { return this->PolySelections; };
+	bool IsEmpty() { return this->PolySelection.IsEmpty(); };
+	bool IsNotEmpty() { return !this->PolySelection.IsEmpty(); };
+	TArray<UPolyMeshSelection*> GetPolySelection() { return this->PolySelection; };
 
 
 protected:
