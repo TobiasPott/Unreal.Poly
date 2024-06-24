@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Gizmos/GizmoTypes.h"
+#include "Modeling/PolySelection.h"
+#include "Modeling/PolyMeshSelection.h"
 #include "UDynamicMesh.h"
 #include "Poly_ActorFunctions.generated.h"
 
@@ -46,11 +48,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Actor")
 	static bool GetDynamicMesh(AActor* TargetActor, UDynamicMesh*& Mesh);
 
-	UFUNCTION(BlueprintCallable, Category = "Actor")
-	static FVector GetLocation(AActor* TargetActor, const ETransformSpace& Space);
-
-	UFUNCTION(BlueprintCallable, Category = "Actor")
-	static FRotator GetRotation(AActor* TargetActor, const ETransformSpace& Space);
+	static FVector GetLocation(AActor* Actor, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation);
+	static FVector GetLocation(UPolySelection* Selection, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation);
+	static FVector GetLocation(UPolyMeshSelection* Selection, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation);
+	static FVector GetLocation(const TArray<AActor*> Actors, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation);
+	static FVector GetLocation(const TArray<UPolySelection*> Selections, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation);
+	static FVector GetLocation(const TArray<UPolyMeshSelection*> Selections, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation);
+	
+	static FRotator GetRotation(AActor* Actor, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation);
+	static FRotator GetRotation(UPolySelection* Selection, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation);
+	static FRotator GetRotation(const TArray<AActor*> Actors, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation);
+	static FRotator GetRotation(const TArray<UPolySelection*> Selections, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation);
 
 
 
