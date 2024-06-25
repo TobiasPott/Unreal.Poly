@@ -303,14 +303,14 @@ void AGizmoBaseActor::UpdatePivot(bool bRefreshLocation, bool bRefreshOrientatio
 	if (bRefreshLocation)
 	{
 		FVector Location = GetPivotLocation();
-		//this->Pivot.Location = Location;
+		this->Pivot.Location = Location;
 		this->SetActorLocation(Location);
 	}
 
 	if (bRefreshOrientation)
 	{
 		FRotator Rotation = GetPivotOrientation();
-		//this->Pivot.Orientation = Rotation;
+		this->Pivot.Orientation = Rotation;
 		this->SetActorRotation(Rotation);
 	}
 }
