@@ -26,13 +26,9 @@ FVector UPoly_ActorFunctions::GetLocation(AActor* Actor, const ETransformSpace& 
 	if (IsValid(Actor))
 	{
 		if (Space == ETransformSpace::TS_World)
-		{
 			return Actor->GetActorLocation();
-		}
 		else
-		{
-			//return Actor->Local();
-		}
+			return Actor->GetRootComponent()->GetRelativeLocation();
 	}
 	return FVector::ZeroVector;
 }
@@ -46,6 +42,8 @@ FVector UPoly_ActorFunctions::GetLocation(UPolySelection* Selection, const ETran
 
 FVector UPoly_ActorFunctions::GetLocation(UPolyMeshSelection* Selection, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation)
 {
+	FBox Bounds;
+	bool bIsEmpty = true;
 	if (IsValid(Selection))
 	{
 		if (Selection->IsNotEmpty())
@@ -53,8 +51,6 @@ FVector UPoly_ActorFunctions::GetLocation(UPolyMeshSelection* Selection, const E
 			FGeometryScriptMeshSelection MeshSelection = Selection->GetMeshElementsSelection();
 			UDynamicMesh* TargetMesh = Selection->GetSelectedMesh();
 
-			FBox Bounds;
-			bool bIsEmpty = true;
 			UGeometryScriptLibrary_MeshSelectionQueryFunctions::GetMeshSelectionBoundingBox(TargetMesh, MeshSelection, Bounds, bIsEmpty);
 
 			FTransform ActorTransform = Selection->GetSelectedActor()->GetActorTransform();
@@ -74,7 +70,7 @@ FVector UPoly_ActorFunctions::GetLocation(const TArray<AActor*> Actors, const ET
 		AActor* Actor = Actors[i];
 		if (IsValid(Actor))
 		{
-			Location + GetLocation(Actor, Space, Aggregation);
+			Location += GetLocation(Actor, Space, Aggregation);
 			Count++;
 		}
 	}
@@ -134,7 +130,14 @@ FVector UPoly_ActorFunctions::GetLocation(const TArray<UPolyMeshSelection*> Sele
 
 FRotator UPoly_ActorFunctions::GetRotation(AActor* Actor, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation)
 {
-	return FRotator();
+	if (IsValid(Actor))
+	{
+		if (Space == ETransformSpace::TS_World)
+			return Actor->GetActorRotation();
+		else
+			return Actor->GetRootComponent()->GetRelativeRotation();
+	}
+	return FRotator::ZeroRotator;
 }
 
 FRotator UPoly_ActorFunctions::GetRotation(UPolySelection* Selection, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation)
@@ -144,7 +147,7 @@ FRotator UPoly_ActorFunctions::GetRotation(UPolySelection* Selection, const ETra
 	return FRotator::ZeroRotator;
 }
 
-FRotator UPoly_ActorFunctions::GetRotation(const TArray<UPolySelection*> Selections, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation)
+FRotator UPoly_ActorFunctions::GetRotation(UPolyMeshSelection* Selection, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation)
 {
 	return FRotator();
 }
@@ -153,6 +156,17 @@ FRotator UPoly_ActorFunctions::GetRotation(const TArray<AActor*> Actors, const E
 {
 	return FRotator();
 }
+
+FRotator UPoly_ActorFunctions::GetRotation(const TArray<UPolySelection*> Selections, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation)
+{
+	return FRotator();
+}
+
+FRotator UPoly_ActorFunctions::GetRotation(const TArray<UPolyMeshSelection*> Selections, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation)
+{
+	return FRotator();
+}
+
 
 
 bool UPoly_ActorFunctions::IsAttached(AActor* Actor)

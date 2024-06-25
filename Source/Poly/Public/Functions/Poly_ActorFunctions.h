@@ -57,8 +57,10 @@ public:
 	
 	static FRotator GetRotation(AActor* Actor, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation);
 	static FRotator GetRotation(UPolySelection* Selection, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation);
+	static FRotator GetRotation(UPolyMeshSelection* Selection, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation);
 	static FRotator GetRotation(const TArray<AActor*> Actors, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation);
 	static FRotator GetRotation(const TArray<UPolySelection*> Selections, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation);
+	static FRotator GetRotation(const TArray<UPolyMeshSelection*> Selections, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation);
 
 
 
