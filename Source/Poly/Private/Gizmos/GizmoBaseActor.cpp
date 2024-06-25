@@ -115,6 +115,7 @@ void AGizmoBaseActor::Translate_TranslationChanged_Implementation(bool bEnded, F
 		{
 		}
 		ElementsCore->UpdateSelectionVisuals();
+		// update pivot transform
 		this->UpdatePivot(true, true);
 	}
 }
@@ -147,6 +148,7 @@ void AGizmoBaseActor::Rotate_RotationChanged_Implementation(bool bEnded, FRotato
 		{
 		}
 		ElementsCore->UpdateSelectionVisuals();
+		// update pivot transform
 		this->UpdatePivot(true, true);
 	}
 }
@@ -175,6 +177,7 @@ void AGizmoBaseActor::Scale_ScaleChanged_Implementation(bool bEnded, FVector Del
 		{
 		}
 		ElementsCore->UpdateSelectionVisuals();
+		// update pivot transform
 		this->UpdatePivot(true, true);
 	}
 }
@@ -182,14 +185,8 @@ void AGizmoBaseActor::Scale_ScaleChanged_Implementation(bool bEnded, FVector Del
 void AGizmoBaseActor::Select_Finished_Implementation(USelectionRequest* Request, bool bSuccess)
 {
 	this->bHasActorSelection = bSuccess;
-	if (bSuccess)
-	{
-		this->UpdatePivot(true, true);
-	}
-	else
-	{
-		this->UpdatePivot(true, true);
-	}
+	// update pivot transform
+	this->UpdatePivot(true, true);
 }
 
 
@@ -209,16 +206,8 @@ void AGizmoBaseActor::Elements_Finished_Implementation(AElementsGizmo* Core)
 		}
 	}
 	this->bHasElementSelection = bSuccess;
-	if (bSuccess)
-	{
-		// ToDo: @tpott: Add location and rotation determination from given selection
-		this->UpdatePivot(true, true);
-	}
-	else
-	{
-		this->UpdatePivot(true, true);
-	}
 	// update pivot transform
+	this->UpdatePivot(true, true);
 }
 
 void AGizmoBaseActor::SetupCores()
@@ -258,13 +247,6 @@ void AGizmoBaseActor::TransformSelection(FTransform DeltaTransform, bool bInLoca
 			FGeometryScriptMeshSelection MeshSelection = Selection->GetMeshElementsSelection();
 
 			UPoly_MeshEditFunctions::AddMeshElementsTransform(TargetMesh, MeshSelection, DeltaTransform, Space);
-			//if (IsValid(TargetMesh) && MeshSelection.GetNumSelected() > 0)
-			//{
-			//	// ToDo: @tpott: remove hard scale override to 1,1,1 with a better default or a more valid saveguard (adding 1,1,1)?!
-			//	DeltaTransform.SetScale3D(DeltaTransform.GetScale3D() + FVector::OneVector);
-			//	UGeometryScriptLibrary_MeshTransformFunctions::TransformMeshSelection(TargetMesh, MeshSelection, DeltaTransform);
-			//	// ToDo: @tpott: Add update of ElementsCore visuals after transform was applied (only update on mouse released)
-			//}
 		}
 	}
 }
