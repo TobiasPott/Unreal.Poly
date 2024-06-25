@@ -113,8 +113,9 @@ void AGizmoBaseActor::Translate_TranslationChanged_Implementation(bool bEnded, F
 		}
 		else
 		{
-			ElementsCore->UpdateSelectionVisuals();
 		}
+		ElementsCore->UpdateSelectionVisuals();
+		this->UpdatePivot(true, true);
 	}
 }
 
@@ -144,8 +145,9 @@ void AGizmoBaseActor::Rotate_RotationChanged_Implementation(bool bEnded, FRotato
 		}
 		else
 		{
-			ElementsCore->UpdateSelectionVisuals();
 		}
+		ElementsCore->UpdateSelectionVisuals();
+		this->UpdatePivot(true, true);
 	}
 }
 
@@ -171,9 +173,9 @@ void AGizmoBaseActor::Scale_ScaleChanged_Implementation(bool bEnded, FVector Del
 		}
 		else
 		{
-			ElementsCore->UpdateSelectionVisuals();
 		}
-		
+		ElementsCore->UpdateSelectionVisuals();
+		this->UpdatePivot(true, true);
 	}
 }
 
@@ -186,6 +188,7 @@ void AGizmoBaseActor::Select_Finished_Implementation(USelectionRequest* Request,
 	}
 	else
 	{
+		this->UpdatePivot(true, true);
 	}
 }
 
@@ -213,6 +216,7 @@ void AGizmoBaseActor::Elements_Finished_Implementation(AElementsGizmo* Core)
 	}
 	else
 	{
+		this->UpdatePivot(true, true);
 	}
 	// update pivot transform
 }
