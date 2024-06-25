@@ -77,36 +77,35 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category = "Intern")
 	void TransformSelection(FTransform DeltaTransform, bool bInLocalSpace);
-	UFUNCTION(BlueprintCallable, Category = "Intern")
+	//UFUNCTION(BlueprintCallable, Category = "Intern")
 	void TransformCore(FTransform DeltaTransform, bool bInLocalSpace, AActor* InActor);
+	//UFUNCTION(BlueprintCallable, Category = "Intern")
+	void ResetCoreTransform(AActor* InActor);
 
 	UFUNCTION(BlueprintCallable, Category = "Intern")
 	void UpdateGizmoSpace(ETransformSpace InSpace);
 
 
-	UFUNCTION(BlueprintCallable, Category = "Intern")
+	UFUNCTION(BlueprintCallable, Category = "Gizmo|Pivot")
 	void UpdatePivot(bool bRefreshLocation = true, bool bRefreshOrientation = true);
-	UFUNCTION(BlueprintCallable, Category = "Intern")
+	UFUNCTION(BlueprintCallable, Category = "Gizmo|Pivot")
 	FVector GetPivotLocation();
-	UFUNCTION(BlueprintCallable, Category = "Intern")
+	UFUNCTION(BlueprintCallable, Category = "Gizmo|Pivot")
 	FRotator GetPivotOrientation();
 
-	UFUNCTION(BlueprintCallable, Category = "Intern")
+	UFUNCTION(BlueprintCallable, Category = "Gizmo|Pivot")
 	void SetPivotBehaviour(const EGizmoPivotSource InSource = EGizmoPivotSource::PS_Keep,
 		const EGizmoPivotSelectionSource InSelectionSource = EGizmoPivotSelectionSource::PSS_Keep,
 		const EGizmoPivotAggregation InLocationAggregation = EGizmoPivotAggregation::PA_Keep,
-		const EGizmoPivotAggregation InOrientationAggregation = EGizmoPivotAggregation::PA_Keep)
-	{
-		if (InSource != EGizmoPivotSource::PS_Keep)
-			this->PivotSource = InSource;
-		if (InSelectionSource != EGizmoPivotSelectionSource::PSS_Keep)
-			this->PivotSelectionSource = InSelectionSource;
-		if (InLocationAggregation != EGizmoPivotAggregation::PA_Keep)
-			this->PivotLocationAggregation = InLocationAggregation;
-		if (InOrientationAggregation != EGizmoPivotAggregation::PA_Keep)
-			this->PivotOrientationAggregation = InOrientationAggregation;
-		this->UpdatePivot(true, true);
-	};
+		const EGizmoPivotAggregation InOrientationAggregation = EGizmoPivotAggregation::PA_Keep);
+	UFUNCTION(BlueprintCallable, Category = "Gizmo|Pivot")
+	void SetPivotSource(const EGizmoPivotSource InSource = EGizmoPivotSource::PS_Keep);
+	UFUNCTION(BlueprintCallable, Category = "Gizmo|Pivot")
+	void SetPivotSelectionSource(const EGizmoPivotSelectionSource InSelectionSource = EGizmoPivotSelectionSource::PSS_Keep);
+	UFUNCTION(BlueprintCallable, Category = "Gizmo|Pivot")
+	void SetPivotAggregation(const EGizmoPivotAggregation InLocationAggregation = EGizmoPivotAggregation::PA_Keep, const EGizmoPivotAggregation InOrientationAggregation = EGizmoPivotAggregation::PA_Keep);
+
+
 
 public:
 	/** Please add a variable description */

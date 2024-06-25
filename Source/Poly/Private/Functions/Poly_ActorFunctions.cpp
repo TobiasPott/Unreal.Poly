@@ -42,25 +42,28 @@ FVector UPoly_ActorFunctions::GetLocation(AActor* Actor, const ETransformSpace& 
 	{
 		if (Space == ETransformSpace::TS_World)
 		{
-			USceneComponent* RootComp = Actor->GetRootComponent();
-			if (IsValid(RootComp))
-			{
-				if (Aggregation == EGizmoPivotAggregation::PA_Identity)
-					return RootComp->GetComponentLocation();
-				else
-					return RootComp->Bounds.Origin;
-			}
+			//if (Aggregation == EGizmoPivotAggregation::PA_Identity)
+			return Actor->GetActorLocation();
+			//else
+			//{
+			//	FVector Origin, Extents;
+			//	FVector ActLoc = Actor->GetActorLocation();
+			//	Actor->GetActorBounds(false, Origin, Extents);
+
+			//	UE_LOG(LogTemp, Warning, TEXT("GetLocation (Actor): %s;"), *(Origin).ToString());
+			//	return Origin;
+			//}
 		}
 		else
 		{
-			if (Aggregation == EGizmoPivotAggregation::PA_Identity)
-				return Actor->GetActorLocation();
-			else
-			{
-				FVector Origin, Extents;
-				Actor->GetActorBounds(false, Origin, Extents);
-				return Origin;
-			}
+			//if (Aggregation == EGizmoPivotAggregation::PA_Identity)
+			//	return Actor->GetActorLocation();
+			//else
+			//{
+			//	FVector Origin, Extents;
+			//	Actor->GetActorBounds(false, Origin, Extents);
+			//	return Origin + Actor->GetActorLocation();
+			//}
 		}
 	}
 	return FVector::ZeroVector;
@@ -86,10 +89,10 @@ FVector UPoly_ActorFunctions::GetLocation(UPolyMeshSelection* Selection, const E
 			bool bIsEmpty = true;
 			UGeometryScriptLibrary_MeshSelectionQueryFunctions::GetMeshSelectionBoundingBox(TargetMesh, MeshSelection, Bounds, bIsEmpty);
 
-			if (!bIsEmpty)
-				return Bounds.GetCenter();
+			FTransform ActorTransform = Selection->GetSelectedActor()->GetActorTransform();
+			return ActorTransform.TransformPosition(Bounds.GetCenter());
 		}
-		return GetLocation(Selection, Space, Aggregation);
+		return GetLocation(Selection->GetSelectedActor(), Space, Aggregation);
 	}
 	return FVector::ZeroVector;
 }
@@ -120,9 +123,11 @@ FVector UPoly_ActorFunctions::GetLocation(const TArray<UPolySelection*> Selectio
 	{
 		if (!IsValid(Selections[i]))
 			continue;
-		Location + GetLocation(Selections[i], Space, Aggregation);
+		Location += GetLocation(Selections[i], Space, Aggregation);
 		Count++;
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("GetLocation: %s;"), *Location.ToString());
 	if (Count == 0)
 		return FVector::ZeroVector;
 	return Location / Count;
@@ -136,7 +141,7 @@ FVector UPoly_ActorFunctions::GetLocation(const TArray<UPolyMeshSelection*> Sele
 	{
 		if (!IsValid(Selections[i]))
 			continue;
-		Location + GetLocation(Selections[i], Space, Aggregation);
+		Location += GetLocation(Selections[i], Space, Aggregation);
 		Count++;
 	}
 	if (Count == 0)

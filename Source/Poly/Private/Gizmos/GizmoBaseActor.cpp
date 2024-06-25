@@ -173,6 +173,7 @@ void AGizmoBaseActor::Scale_ScaleChanged_Implementation(bool bEnded, FVector Del
 		{
 			ElementsCore->UpdateSelectionVisuals();
 		}
+		
 	}
 }
 
@@ -266,20 +267,27 @@ void AGizmoBaseActor::TransformSelection(FTransform DeltaTransform, bool bInLoca
 
 void AGizmoBaseActor::TransformCore(FTransform DeltaTransform, bool bInLocalSpace, AActor* InActor)
 {
-	if (bInLocalSpace)
-	{
-		AActor* Selected = InActor;
-		Selected->AddActorLocalOffset(DeltaTransform.GetLocation());
-		Selected->AddActorLocalRotation(DeltaTransform.GetRotation());
-		Selected->SetActorRelativeScale3D(Selected->GetActorRelativeScale3D() + DeltaTransform.GetScale3D());
-	}
-	else
-	{
-		AActor* Selected = InActor;
-		Selected->AddActorWorldOffset(DeltaTransform.GetLocation());
-		Selected->AddActorWorldRotation(DeltaTransform.GetRotation());
-		Selected->SetActorScale3D(Selected->GetActorScale3D() + DeltaTransform.GetScale3D());
-	}
+	if (IsValid(InActor))
+		if (bInLocalSpace)
+		{
+			AActor* Selected = InActor;
+			Selected->AddActorLocalOffset(DeltaTransform.GetLocation());
+			Selected->AddActorLocalRotation(DeltaTransform.GetRotation());
+			Selected->SetActorRelativeScale3D(Selected->GetActorRelativeScale3D() + DeltaTransform.GetScale3D());
+		}
+		else
+		{
+			AActor* Selected = InActor;
+			Selected->AddActorWorldOffset(DeltaTransform.GetLocation());
+			Selected->AddActorWorldRotation(DeltaTransform.GetRotation());
+			Selected->SetActorScale3D(Selected->GetActorScale3D() + DeltaTransform.GetScale3D());
+		}
+}
+
+void AGizmoBaseActor::ResetCoreTransform(AActor* InActor)
+{
+	if (IsValid(InActor))
+		InActor->SetActorRelativeTransform(FTransform::Identity);
 }
 
 void AGizmoBaseActor::UpdateGizmoSpace(ETransformSpace InSpace)
@@ -294,14 +302,16 @@ void AGizmoBaseActor::UpdatePivot(bool bRefreshLocation, bool bRefreshOrientatio
 {
 	if (bRefreshLocation)
 	{
-		this->Pivot.Location = GetPivotLocation();
-		this->SetActorLocation(this->Pivot.Location);
+		FVector Location = GetPivotLocation();
+		//this->Pivot.Location = Location;
+		this->SetActorLocation(Location);
 	}
 
 	if (bRefreshOrientation)
 	{
-		this->Pivot.Orientation = GetPivotOrientation();
-		this->SetActorRotation(this->Pivot.Orientation);
+		FRotator Rotation = GetPivotOrientation();
+		//this->Pivot.Orientation = Rotation;
+		this->SetActorRotation(Rotation);
 	}
 }
 
@@ -317,15 +327,17 @@ FVector AGizmoBaseActor::GetPivotLocation()
 	case EGizmoPivotAggregation::PA_CenterMedian:
 	{
 		// ToDo: @tpott: add distinction for 'All', 'first', 'last' sources
-		if (this->SelectCore->IsNotEmpty())
+		if (this->PivotSelectionSource == EGizmoPivotSelectionSource::PSS_Actor && this->SelectCore->IsNotEmpty())
 		{
-			UPoly_ActorFunctions::GetLocation(this->SelectCore->GetPolySelection(), Space, this->PivotLocationAggregation);
-			UE_LOG(LogTemp, Warning, TEXT("Pivot (Actors): \nsource: %s; \nlocation-aggr: %s;"), *UEnum::GetValueAsString(PivotSource), *UEnum::GetValueAsString(PivotLocationAggregation))
+			FVector Loc = UPoly_ActorFunctions::GetLocation(this->SelectCore->GetPolySelection(), Space, this->PivotLocationAggregation);
+			UE_LOG(LogTemp, Warning, TEXT("Pivot (Actors): %s \nsource: %s; \nlocation-aggr: %s;"), *Loc.ToString(), *UEnum::GetValueAsString(PivotSource), *UEnum::GetValueAsString(PivotLocationAggregation));
+			return Loc;
 		}
-		else if (this->ElementsCore->IsNotEmpty())
+		else if (this->PivotSelectionSource == EGizmoPivotSelectionSource::PSS_Elements && this->ElementsCore->IsNotEmpty())
 		{
-			UPoly_ActorFunctions::GetLocation(this->ElementsCore->GetPolySelection(), Space, this->PivotLocationAggregation);
-			UE_LOG(LogTemp, Warning, TEXT("Pivot (Elements): \nsource: %s; \nlocation-aggr: %s;"), *UEnum::GetValueAsString(PivotSource), *UEnum::GetValueAsString(PivotLocationAggregation))
+			FVector Loc = UPoly_ActorFunctions::GetLocation(this->ElementsCore->GetPolySelection(), Space, this->PivotLocationAggregation);
+			UE_LOG(LogTemp, Warning, TEXT("Pivot (Elements): %s \nsource: %s; \nlocation-aggr: %s;"), *Loc.ToString(), *UEnum::GetValueAsString(PivotSource), *UEnum::GetValueAsString(PivotLocationAggregation));
+			return Loc;
 		}
 		break;
 	}
@@ -438,4 +450,32 @@ FRotator AGizmoBaseActor::GetPivotOrientation()
 	}
 	// return 'identity' rotator
 	return FRotator::ZeroRotator;
+}
+
+void AGizmoBaseActor::SetPivotBehaviour(const EGizmoPivotSource InSource,
+	const EGizmoPivotSelectionSource InSelectionSource,
+	const EGizmoPivotAggregation InLocationAggregation,
+	const EGizmoPivotAggregation InOrientationAggregation)
+{
+	if (InSource != EGizmoPivotSource::PS_Keep)
+		this->PivotSource = InSource;
+	if (InSelectionSource != EGizmoPivotSelectionSource::PSS_Keep)
+		this->PivotSelectionSource = InSelectionSource;
+	if (InLocationAggregation != EGizmoPivotAggregation::PA_Keep)
+		this->PivotLocationAggregation = InLocationAggregation;
+	if (InOrientationAggregation != EGizmoPivotAggregation::PA_Keep)
+		this->PivotOrientationAggregation = InOrientationAggregation;
+	this->UpdatePivot(true, true);
+}
+void AGizmoBaseActor::SetPivotSource(const EGizmoPivotSource InSource)
+{
+	SetPivotBehaviour(InSource);
+}
+void AGizmoBaseActor::SetPivotSelectionSource(const EGizmoPivotSelectionSource InSelectionSource)
+{
+	SetPivotBehaviour(EGizmoPivotSource::PS_Keep, InSelectionSource);
+}
+void AGizmoBaseActor::SetPivotAggregation(const EGizmoPivotAggregation InLocationAggregation, const EGizmoPivotAggregation InOrientationAggregation)
+{
+	SetPivotBehaviour(EGizmoPivotSource::PS_Keep, EGizmoPivotSelectionSource::PSS_Keep, InLocationAggregation, InOrientationAggregation);
 }
