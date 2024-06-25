@@ -5,7 +5,10 @@
 #include "Selection/SelectorBase.h"
 #include "Functions/Poly_SelectorFunctions.h"
 #include "Functions/Poly_ActorFunctions.h"
+#include "EnumTypes.h"
 
+
+// ToDo: @tpott: LONG-TERM: Add visualiser type for Mesh Elements selection, which has the DynMesh for polygons and staticInstanced for vertices
 // Sets default values
 ASelectorVisualiserBase::ASelectorVisualiserBase()
 {
@@ -39,13 +42,19 @@ void ASelectorVisualiserBase::Init()
 void ASelectorVisualiserBase::OnSelectableSelected_Implementation(ASelectorBase* InSelector, UPolySelection* InSelectable)
 {
 	if (IsValid(InSelectable->GetSelectedActor()))
-		UPoly_SelectorFunctions::SetMaterialForState(InSelectable->GetSelectedActor()->GetOwner(), true, this->OverlayMaterial, InSelector->Stencil);
+	{
+		//UE_LOG(LogPolyTemp, Warning, TEXT("OnSelectableSelected_Implementation:: %s"), *InSelectable->GetSelectedActor()->GetName());
+		UPoly_SelectorFunctions::SetMaterialForState(InSelectable->GetSelectedActor(), true, this->OverlayMaterial, InSelector->Stencil);
+	}
 }
 
 void ASelectorVisualiserBase::OnSelectableDeselected_Implementation(ASelectorBase* InSelector, UPolySelection* InSelectable)
 {
 	if (IsValid(InSelectable->GetSelectedActor()))
-		UPoly_SelectorFunctions::SetMaterialForState(InSelectable->GetSelectedActor()->GetOwner(), false, this->OverlayMaterial, InSelector->Stencil);
+	{
+		//UE_LOG(LogPolyTemp, Warning, TEXT("OnSelectableDeselected_Implementation:: %s"), *InSelectable->GetSelectedActor()->GetName());
+		UPoly_SelectorFunctions::SetMaterialForState(InSelectable->GetSelectedActor(), false, this->OverlayMaterial, InSelector->Stencil);
+	}
 }
 
 void ASelectorVisualiserBase::OnSelectorDestroyed(AActor* DestroyedActor)

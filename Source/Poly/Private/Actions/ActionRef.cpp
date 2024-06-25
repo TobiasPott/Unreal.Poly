@@ -5,6 +5,13 @@
 
 int32 UActionRef::InstanceCount = 0;
 
+UActionRef::UActionRef()
+{
+	Id = InstanceCount++;
+	if (InstanceCount >= MAX_int32)
+		InstanceCount = MIN_int32;
+}
+
 void UActionRef::Init(UActionBase* InAction)
 {
 	if (IsValid(Action))
@@ -13,12 +20,6 @@ void UActionRef::Init(UActionBase* InAction)
 	}
 }
 
-UActionRef::UActionRef()
-{
-	Id = InstanceCount++;
-	if (InstanceCount >= MAX_int32)
-		InstanceCount = MIN_int32;
-}
 
 bool UActionRef::Execute_Implementation(bool bEmitRecord)
 {

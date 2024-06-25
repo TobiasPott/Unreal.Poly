@@ -2,6 +2,7 @@
 
 
 #include "Actions/ActionRunner.h"
+#include <Functions/Poly_BaseFunctions.h>
 
 // Sets default values
 AActionRunner::AActionRunner()
@@ -59,6 +60,17 @@ bool AActionRunner::Run(UActionBase* Action)
 		PendingAction->Execute();
 		return true;
 	}
+	return false;
+}
+
+bool AActionRunner::RunOnAny(const UObject* WorldContext, UActionBase* InAction)
+{
+	// ToDo: @tpott: Add static member to track one single ActionRunner (or make one per player and have sort of a subsystem?)
+	AActor* ActionRunnerActor;
+	UPoly_BaseFunctions::GetOrCreateActor(WorldContext, AActionRunner::StaticClass(), ActionRunnerActor);
+	AActionRunner* ActionRunner = Cast<AActionRunner>(ActionRunnerActor);
+	if (IsValid(ActionRunner) && IsValid(InAction))
+		return ActionRunner->Run(InAction);
 	return false;
 }
 

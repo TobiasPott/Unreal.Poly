@@ -45,30 +45,19 @@ protected:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Protected|Core Events")
 	void Translate_TranslationChanged(bool bEnded, FVector DeltaTranslation);
 	virtual void Translate_TranslationChanged_Implementation(bool bEnded, FVector DeltaTranslation) { };
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Protected|Core Events")
-	void Translate_TransformEnded(bool bEnded, FTransform DeltaTransform);
-	virtual void Translate_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform) { };
-
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Protected|Core Events")
 	void Rotate_RotationChanged(bool bEnded, FRotator DeltaRotation);
 	virtual void Rotate_RotationChanged_Implementation(bool bEnded, FRotator DeltaRotation) { };
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Protected|Core Events")
-	void Rotate_TransformEnded(bool bEnded, FTransform DeltaTransform);
-	virtual void Rotate_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform) { };
-
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Protected|Core Events")
 	void Scale_ScaleChanged(bool bEnded, FVector DeltaScale);
 	virtual void Scale_ScaleChanged_Implementation(bool bEnded, FVector DeltaScale) { };
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Protected|Core Events")
-	void Scale_TransformEnded(bool bEnded, FTransform DeltaTransform);
-	virtual void Scale_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform) { };
-
+	
+	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Protected|Core Events")
 	void Select_Finished(USelectionRequest* Request, bool bSuccess);
 	virtual void Select_Finished_Implementation(USelectionRequest* Request, bool bSuccess) { };
-
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Protected|Core Events")
 	void Elements_Finished(AElementsGizmo* Core);

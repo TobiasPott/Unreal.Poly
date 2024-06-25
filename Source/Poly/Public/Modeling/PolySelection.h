@@ -7,6 +7,7 @@
 #include "UDynamicMesh.h"
 #include "GeometryScript/GeometryScriptSelectionTypes.h"
 #include "IdentifierComponent.h"
+#include "Functions/Poly_IdentifierFunctions.h"
 #include "PolySelection.generated.h"
 
 
@@ -103,7 +104,33 @@ public:
 		}
 		return NumAdded;
 	}
-	
+
+	/**
+	 * Documentation missing (@tpott).
+	 * @param	Array
+	 * @param	Id
+	 */
+	template<class TPolySelectionType>
+	static int32 AddByIdT(TArray<TPolySelectionType*>& Array, int32 Id)
+	{
+		int32 Index = INDEX_NONE;
+		UIdentifierComponent* IdComp;
+		AActor* IdActor;
+		UPoly_IdentifierFunctions::GetActorById(Id, IdActor, IdComp);
+		
+		// ToDo: @tpott: debug for valid actor and set selection members from 'GEtActorById' results
+		if (IsValid(IdActor))
+		{
+			TPolySelectionType* Result = NewObject<TPolySelectionType>(IdActor);
+			Result->TargetId = Id;
+			if (Result->Resolve())
+			{
+				Index = Array.Add(Result);
+				return Index;
+			}
+		}
+		return INDEX_NONE;
+	}
 	/**
 	 * Documentation missing (@tpott).
 	 * @param	Array
@@ -127,7 +154,7 @@ public:
 	static int32 RemoveByT(TArray<TPolySelectionType*>& Array, TSelectedByType SelectedBy)
 	{
 		int32 NumRemoved = 0;
-		for (int i = Array.Num() - 1; i > 0; i--)
+		for (int i = Array.Num() - 1; i >= 0; i--)
 		{
 			TPolySelectionType* Selection = Array[i];
 			if (Selection->IsSelected(SelectedBy))
@@ -138,5 +165,24 @@ public:
 		}
 		return NumRemoved;
 	}
+
+
+	///**
+	// * Documentation missing (@tpott).
+	// * @param	Array
+	// * @param	OutIds
+	// * @param	bReplace
+	// */
+	//template<class TPolySelectionType>
+	//static void AddIdsTo(const TArray<TPolySelectionType*>& Array, TSet<int32> OutIds, bool bReplace = true)
+	//{
+	//	if (bReplace)
+	//		OutIds.Empty(Array.Num());
+	//	for (TPolySelectionType* Item : Array)
+	//	{
+	//		OutIds.Add(Item->TargetId);
+	//	}
+	//}
+
 
 };

@@ -55,8 +55,6 @@ protected:
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Selection")
-	TArray<AActor*> Selection;
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Selection")
 	TArray<UPolySelection*> PolySelection;
 
 
@@ -70,9 +68,7 @@ public:
 	void Setup(ESelectionRequestMode InMarqueeMode, UClass* InFilterClass, bool bInIncludeNonCollider = false, bool bInIncludeOnlyEnclosed = false,
 		bool bInDisableOnFinish = false);
 
-	void SetEnabled(const bool bInEnable);
-
-	virtual void SetGizmoHidden(bool bHiddenInGame = false) override;
+	virtual void SetEnableConsumeInput(const bool bInEnable) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SetSelectionMode(EPolySelectionMode InSelectionMode = EPolySelectionMode::Replace);
@@ -81,14 +77,14 @@ public:
 
 	void UpdateSelection();
 
-	TArray<AActor*> GetSelection() { return this->Selection; };
+	//TArray<AActor*> GetSelection() { return TArray<AActor*>(); }; // this->Selection; };
 	TArray<UPolySelection*> GetPolySelection() { return this->PolySelection; };
 
-	bool IsEmpty() { return this->Selection.IsEmpty(); };
-	bool IsNotEmpty() { return !this->Selection.IsEmpty(); };
+	bool IsEmpty() { return this->PolySelection.IsEmpty(); };
+	bool IsNotEmpty() { return !this->PolySelection.IsEmpty(); };
 
-	AActor* GetFirstSelected() { return this->Selection.Num() > 0 ? this->Selection[0] : nullptr; };
-	AActor* GetLastSelected() { return this->Selection.Num() > 0 ? this->Selection[this->Selection.Num() - 1] : nullptr; };
+	AActor* GetFirstSelected() { return this->PolySelection.Num() > 0 ? this->PolySelection[0]->GetSelectedActor() : nullptr; };
+	AActor* GetLastSelected() { return this->PolySelection.Num() > 0 ? this->PolySelection[this->PolySelection.Num() - 1]->GetSelectedActor() : nullptr; };
 
 protected:
 

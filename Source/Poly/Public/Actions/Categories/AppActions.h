@@ -17,13 +17,10 @@ class POLY_API UQuitGameAction : public UActionBase
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
-	UQuitGameAction()
-	{
-		Description = "poly.QuitGame";
-		ShortName = "Quit Game";
-	}
+	// Ctor
+	UQuitGameAction() : UActionBase("poly.QuitGame", "Quit Game") {}
 
+	// Members
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	int32 PlayerIndex = 0;
 
@@ -38,13 +35,10 @@ class POLY_API UQuitGameWithConfirmAction : public UActionWithConfirmBase
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
-	UQuitGameWithConfirmAction()
-	{
-		Description = "poly.QuitGameWithConfirm";
-		ShortName = "Quit Game with Confirm";
-	}
+	// Ctor
+	UQuitGameWithConfirmAction() : UActionWithConfirmBase("poly.QuitGameWithConfirm", "Quit Game with Confirm") {}
 
+	// Members
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	int32 PlayerIndex = 0;
 

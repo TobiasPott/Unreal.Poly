@@ -59,6 +59,9 @@ public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category = "Selector")
 	bool HasSelector(FName Name);
+
+	UFUNCTION(BlueprintCallable, Category = "Selector")
+	bool IsEmpty(FName Name);
 	UFUNCTION(BlueprintCallable, Category = "Selector")
 	ASelectorBase* AddSelector(FName Name, uint8 Stencil = 1);
 	UFUNCTION(BlueprintCallable, Category = "Selector", meta = (WorldContext = "WorldContext"))

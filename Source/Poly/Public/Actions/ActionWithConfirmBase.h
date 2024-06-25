@@ -16,13 +16,11 @@ class POLY_API UActionWithConfirmBase : public UActionBase
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
-	UActionWithConfirmBase()
-	{
-		Description = "poly.ActionWithConfirm";
-		ShortName = "<Action With Confirm>";
-	}
+	// Ctor
+	UActionWithConfirmBase() : UActionBase("poly.ActionWithConfirmBase", "ActionWithConfirmBase") {}
+	UActionWithConfirmBase(const FString& InDescription, const FString& InShortName) : UActionBase(InDescription, InShortName) {}
 
+	// Members
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	TSubclassOf<UModalDialogBase> DialogClass = UModalDialogBase::StaticClass();
 

@@ -41,4 +41,6 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Selection")
 	FGeometryScriptMeshSelection GetMeshElementsSelection() const { return Selection; };
 
+	bool IsEmpty() { return Selection.GetNumSelected() == 0; }
+	bool IsNotEmpty() { return Selection.GetNumSelected() != 0; }
 };

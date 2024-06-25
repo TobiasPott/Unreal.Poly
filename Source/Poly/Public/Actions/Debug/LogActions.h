@@ -17,14 +17,10 @@ class POLY_API ULogAction : public UActionBase
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
-	ULogAction()
-	{
-		Description = "poly.Log";
-		ShortName = "Log";
-	}
+	// Ctor
+	ULogAction() : UActionBase("poly.Log", "Log") {}
 
-	/** Please add a variable description */
+	// Members
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	FString Text = "None";
 
@@ -42,15 +38,10 @@ class POLY_API UPrintAction : public UActionBase
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
-	UPrintAction()
-	{
-		Description = "poly.Print";
-		ShortName = "Print";
-	}
+	// Ctor
+	UPrintAction() : UActionBase("poly.Print", "Print") {}
 
-
-	/** Please add a variable description */
+	// Members
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	FString Text = "None";
 

@@ -17,6 +17,17 @@ class POLY_API UActionBase : public UObject
 	GENERATED_BODY()
 
 protected:
+	// Ctors
+	UActionBase()
+	{
+		Description = "poly.ActionBase";
+		ShortName = "<ActionBase>";
+	}
+	UActionBase(const FString& InDescription, const FString& InShortName)
+	{
+		Description = InDescription;
+		ShortName = InShortName;
+	}
 
 	UPROPERTY(VisibleAnywhere, Category = "Default")
 	FString Description = "poly.Action";
@@ -37,6 +48,19 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Default")
 	virtual UActionRef* GetUnique();
+
+
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Actions", meta = (WorldContext = "WorldContext"))
+	static void CreateActionCollection(UObject* WorldContext, const FString InShortName, const FString InDescription, UPARAM(ref) TArray<UActionBase*>& InActions, UActionCollection*& OutCollection);
+
+	UFUNCTION(BlueprintCallable, Category = "Actions", meta = (WorldContext = "WorldContext"))
+	static void CreateEditMeshCollection(UObject* WorldContext, UActionCollection*& OutCollection);
+	UFUNCTION(BlueprintCallable, Category = "Actions", meta = (WorldContext = "WorldContext"))
+	static void CreateShapeCollection(UObject* WorldContext, UActionCollection*& OutCollection);
+	UFUNCTION(BlueprintCallable, Category = "Actions", meta = (WorldContext = "WorldContext"))
+	static void CreateLightCollection(UObject* WorldContext, UActionCollection*& OutCollection);
 
 
 public:

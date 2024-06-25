@@ -22,6 +22,9 @@ public:
 	virtual void SetGizmoHidden(bool bHiddenInGame = false);
 
 
+	UFUNCTION(BlueprintCallable, Category = "Gizmo")
+	virtual void SetEnableConsumeInput(const bool bInEnable) { };
+
 public:
 
 };

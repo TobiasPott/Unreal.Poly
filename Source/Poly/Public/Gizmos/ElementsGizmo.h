@@ -77,12 +77,8 @@ protected:
 
 
 protected:
-	//  ToDo: @tpott: Remove internal 'Selections' member (move to PolySelection instead)
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Selection")
-	TMap<AActor*, FGeometryScriptMeshSelection> Selections;
-
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Selection")
-	TArray<UPolyMeshSelection*> PolySelections;
+	TArray<UPolyMeshSelection*> PolySelection;
 
 	UPROPERTY()
 	TObjectPtr<UDynamicMeshPool> Pool;
@@ -96,12 +92,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void Setup(ESelectionRequestMode InMarqueeMode, const float InDistance = 10000.0, const EGeometryScriptMeshSelectionType InSelectionType = EGeometryScriptMeshSelectionType::Triangles, const bool bInDisableOnFinish = false);
 
-	void SetEnabled(const bool bInEnable);
-
-	virtual void SetGizmoHidden(const bool bHiddenInGame = false) override;
+	virtual void SetEnableConsumeInput(const bool bInEnable) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SetTargets(const TArray<AActor*>& Targets);
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void ClearTargets();
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void ClearSelections();
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SetSelectionMode(EPolySelectionMode InSelectionMode = EPolySelectionMode::Replace);
 	UFUNCTION(BlueprintCallable, Category = "Selection")
@@ -115,7 +113,10 @@ public:
 	void UpdateSelectionVisuals();
 
 
-	TArray<UPolyMeshSelection*> GetPolySelections() { return this->PolySelections; };
+	bool IsEmptySelection() const;
+	bool IsEmpty() { return this->PolySelection.IsEmpty(); };
+	bool IsNotEmpty() { return !this->PolySelection.IsEmpty(); };
+	TArray<UPolyMeshSelection*> GetPolySelection() { return this->PolySelection; };
 
 
 protected:
