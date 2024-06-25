@@ -330,84 +330,18 @@ FVector AGizmoBaseActor::GetPivotLocation()
 		if (this->PivotSelectionSource == EGizmoPivotSelectionSource::PSS_Actor && this->SelectCore->IsNotEmpty())
 		{
 			FVector Loc = UPoly_ActorFunctions::GetLocation(this->SelectCore->GetPolySelection(), Space, this->PivotLocationAggregation);
-			UE_LOG(LogTemp, Warning, TEXT("Pivot (Actors): %s \nsource: %s; \nlocation-aggr: %s;"), *Loc.ToString(), *UEnum::GetValueAsString(PivotSource), *UEnum::GetValueAsString(PivotLocationAggregation));
+			//UE_LOG(LogTemp, Warning, TEXT("Pivot (Actors): %s \nsource: %s; \nlocation-aggr: %s;"), *Loc.ToString(), *UEnum::GetValueAsString(PivotSource), *UEnum::GetValueAsString(PivotLocationAggregation));
 			return Loc;
 		}
 		else if (this->PivotSelectionSource == EGizmoPivotSelectionSource::PSS_Elements && this->ElementsCore->IsNotEmpty())
 		{
 			FVector Loc = UPoly_ActorFunctions::GetLocation(this->ElementsCore->GetPolySelection(), Space, this->PivotLocationAggregation);
-			UE_LOG(LogTemp, Warning, TEXT("Pivot (Elements): %s \nsource: %s; \nlocation-aggr: %s;"), *Loc.ToString(), *UEnum::GetValueAsString(PivotSource), *UEnum::GetValueAsString(PivotLocationAggregation));
+			//UE_LOG(LogTemp, Warning, TEXT("Pivot (Elements): %s \nsource: %s; \nlocation-aggr: %s;"), *Loc.ToString(), *UEnum::GetValueAsString(PivotSource), *UEnum::GetValueAsString(PivotLocationAggregation));
 			return Loc;
 		}
 		break;
 	}
 
-	//case EGizmoPivotSource_OLD::PS_Self:
-	//	return UPoly_ActorFunctions::GetLocation(this, Space);
-	//case EGizmoPivotSource_OLD::PS_First:
-	//	if (SelectCore->IsNotEmpty())
-	//		return UPoly_ActorFunctions::GetLocation(SelectCore->GetFirstSelected(), Space);
-	//	break;
-	//case EGizmoPivotSource_OLD::PS_Last:
-	//	if (SelectCore->IsNotEmpty())
-	//		return UPoly_ActorFunctions::GetLocation(SelectCore->GetLastSelected(), Space);
-	//	break;
-	//case EGizmoPivotSource_OLD::PS_Center:
-	//{
-	//	if (this->PivotSelectionSource == EGizmoPivotSelectionSource::PSS_Actor
-	//		&& bHasActorSelection)
-	//	{
-	//		// ToDo: @tpott: Add branch for 'Elements' PivotSelectionSource to determine position from selection
-	//		FVector SelectionCenter, SelectionExtents;
-	//		TArray<UPolySelection*> CurSelection = this->SelectCore->GetPolySelection();
-	//		TArray<AActor*> Actors;
-	//		for (auto Sel : CurSelection)
-	//		{
-	//			Actors.AddUnique(Sel->GetSelectedActor());
-	//		}
-
-	//		UGameplayStatics::GetActorArrayBounds(Actors, false, SelectionCenter, SelectionExtents);
-	//		return SelectionCenter;
-	//	}
-	//	else if (this->PivotSelectionSource == EGizmoPivotSelectionSource::PSS_Elements
-	//		&& bHasElementSelection)
-	//	{
-	//		TArray<UPolyMeshSelection*> Selections = this->ElementsCore->GetPolySelections();
-	//		int Count = 0;
-
-	//		FVector SelectionCenter = FVector::ZeroVector;
-
-	//		// ToDo: @tpott: (Mesh Element Selection): Need to  finish center determination based on actors of selection if all selections are empty (elements)
-	//		// 
-	//		// ToDo: Refine this to determine 'median' position from selection (bounds will shift location to selection 3D center
-	//		//			Create method to get median location of mesh elements (tri & polygroups use tri-barycentric center, vertices use vertex position)
-	//		for (auto Selection : Selections)
-	//		{
-	//			FVector Center;
-	//			if (UPoly_MeshSelectionFunctions::GetSelectionCenterOfBounds(Selection->GetSelectedMesh(), Selection->GetMeshElementsSelection(), Center))
-	//			{
-	//				SelectionCenter = SelectionCenter + Center;
-	//				Count++;
-	//			}
-	//		}
-
-	//		if (Count > 0)
-	//		{
-	//			SelectionCenter = SelectionCenter / Count;
-	//			UE_LOG(LogTemp, Warning, TEXT("Elements: %d / %d (%s)"), Count, Selections.Num(), *SelectionCenter.ToString());
-	//			return SelectionCenter;
-	//		}
-	//		else
-	//		{
-	//			UE_LOG(LogTemp, Warning, TEXT("Elements: %d / %d (%s)"), Count, Selections.Num(), *SelectionCenter.ToString());
-	//			return SelectionCenter;
-	//		}
-	//	}
-	//}
-
-	//default:
-	//case EGizmoPivotSource_OLD::PS_Identity:
-	//	break;
 	}
 	// return 'identity' rotator
 	return FVector::ZeroVector;

@@ -21,49 +21,17 @@ bool UPoly_ActorFunctions::GetDynamicMesh(AActor* Actor, UDynamicMesh*& Mesh)
 	return false;
 }
 
-//FVector UPoly_ActorFunctions::GetLocation(AActor* Actor, const ETransformSpace& Space)
-//{
-//	if (IsValid(Actor))
-//	{
-//		if (Space == ETransformSpace::TS_World)
-//		{
-//			USceneComponent* RootComp = Actor->GetRootComponent();
-//			if (IsValid(RootComp))
-//				return RootComp->GetComponentLocation();
-//		}
-//		return Actor->GetActorLocation();
-//	}
-//	return FVector::ZeroVector;
-//}
-
 FVector UPoly_ActorFunctions::GetLocation(AActor* Actor, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation)
 {
 	if (IsValid(Actor))
 	{
 		if (Space == ETransformSpace::TS_World)
 		{
-			//if (Aggregation == EGizmoPivotAggregation::PA_Identity)
 			return Actor->GetActorLocation();
-			//else
-			//{
-			//	FVector Origin, Extents;
-			//	FVector ActLoc = Actor->GetActorLocation();
-			//	Actor->GetActorBounds(false, Origin, Extents);
-
-			//	UE_LOG(LogTemp, Warning, TEXT("GetLocation (Actor): %s;"), *(Origin).ToString());
-			//	return Origin;
-			//}
 		}
 		else
 		{
-			//if (Aggregation == EGizmoPivotAggregation::PA_Identity)
-			//	return Actor->GetActorLocation();
-			//else
-			//{
-			//	FVector Origin, Extents;
-			//	Actor->GetActorBounds(false, Origin, Extents);
-			//	return Origin + Actor->GetActorLocation();
-			//}
+			//return Actor->Local();
 		}
 	}
 	return FVector::ZeroVector;
@@ -127,7 +95,6 @@ FVector UPoly_ActorFunctions::GetLocation(const TArray<UPolySelection*> Selectio
 		Count++;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("GetLocation: %s;"), *Location.ToString());
 	if (Count == 0)
 		return FVector::ZeroVector;
 	return Location / Count;
