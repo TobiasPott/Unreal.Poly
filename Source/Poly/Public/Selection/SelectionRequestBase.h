@@ -20,6 +20,7 @@ enum class EPolySelectionMode : uint8
 };
 
 
+
 UCLASS(Blueprintable)
 class POLY_API USelectionRequestBase : public UObject
 {

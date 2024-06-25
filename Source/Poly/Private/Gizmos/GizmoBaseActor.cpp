@@ -2,14 +2,17 @@
 
 #include "Gizmos/GizmoBaseActor.h"
 #include "Functions/Poly_BaseFunctions.h"
+#include "Functions/Poly_MeshEditFunctions.h"
 #include "Functions/Poly_ActorFunctions.h"
 #include "Functions/Poly_MeshSelectionFunctions.h"
 #include "Selection/SelectorSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "GeometryScript/MeshSelectionFunctions.h"
+#include "GeometryScript/MeshTransformFunctions.h"
 #include "GeometryScript/MeshSelectionQueryFunctions.h"
-//#include "GeometryScript/GeometryScriptTypes.h"
 #include "GeometryScript/GeometryScriptSelectionTypes.h"
+#include "Actions/Categories/EditActorActions.h"
+#include "Actions/ActionRunner.h"
 
 
 // Sets default values
@@ -32,7 +35,6 @@ void AGizmoBaseActor::CreateTranslateCore_Implementation(ATranslateGizmo*& OutTr
 	OutTranslateCore = this->TranslateCore;
 
 	OutTranslateCore->TranslationChanged.AddDynamic(this, &AGizmoBaseActor::Translate_TranslationChanged);
-	OutTranslateCore->TransformEnded.AddDynamic(this, &AGizmoBaseActor::Translate_TransformEnded);
 }
 
 void AGizmoBaseActor::CreateRotateCore_Implementation(ARotateGizmo*& OutRotateCore)
@@ -44,7 +46,6 @@ void AGizmoBaseActor::CreateRotateCore_Implementation(ARotateGizmo*& OutRotateCo
 	OutRotateCore = this->RotateCore;
 
 	OutRotateCore->RotationChanged.AddDynamic(this, &AGizmoBaseActor::Rotate_RotationChanged);
-	OutRotateCore->TransformEnded.AddDynamic(this, &AGizmoBaseActor::Rotate_TransformEnded);
 }
 
 void AGizmoBaseActor::CreateScaleCore_Implementation(AScaleGizmo*& OutScaleCore)
@@ -56,7 +57,6 @@ void AGizmoBaseActor::CreateScaleCore_Implementation(AScaleGizmo*& OutScaleCore)
 	OutScaleCore = this->ScaleCore;
 
 	OutScaleCore->ScaleChanged.AddDynamic(this, &AGizmoBaseActor::Scale_ScaleChanged);
-	OutScaleCore->TransformEnded.AddDynamic(this, &AGizmoBaseActor::Scale_TransformEnded);
 }
 
 void AGizmoBaseActor::CreateSelectCore_Implementation(ASelectGizmo*& OutSelectCore)
@@ -95,14 +95,27 @@ void AGizmoBaseActor::Translate_TranslationChanged_Implementation(bool bEnded, F
 		this->TransformCore(Transform, false, this->TranslateCore);
 		this->TransformSelection(Transform, false);
 	}
-}
-
-void AGizmoBaseActor::Translate_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform)
-{
-	if (bEnded)
+	else
 	{
-		TranslateCore->SetActorRelativeLocation(FVector::ZeroVector);
-		this->AddActorWorldOffset(DeltaTransform.GetLocation());
+		// check if no elements are selected, perform action on actor then
+		if (ElementsCore->IsEmptySelection())
+		{
+			const FTransform Transform = UPoly_BaseFunctions::Transform_TranslationOnly(DeltaTranslation);
+			TranslateCore->SetActorRelativeLocation(FVector::ZeroVector);
+			this->AddActorWorldOffset(Transform.GetLocation());
+
+			UTransformSelectionAction* Action = NewObject<UTransformSelectionAction>(this);
+			Action->SetupWith(USelectorNames::Actors, ETransformSpace::TS_World, Transform);
+			Action->SetLocation(-Transform.GetLocation());
+			Action->Execute();
+			Action->SetLocation(Transform.GetLocation());
+			AActionRunner::RunOnAny(this, Action);
+		}
+		else
+		{
+		}
+		ElementsCore->UpdateSelectionVisuals();
+		this->UpdatePivot(true, true);
 	}
 }
 
@@ -114,14 +127,27 @@ void AGizmoBaseActor::Rotate_RotationChanged_Implementation(bool bEnded, FRotato
 		this->TransformCore(Transform, false, this->RotateCore);
 		this->TransformSelection(Transform, false);
 	}
-}
-
-void AGizmoBaseActor::Rotate_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform)
-{
-	if (bEnded)
+	else
 	{
-		RotateCore->SetActorRelativeRotation(FRotator::ZeroRotator);
-		this->UpdatePivot(false, true);
+		// check if no elements are selected, perform action on actor then
+		if (ElementsCore->IsEmptySelection())
+		{
+			RotateCore->SetActorRelativeRotation(FRotator::ZeroRotator);
+			this->UpdatePivot(false, true);
+
+			const FTransform Transform = UPoly_BaseFunctions::Transform_RotationOnly(DeltaRotation);
+			UTransformSelectionAction* Action = NewObject<UTransformSelectionAction>(this);
+			Action->SetupWith(USelectorNames::Actors, ETransformSpace::TS_World, Transform);
+			Action->SetRotation(Transform.GetRotation().Inverse());
+			Action->Execute();
+			Action->SetRotation(Transform.GetRotation());
+			AActionRunner::RunOnAny(this, Action);
+		}
+		else
+		{
+		}
+		ElementsCore->UpdateSelectionVisuals();
+		this->UpdatePivot(true, true);
 	}
 }
 
@@ -132,38 +158,45 @@ void AGizmoBaseActor::Scale_ScaleChanged_Implementation(bool bEnded, FVector Del
 		const FTransform Transform = UPoly_BaseFunctions::Transform_ScaleOnly(DeltaScale);
 		this->TransformSelection(Transform, false);
 	}
-}
-
-void AGizmoBaseActor::Scale_TransformEnded_Implementation(bool bEnded, FTransform DeltaTransform)
-{
+	else
+	{
+		// check if no elements are selected, perform action on actor then
+		if (ElementsCore->IsEmptySelection())
+		{
+			const FTransform Transform = UPoly_BaseFunctions::Transform_ScaleOnly(DeltaScale);
+			UTransformSelectionAction* Action = NewObject<UTransformSelectionAction>(this);
+			Action->SetupWith(USelectorNames::Actors, ETransformSpace::TS_World, Transform);
+			Action->SetScale3D(-Transform.GetScale3D());
+			Action->Execute();
+			Action->SetScale3D(Transform.GetScale3D());
+			AActionRunner::RunOnAny(this, Action);
+		}
+		else
+		{
+		}
+		ElementsCore->UpdateSelectionVisuals();
+		this->UpdatePivot(true, true);
+	}
 }
 
 void AGizmoBaseActor::Select_Finished_Implementation(USelectionRequest* Request, bool bSuccess)
 {
-	USelectorSubsystem* SelectorSubsystem = UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>();
-	ASelectorBase* Selector;
-	SelectorSubsystem->GetSelector(this, this->SelectorName, Selector);
-
 	this->bHasActorSelection = bSuccess;
 	if (bSuccess)
 	{
 		this->UpdatePivot(true, true);
-		TArray<UPolySelection*> Actors = this->SelectCore->GetPolySelection();
-		Selector->ReplaceAll(Actors);
 	}
 	else
 	{
-		Selector->ClearSelection();
+		this->UpdatePivot(true, true);
 	}
-	// update pivot transform
-	// ToDo: @tpott: Cleanup ElementCore.Selections and only keep those actors in there, which are also selected by SelectCore
 }
 
 
 void AGizmoBaseActor::Elements_Finished_Implementation(AElementsGizmo* Core)
 {
 	bool bSuccess = false;
-	TArray<UPolyMeshSelection*> Selections = Core->GetPolySelections();
+	TArray<UPolyMeshSelection*> Selections = Core->GetPolySelection();
 	if (!Selections.IsEmpty())
 	{
 		for (auto Selection : Selections)
@@ -183,6 +216,7 @@ void AGizmoBaseActor::Elements_Finished_Implementation(AElementsGizmo* Core)
 	}
 	else
 	{
+		this->UpdatePivot(true, true);
 	}
 	// update pivot transform
 }
@@ -203,45 +237,61 @@ void AGizmoBaseActor::SetupCores()
 
 void AGizmoBaseActor::TransformSelection(FTransform DeltaTransform, bool bInLocalSpace)
 {
-	TArray<AActor*> ActiveSelection = this->SelectCore->GetSelection();
-	if (bInLocalSpace)
+	if (ElementsCore->IsEmptySelection())
 	{
+		const ETransformSpace Space = bInLocalSpace ? ETransformSpace::TS_Local : ETransformSpace::TS_World;
+		TArray<UPolySelection*> ActiveSelection = this->SelectCore->GetPolySelection();
 		for (int i = 0; i < ActiveSelection.Num(); i++)
 		{
-			AActor* Selected = ActiveSelection[i];
-			Selected->AddActorLocalOffset(DeltaTransform.GetLocation());
-			Selected->AddActorLocalRotation(DeltaTransform.GetRotation());
-			Selected->SetActorRelativeScale3D(Selected->GetActorRelativeScale3D() + DeltaTransform.GetScale3D());
+			UPoly_ActorFunctions::AddActorTransform(ActiveSelection[i]->GetSelectedActor(), DeltaTransform, Space);
 		}
 	}
 	else
 	{
+		DeltaTransform.SetScale3D(DeltaTransform.GetScale3D() + FVector::OneVector);
+		const ETransformSpace Space = bInLocalSpace ? ETransformSpace::TS_Local : ETransformSpace::TS_World;
+		TArray<UPolyMeshSelection*> ActiveSelection = this->ElementsCore->GetPolySelection();
 		for (int i = 0; i < ActiveSelection.Num(); i++)
 		{
-			AActor* Selected = ActiveSelection[i];
-			Selected->AddActorWorldOffset(DeltaTransform.GetLocation());
-			Selected->AddActorWorldRotation(DeltaTransform.GetRotation());
-			Selected->SetActorScale3D(Selected->GetActorScale3D() + DeltaTransform.GetScale3D());
+			UPolyMeshSelection* Selection = Cast<UPolyMeshSelection>(ActiveSelection[i]);
+			UDynamicMesh* TargetMesh = Selection->GetSelectedMesh();
+			FGeometryScriptMeshSelection MeshSelection = Selection->GetMeshElementsSelection();
+
+			UPoly_MeshEditFunctions::AddMeshElementsTransform(TargetMesh, MeshSelection, DeltaTransform, Space);
+			//if (IsValid(TargetMesh) && MeshSelection.GetNumSelected() > 0)
+			//{
+			//	// ToDo: @tpott: remove hard scale override to 1,1,1 with a better default or a more valid saveguard (adding 1,1,1)?!
+			//	DeltaTransform.SetScale3D(DeltaTransform.GetScale3D() + FVector::OneVector);
+			//	UGeometryScriptLibrary_MeshTransformFunctions::TransformMeshSelection(TargetMesh, MeshSelection, DeltaTransform);
+			//	// ToDo: @tpott: Add update of ElementsCore visuals after transform was applied (only update on mouse released)
+			//}
 		}
 	}
 }
 
 void AGizmoBaseActor::TransformCore(FTransform DeltaTransform, bool bInLocalSpace, AActor* InActor)
 {
-	if (bInLocalSpace)
-	{
-		AActor* Selected = InActor;
-		Selected->AddActorLocalOffset(DeltaTransform.GetLocation());
-		Selected->AddActorLocalRotation(DeltaTransform.GetRotation());
-		Selected->SetActorRelativeScale3D(Selected->GetActorRelativeScale3D() + DeltaTransform.GetScale3D());
-	}
-	else
-	{
-		AActor* Selected = InActor;
-		Selected->AddActorWorldOffset(DeltaTransform.GetLocation());
-		Selected->AddActorWorldRotation(DeltaTransform.GetRotation());
-		Selected->SetActorScale3D(Selected->GetActorScale3D() + DeltaTransform.GetScale3D());
-	}
+	if (IsValid(InActor))
+		if (bInLocalSpace)
+		{
+			AActor* Selected = InActor;
+			Selected->AddActorLocalOffset(DeltaTransform.GetLocation());
+			Selected->AddActorLocalRotation(DeltaTransform.GetRotation());
+			Selected->SetActorRelativeScale3D(Selected->GetActorRelativeScale3D() + DeltaTransform.GetScale3D());
+		}
+		else
+		{
+			AActor* Selected = InActor;
+			Selected->AddActorWorldOffset(DeltaTransform.GetLocation());
+			Selected->AddActorWorldRotation(DeltaTransform.GetRotation());
+			Selected->SetActorScale3D(Selected->GetActorScale3D() + DeltaTransform.GetScale3D());
+		}
+}
+
+void AGizmoBaseActor::ResetCoreTransform(AActor* InActor)
+{
+	if (IsValid(InActor))
+		InActor->SetActorRelativeTransform(FTransform::Identity);
 }
 
 void AGizmoBaseActor::UpdateGizmoSpace(ETransformSpace InSpace)
@@ -256,106 +306,114 @@ void AGizmoBaseActor::UpdatePivot(bool bRefreshLocation, bool bRefreshOrientatio
 {
 	if (bRefreshLocation)
 	{
-		this->Pivot.Location = GetPivotLocationFromSelection();
-		this->SetActorLocation(this->Pivot.Location);
+		FVector Location = GetPivotLocation();
+		this->Pivot.Location = Location;
+		this->SetActorLocation(Location);
 	}
 
 	if (bRefreshOrientation)
 	{
-		this->Pivot.Orientation = GetPivotOrientationFromSelection();
-		this->SetActorRotation(this->Pivot.Orientation);
+		FRotator Rotation = GetPivotOrientation();
+		this->Pivot.Orientation = Rotation;
+		this->SetActorRotation(Rotation);
 	}
 }
 
-EGizmoPivotSelectionSource AGizmoBaseActor::GetPivotSelectionSource()
-{
-	return this->PivotSelectionSource;
-}
-
-FVector AGizmoBaseActor::GetPivotLocationFromSelection()
+FVector AGizmoBaseActor::GetPivotLocation()
 {
 	ETransformSpace Space = this->Pivot.Space;
-	switch (this->PivotLocationSource)
+	switch (this->PivotLocationAggregation)
 	{
-	case EGizmoPivotSource::PS_Custom:
+	case EGizmoPivotAggregation::PA_Custom:
 		return this->Pivot.Location;
-	case EGizmoPivotSource::PS_Self:
-		return UPoly_ActorFunctions::GetLocation(this, Space);
-	case EGizmoPivotSource::PS_First:
-		if (SelectCore->IsNotEmpty())
-			return UPoly_ActorFunctions::GetLocation(SelectCore->GetFirstSelected(), Space);
-		break;
-	case EGizmoPivotSource::PS_Last:
-		if (SelectCore->IsNotEmpty())
-			return UPoly_ActorFunctions::GetLocation(SelectCore->GetLastSelected(), Space);
-		break;
-	case EGizmoPivotSource::PS_Center:
+
+	case EGizmoPivotAggregation::PA_Identity:
+	case EGizmoPivotAggregation::PA_CenterMedian:
 	{
-		if (this->PivotSelectionSource == EGizmoPivotSelectionSource::PSS_Actor
-			&& bHasActorSelection)
+		// ToDo: @tpott: add distinction for 'All', 'first', 'last' sources
+		if (this->PivotSelectionSource == EGizmoPivotSelectionSource::PSS_Actor && this->SelectCore->IsNotEmpty())
 		{
-			// ToDo: @tpott: Add branch for 'Elements' PivotSelectionSource to determine position from selection
-			FVector SelectionCenter, SelectionExtents;
-			UGameplayStatics::GetActorArrayBounds(this->SelectCore->GetSelection(), false, SelectionCenter, SelectionExtents);
-			return SelectionCenter;
+			FVector Loc = UPoly_ActorFunctions::GetLocation(this->SelectCore->GetPolySelection(), Space, this->PivotLocationAggregation);
+			//UE_LOG(LogTemp, Warning, TEXT("Pivot (Actors): %s \nsource: %s; \nlocation-aggr: %s;"), *Loc.ToString(), *UEnum::GetValueAsString(PivotSource), *UEnum::GetValueAsString(PivotLocationAggregation));
+			return Loc;
 		}
-		else if (this->PivotSelectionSource == EGizmoPivotSelectionSource::PSS_Elements
-			&& bHasElementSelection)
+		else if (this->PivotSelectionSource == EGizmoPivotSelectionSource::PSS_Elements && this->ElementsCore->IsNotEmpty())
 		{
-			TArray<UPolyMeshSelection*> Selections = this->ElementsCore->GetPolySelections();
-			int Count = 0;
-			FVector SelectionCenter;
-
-			// ToDo: Refine this to determine 'median' position from selection (bounds will shift location to selection 3D center
-			//			Create method to get median location of mesh elements (tri & polygroups use tri-barycentric center, vertices use vertex position)
-			for (auto Selection : Selections)
-			{
-				FVector Center;
-				if (UPoly_MeshSelectionFunctions::GetSelectionCenterOfBounds(Selection->GetSelectedMesh(), Selection->GetMeshElementsSelection(), Center))
-				{
-					SelectionCenter = SelectionCenter + Center;
-					Count++;
-				}
-			}
-
-			SelectionCenter = SelectionCenter / Count;
-			UE_LOG(LogTemp, Warning, TEXT("Elements: %d / %d (%s)"), Count, Selections.Num(), *SelectionCenter.ToString());
-			return SelectionCenter;
+			FVector Loc = UPoly_ActorFunctions::GetLocation(this->ElementsCore->GetPolySelection(), Space, this->PivotLocationAggregation);
+			//UE_LOG(LogTemp, Warning, TEXT("Pivot (Elements): %s \nsource: %s; \nlocation-aggr: %s;"), *Loc.ToString(), *UEnum::GetValueAsString(PivotSource), *UEnum::GetValueAsString(PivotLocationAggregation));
+			return Loc;
 		}
+		break;
 	}
 
-	default:
-	case EGizmoPivotSource::PS_Identity:
-		break;
 	}
 	// return 'identity' rotator
 	return FVector::ZeroVector;
 }
 
-FRotator AGizmoBaseActor::GetPivotOrientationFromSelection()
+FRotator AGizmoBaseActor::GetPivotOrientation()
 {
-	switch (this->PivotOrientationSource)
+	ETransformSpace Space = this->Pivot.Space;
+	switch (this->PivotLocationAggregation)
 	{
-	case EGizmoPivotSource::PS_Custom:
+	case EGizmoPivotAggregation::PA_Custom:
 		return this->Pivot.Orientation;
-	case EGizmoPivotSource::PS_Self:
-		return UPoly_ActorFunctions::GetRotation(this, this->Pivot.Space);
-	case EGizmoPivotSource::PS_First:
-		if (SelectCore->IsNotEmpty())
-			return UPoly_ActorFunctions::GetRotation(SelectCore->GetFirstSelected(), this->Pivot.Space);
-		break;
-	case EGizmoPivotSource::PS_Last:
-		if (SelectCore->IsNotEmpty())
-			return UPoly_ActorFunctions::GetRotation(SelectCore->GetLastSelected(), this->Pivot.Space);
-		break;
 
-	default:
-	case EGizmoPivotSource::PS_Center:
-	case EGizmoPivotSource::PS_Identity:
-		// ToDo: @tpott: Add branch for 'Elements' PivotSelectionSource to determine rotation/Normal from given selection
-		//					Would also apply to PS_Last and First? to use orientation from selection of first or last selected actor?
+	case EGizmoPivotAggregation::PA_Identity:
+	case EGizmoPivotAggregation::PA_CenterMedian:
+	{
 		break;
+	}
+	//switch (this->PivotAggregation)
+	//{
+	//case EGizmoPivotSource_OLD::PS_Custom:
+	//	return this->Pivot.Orientation;
+	//case EGizmoPivotSource_OLD::PS_Self:
+	//	return UPoly_ActorFunctions::GetRotation(this, this->Pivot.Space);
+	//case EGizmoPivotSource_OLD::PS_First:
+	//	if (SelectCore->IsNotEmpty())
+	//		return UPoly_ActorFunctions::GetRotation(SelectCore->GetFirstSelected(), this->Pivot.Space);
+	//	break;
+	//case EGizmoPivotSource_OLD::PS_Last:
+	//	if (SelectCore->IsNotEmpty())
+	//		return UPoly_ActorFunctions::GetRotation(SelectCore->GetLastSelected(), this->Pivot.Space);
+	//	break;
+
+	//default:
+	//case EGizmoPivotSource_OLD::PS_Center:
+	//case EGizmoPivotSource_OLD::PS_Identity:
+	//	// ToDo: @tpott: Add branch for 'Elements' PivotSelectionSource to determine rotation/Normal from given selection
+	//	//					Would also apply to PS_Last and First? to use orientation from selection of first or last selected actor?
+	//	break;
 	}
 	// return 'identity' rotator
 	return FRotator::ZeroRotator;
+}
+
+void AGizmoBaseActor::SetPivotBehaviour(const EGizmoPivotSource InSource,
+	const EGizmoPivotSelectionSource InSelectionSource,
+	const EGizmoPivotAggregation InLocationAggregation,
+	const EGizmoPivotAggregation InOrientationAggregation)
+{
+	if (InSource != EGizmoPivotSource::PS_Keep)
+		this->PivotSource = InSource;
+	if (InSelectionSource != EGizmoPivotSelectionSource::PSS_Keep)
+		this->PivotSelectionSource = InSelectionSource;
+	if (InLocationAggregation != EGizmoPivotAggregation::PA_Keep)
+		this->PivotLocationAggregation = InLocationAggregation;
+	if (InOrientationAggregation != EGizmoPivotAggregation::PA_Keep)
+		this->PivotOrientationAggregation = InOrientationAggregation;
+	this->UpdatePivot(true, true);
+}
+void AGizmoBaseActor::SetPivotSource(const EGizmoPivotSource InSource)
+{
+	SetPivotBehaviour(InSource);
+}
+void AGizmoBaseActor::SetPivotSelectionSource(const EGizmoPivotSelectionSource InSelectionSource)
+{
+	SetPivotBehaviour(EGizmoPivotSource::PS_Keep, InSelectionSource);
+}
+void AGizmoBaseActor::SetPivotAggregation(const EGizmoPivotAggregation InLocationAggregation, const EGizmoPivotAggregation InOrientationAggregation)
+{
+	SetPivotBehaviour(EGizmoPivotSource::PS_Keep, EGizmoPivotSelectionSource::PSS_Keep, InLocationAggregation, InOrientationAggregation);
 }

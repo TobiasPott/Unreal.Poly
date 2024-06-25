@@ -172,8 +172,7 @@ protected:
 	UFUNCTION()
 	void ScaleToScreenSpace();
 
-	UFUNCTION(BlueprintCallable, Category = "Gizmo")
-	void SetEnableConsumeInput(const bool bInEnable);
+	void SetEnableConsumeInput(const bool bInEnable) override;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Gizmo")
 	void OnInputKey_Pressed(FKey InKey);

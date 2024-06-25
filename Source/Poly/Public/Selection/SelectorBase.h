@@ -36,7 +36,7 @@ public:
 
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Selector")
-	TObjectPtr<UClass> VisualiserClass = ASelectorVisualiserBase::StaticClass();
+	TObjectPtr<UClass> VisualiserClass = nullptr; // ASelectorVisualiserBase::StaticClass();
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	bool IsEmpty() { return Selection.IsEmpty(); }
@@ -88,7 +88,6 @@ public:
 		Selection.AddUnique(InSelectable);
 		IsSelected = Selection.Contains(InSelectable);
 
-		UPoly_SelectorFunctions::SetMaterialForState(InSelectable->GetSelectedActor(), IsSelected, nullptr, 1);
 
 		if (IsSelected)
 			if (this->SelectableSelected.IsBound())
@@ -111,8 +110,6 @@ public:
 
 		Selection.Remove(InSelectable);
 		IsSelected = Selection.Contains(InSelectable);
-
-		UPoly_SelectorFunctions::SetMaterialForState(InSelectable->GetSelectedActor(), IsSelected, nullptr, 1);
 
 		if (!IsSelected)
 			if (this->SelectableDeselected.IsBound())
@@ -168,7 +165,7 @@ public:
 
 
 
-protected:
+public:
 	UFUNCTION()
 	void SetVisualiser(TSubclassOf<ASelectorVisualiserBase> NewVisualiserClass);
 

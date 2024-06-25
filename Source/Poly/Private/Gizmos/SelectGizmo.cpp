@@ -7,7 +7,11 @@
 #include "Selection/SelectorSubsystem.h"
 #include "Selection/SelectorBase.h"
 #include "UI/PolyHUD.h"
+#include "EnumTypes.h"
 #include "Kismet/GameplayStatics.h"
+#include "Actions/Categories/SelectionActions.h"
+#include "Actions/ActionRunner.h"
+#include "Functions/Poly_BaseFunctions.h"
 
 // Sets default values
 ASelectGizmo::ASelectGizmo()
@@ -38,7 +42,7 @@ void ASelectGizmo::Setup(ESelectionRequestMode InMarqueeMode, UClass* InFilterCl
 	bDisableOnFinish = bInDisableOnFinish;
 }
 
-void ASelectGizmo::SetEnabled(const bool bInEnable)
+void ASelectGizmo::SetEnableConsumeInput(const bool bInEnable)
 {
 	if (!bIsEnabled && bInEnable)
 	{
@@ -87,12 +91,6 @@ void ASelectGizmo::SetEnabled(const bool bInEnable)
 	bIsEnabled = bInEnable;
 }
 
-void ASelectGizmo::SetGizmoHidden(bool bHiddenInGame)
-{
-	Super::SetGizmoHidden(bHiddenInGame);
-	this->SetEnabled(!bHiddenInGame);
-}
-
 void ASelectGizmo::SetSelectionMode(EPolySelectionMode InSelectionMode)
 {
 	this->SelectionMode = InSelectionMode;
@@ -100,13 +98,13 @@ void ASelectGizmo::SetSelectionMode(EPolySelectionMode InSelectionMode)
 
 void ASelectGizmo::UpdateSelection()
 {
+
 	switch (this->SelectionMode)
 	{
 	case EPolySelectionMode::Deselect:
 	{
 		for (AActor* Actor : this->Request->Actors)
 		{
-			this->Selection.Remove(Actor);
 			UPolySelection::RemoveByT(this->PolySelection, Actor);
 		}
 		break;
@@ -115,7 +113,6 @@ void ASelectGizmo::UpdateSelection()
 	{
 		for (AActor* Actor : this->Request->Actors)
 		{
-			this->Selection.AddUnique(Actor);
 			UPolySelection::AddByActorT(this->PolySelection, Actor);
 		}
 		break;
@@ -123,22 +120,14 @@ void ASelectGizmo::UpdateSelection()
 	case EPolySelectionMode::Replace:
 	default:
 	{
-		this->Selection.Reset(this->Request->Count());
-		this->Selection.Append(this->Request->Actors);
-
 		this->PolySelection.Reset(0);
-		UPolySelection::AddByActorsT(this->PolySelection, this->Selection);
+		if (this->Request->Count() > 0)
+			UPolySelection::AddByActorsT(this->PolySelection, this->Request->Actors);
 		break;
 	}
 	}
 
-	// Add poly selection to selector 'Actors'
-	ASelectorBase* Selector;
-	if (UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>()->GetSelector(this, USelectorNames::Actors, Selector))
-	{
-		Selector->ReplaceAll(this->PolySelection);
-	}
-
+	UE_LOG(LogPolyTemp, Warning, TEXT("UpdateSelection(). %s %d / %d"), *UEnum::GetValueAsString(this->SelectionMode), this->Request->Actors.Num(), this->PolySelection.Num());
 }
 
 
@@ -173,6 +162,7 @@ void ASelectGizmo::OnInputKey_Released(FKey InKey)
 		UPoly_UIFunctions::GetMousePosition(this, PlayerIndex, SecondPoint);
 		Request->UpdateSecondPoint(SecondPoint);
 
+		Request->Actors.Empty();
 		Request->Submit();
 		Request->Finished.AddDynamic(this, &ASelectGizmo::OnRequestFinished);
 	}
@@ -198,10 +188,28 @@ void ASelectGizmo::OnMouse2D(FVector AxisValue)
 void ASelectGizmo::OnRequestFinished(USelectionRequest* InRequest, bool bSuccess)
 {
 	Request->Finished.RemoveDynamic(this, &ASelectGizmo::OnRequestFinished);
-	if (bSuccess)
+	this->UpdateSelection();
+
+	FName SelectorName = USelectorNames::Actors;
+	bool bIsEmpty = this->PolySelection.IsEmpty();
+	if (!bIsEmpty)
 	{
-		this->UpdateSelection();
+		//UE_LOG(LogPolyTemp, Warning, TEXT("OnRequestFinished(). SetSelection"));
+		USetSelectionAction* SetSelectionAction = NewObject<USetSelectionAction>(this);
+		SetSelectionAction->SetupWith(SelectorName, this->PolySelection);
+		AActionRunner::RunOnAny(this, SetSelectionAction);
 	}
+	else
+	{
+		if (!UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>()->IsEmpty(SelectorName))
+		{
+			//UE_LOG(LogPolyTemp, Warning, TEXT("OnRequestFinished(). ClearSelection"));
+			UClearSelectionAction* ClearSelectionAction = NewObject<UClearSelectionAction>(this);
+			ClearSelectionAction->SetupWith(SelectorName);
+			AActionRunner::RunOnAny(this, ClearSelectionAction);
+		}
+	}
+
 
 	this->OnFinished();
 }
@@ -212,12 +220,13 @@ void ASelectGizmo::OnFinished()
 		Finished.Broadcast(this->Request, this->Request->IsNotEmpty());
 
 	if (bDisableOnFinish)
-		this->SetEnabled(false);
+		this->SetEnableConsumeInput(false);
 	this->Request = nullptr;
 }
 
 void ASelectGizmo::Clear()
 {
-	this->Selection.Reset(this->Request->Count());
+	//this->Selection.Reset(this->Request->Count());
+	this->PolySelection.Reset();
 	this->Request = nullptr;
 }

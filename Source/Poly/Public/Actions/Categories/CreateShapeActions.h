@@ -5,43 +5,37 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Actions/ActionBase.h"
-#include "CreationActions.generated.h"
+#include "CreateShapeActions.generated.h"
 
 
-
+/**
+ *
+ */
 UCLASS()
 class POLY_API UCreateShapeActionBase : public UActionBase
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
-	UCreateShapeActionBase()
-	{
-		Description = "poly.CreateShape";
-		ShortName = "<Create Shape>";
-	}
+	// Ctor
+	UCreateShapeActionBase() : UActionBase("poly.Light.CreateShapeActionBase", "<CreateShapeActionBase>") {}
+	UCreateShapeActionBase(const FString& InDescription, const FString& InShortName) : UActionBase("poly.Shapes." + InDescription, InShortName) {}
 
+	// Members
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	FVector Offset = FVector::ZeroVector;
 };
 
-/**
- *
- */
 UCLASS(Blueprintable)
-class POLY_API UCreateBoxAction: public UCreateShapeActionBase
+class POLY_API UCreateBoxAction : public UCreateShapeActionBase
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
-	UCreateBoxAction()
-	{
-		Description = "poly.CreateBox";
-		ShortName = "Create Box";
-	}
+	// Ctor
+	UCreateBoxAction() : UCreateShapeActionBase("CreateBox", "Create Box") {}
 
+	// Members
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	FVector Dimensions = FVector(100, 100, 100);
 
@@ -56,13 +50,10 @@ class POLY_API UCreateSphereAction : public UCreateShapeActionBase
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
-	UCreateSphereAction()
-	{
-		Description = "poly.CreateSphere";
-		ShortName = "Create Sphere";
-	}
+	// Ctor
+	UCreateSphereAction() : UCreateShapeActionBase("CreateSphere", "Create Sphere") {}
 
+	// Members
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	float Radius = 50.0f;
 
@@ -86,13 +77,10 @@ class POLY_API UCreateCylinderAction : public UCreateShapeActionBase
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
-	UCreateCylinderAction()
-	{
-		Description = "poly.CreateCylinder";
-		ShortName = "Create Cylinder";
-	}
+	// Ctor
+	UCreateCylinderAction() : UCreateShapeActionBase("CreateCylinder", "Create Cylinder") {}
 
+	// Members
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	float Radius = 50.0f;
 
@@ -116,13 +104,10 @@ class POLY_API UCreateConeAction : public UCreateShapeActionBase
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
-	UCreateConeAction()
-	{
-		Description = "poly.CreateCone";
-		ShortName = "Create Cone";
-	}
+	// Ctor
+	UCreateConeAction() : UCreateShapeActionBase("CreateCone", "Create Cone") {}
 
+	// Members
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	float BaseRadius = 50.0f;
 
@@ -138,67 +123,6 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	int32 HeightSteps = 4;
 
-public:
-	bool Execute_Implementation(bool bEmitRecord) override;
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-UCLASS(Blueprintable)
-class POLY_API UCreateDirectionalLightAction : public UActionBase
-{
-	GENERATED_BODY()
-
-public:
-	// Sets default values for this actor's properties
-	UCreateDirectionalLightAction()
-	{
-		Description = "poly.CreateDirectionalLight";
-		ShortName = "Create Directional Light";
-	}
-public:
-	bool Execute_Implementation(bool bEmitRecord) override;
-};
-
-UCLASS(Blueprintable)
-class POLY_API UCreateSpotLightAction : public UActionBase
-{
-	GENERATED_BODY()
-
-public:
-	// Sets default values for this actor's properties
-	UCreateSpotLightAction()
-	{
-		Description = "poly.CreateSpotLight";
-		ShortName = "Create Spot Light";
-	}
-public:
-	bool Execute_Implementation(bool bEmitRecord) override;
-};
-
-UCLASS(Blueprintable)
-class POLY_API UCreatePointLightAction : public UActionBase
-{
-	GENERATED_BODY()
-
-public:
-	// Sets default values for this actor's properties
-	UCreatePointLightAction()
-	{
-		Description = "poly.CreatePointLight";
-		ShortName = "Create Point Light";
-	}
 public:
 	bool Execute_Implementation(bool bEmitRecord) override;
 };

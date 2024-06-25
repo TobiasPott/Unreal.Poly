@@ -4,6 +4,7 @@
 #include "Functions/Poly_SelectorFunctions.h"
 #include "Components/BaseDynamicMeshComponent.h"
 #include "GeometryScript/MeshSelectionFunctions.h"
+#include "EnumTypes.h"
 
 void UPoly_SelectorFunctions::SetMaterialForState(AActor* Actor, const bool IsSelected, UMaterialInterface* SelectedMaterial, const uint8 StencilValue)
 {
@@ -15,6 +16,7 @@ void UPoly_SelectorFunctions::SetMaterialForState(AActor* Actor, const bool IsSe
 
 	TInlineComponentArray<UActorComponent*> Components;
 	Actor->GetComponents(Components);
+
 	for (int i = 0; i < Components.Num(); i++)
 	{
 		UActorComponent* Comp = Components[i];

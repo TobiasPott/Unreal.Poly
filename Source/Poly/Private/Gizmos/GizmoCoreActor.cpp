@@ -314,6 +314,8 @@ void AGizmoCoreActor::OnInputKey_Released_Implementation(FKey InKey)
 
 	// triggers gizmo state change if necessary
 	this->SetTransformProgressState(false, EGizmoDomain::TD_None);
+	// reset core actor to identity transform in local/relative space
+	this->SetActorRelativeTransform(FTransform::Identity);
 	bInputKeyPressCaptured = false;
 }
 
