@@ -297,6 +297,8 @@ void AGizmoBaseActor::UpdatePivot(bool bRefreshLocation, bool bRefreshOrientatio
 	{
 		FRotator Rotation = GetPivotOrientation();
 		this->Pivot.Orientation = Rotation;
+
+		UE_LOG(LogTemp, Warning, TEXT("UpdatePivot (Orient): %s \naggr: %s;"), *Rotation.ToString(), *UEnum::GetValueAsString(PivotOrientationAggregation))
 		this->SetActorRotation(Rotation);
 	}
 }
@@ -310,6 +312,8 @@ FVector AGizmoBaseActor::GetPivotLocation()
 		return this->Pivot.Location;
 
 	case EGizmoPivotAggregation::PA_Identity:
+		return FVector::ZeroVector;
+
 	case EGizmoPivotAggregation::PA_CenterMedian:
 	{
 		// ToDo: @tpott: add distinction for 'All', 'first', 'last' sources
@@ -336,37 +340,32 @@ FVector AGizmoBaseActor::GetPivotLocation()
 FRotator AGizmoBaseActor::GetPivotOrientation()
 {
 	ETransformSpace Space = this->Pivot.Space;
-	switch (this->PivotLocationAggregation)
+	switch (this->PivotOrientationAggregation)
 	{
 	case EGizmoPivotAggregation::PA_Custom:
 		return this->Pivot.Orientation;
 
 	case EGizmoPivotAggregation::PA_Identity:
+		return FRotator::ZeroRotator;
+
 	case EGizmoPivotAggregation::PA_CenterMedian:
-	{
+	{		
+		// ToDo: @tpott: add distinction for 'All', 'first', 'last' sources
+		if (this->PivotSelectionSource == EGizmoPivotSelectionSource::PSS_Actor && this->SelectCore->IsNotEmpty())
+		{
+			FRotator Rot = UPoly_ActorFunctions::GetRotation(this->SelectCore->GetPolySelection(), Space, this->PivotOrientationAggregation);
+			//UE_LOG(LogTemp, Warning, TEXT("Pivot (Actors): %s \nsource: %s; \nrotationn-aggr: %s;"), *Rot.ToString(), *UEnum::GetValueAsString(PivotSource), *UEnum::GetValueAsString(PivotOrientationAggregation));
+			return Rot;
+		}
+		else if (this->PivotSelectionSource == EGizmoPivotSelectionSource::PSS_Elements && this->ElementsCore->IsNotEmpty())
+		{
+			FRotator Rot = UPoly_ActorFunctions::GetRotation(this->ElementsCore->GetPolySelection(), Space, this->PivotOrientationAggregation);
+			//UE_LOG(LogTemp, Warning, TEXT("Pivot (Elements): %s \nsource: %s; \nrotationn-aggr: %s;"), *Rot.ToString(), *UEnum::GetValueAsString(PivotSource), *UEnum::GetValueAsString(PivotOrientationAggregation));
+			return Rot;
+		}
 		break;
 	}
-	//switch (this->PivotAggregation)
-	//{
-	//case EGizmoPivotSource_OLD::PS_Custom:
-	//	return this->Pivot.Orientation;
-	//case EGizmoPivotSource_OLD::PS_Self:
-	//	return UPoly_ActorFunctions::GetRotation(this, this->Pivot.Space);
-	//case EGizmoPivotSource_OLD::PS_First:
-	//	if (SelectCore->IsNotEmpty())
-	//		return UPoly_ActorFunctions::GetRotation(SelectCore->GetFirstSelected(), this->Pivot.Space);
-	//	break;
-	//case EGizmoPivotSource_OLD::PS_Last:
-	//	if (SelectCore->IsNotEmpty())
-	//		return UPoly_ActorFunctions::GetRotation(SelectCore->GetLastSelected(), this->Pivot.Space);
-	//	break;
 
-	//default:
-	//case EGizmoPivotSource_OLD::PS_Center:
-	//case EGizmoPivotSource_OLD::PS_Identity:
-	//	// ToDo: @tpott: Add branch for 'Elements' PivotSelectionSource to determine rotation/Normal from given selection
-	//	//					Would also apply to PS_Last and First? to use orientation from selection of first or last selected actor?
-	//	break;
 	}
 	// return 'identity' rotator
 	return FRotator::ZeroRotator;
@@ -385,7 +384,7 @@ void AGizmoBaseActor::SetPivotBehaviour(const EGizmoPivotSource InSource,
 		this->PivotLocationAggregation = InLocationAggregation;
 	if (InOrientationAggregation != EGizmoPivotAggregation::PA_Keep)
 		this->PivotOrientationAggregation = InOrientationAggregation;
-	this->UpdatePivot(true, true);
+	//this->UpdatePivot(true, true);
 }
 void AGizmoBaseActor::SetPivotSource(const EGizmoPivotSource InSource)
 {

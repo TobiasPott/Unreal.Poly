@@ -85,9 +85,10 @@ FVector UPoly_ActorFunctions::GetLocation(const TArray<UPolySelection*> Selectio
 	int32 Count = 0;
 	for (int i = 0; i < Selections.Num(); i++)
 	{
-		if (!IsValid(Selections[i]))
+		UPolySelection* Selection = Selections[i];
+		if (!IsValid(Selection))
 			continue;
-		Location += GetLocation(Selections[i], Space, Aggregation);
+		Location += GetLocation(Selection, Space, Aggregation);
 		Count++;
 	}
 
@@ -102,9 +103,10 @@ FVector UPoly_ActorFunctions::GetLocation(const TArray<UPolyMeshSelection*> Sele
 	int32 Count = 0;
 	for (int i = 0; i < Selections.Num(); i++)
 	{
-		if (!IsValid(Selections[i]))
+		UPolyMeshSelection* Selection = Selections[i];
+		if (!IsValid(Selection))
 			continue;
-		Location += GetLocation(Selections[i], Space, Aggregation);
+		Location += GetLocation(Selection, Space, Aggregation);
 		Count++;
 	}
 	if (Count == 0)
@@ -154,17 +156,56 @@ FRotator UPoly_ActorFunctions::GetRotation(UPolyMeshSelection* Selection, const 
 
 FRotator UPoly_ActorFunctions::GetRotation(const TArray<AActor*> Actors, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation)
 {
-	return FRotator();
+	FRotator Location = FRotator::ZeroRotator;
+	int32 Count = 0;
+	for (int i = 0; i < Actors.Num(); i++)
+	{
+		AActor* Actor = Actors[i];
+		if (IsValid(Actor))
+		{
+			Location += GetRotation(Actor, Space, Aggregation);
+			Count++;
+		}
+	}
+	if (Count == 0)
+		return FRotator::ZeroRotator;
+	return Location * (1 / Count);
 }
 
 FRotator UPoly_ActorFunctions::GetRotation(const TArray<UPolySelection*> Selections, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation)
 {
-	return FRotator();
+	FRotator Location = FRotator::ZeroRotator;
+	int32 Count = 0;
+	for (int i = 0; i < Selections.Num(); i++)
+	{
+		UPolySelection* Selection = Selections[i];
+		if (IsValid(Selection))
+		{
+			Location += GetRotation(Selection, Space, Aggregation);
+			Count++;
+		}
+	}
+	if (Count == 0)
+		return FRotator::ZeroRotator;
+	return Location * (1 / Count);
 }
 
 FRotator UPoly_ActorFunctions::GetRotation(const TArray<UPolyMeshSelection*> Selections, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation)
 {
-	return FRotator();
+	FRotator Location = FRotator::ZeroRotator;
+	int32 Count = 0;
+	for (int i = 0; i < Selections.Num(); i++)
+	{
+		UPolyMeshSelection* Selection = Selections[i];
+		if (IsValid(Selection))
+		{
+			Location += GetRotation(Selection, Space, Aggregation);
+			Count++;
+		}
+	}
+	if (Count == 0)
+		return FRotator::ZeroRotator;
+	return Location * (1 / Count);
 }
 
 
