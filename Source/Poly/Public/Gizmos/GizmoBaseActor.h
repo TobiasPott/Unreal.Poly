@@ -90,8 +90,13 @@ protected:
 	void UpdatePivot(bool bRefreshLocation = true, bool bRefreshOrientation = true);
 	UFUNCTION(BlueprintCallable, Category = "Gizmo|Pivot")
 	FVector GetPivotLocation();
+	FVector GetActorsPivotLocationByPivotSource();
+	FVector GetElementsPivotLocationByPivotSource();
+
 	UFUNCTION(BlueprintCallable, Category = "Gizmo|Pivot")
 	FRotator GetPivotOrientation();
+	FRotator GetActorsPivotOrientationByPivotSource();
+	FRotator GetElementsPivotOrientationByPivotSource();
 
 	UFUNCTION(BlueprintCallable, Category = "Gizmo|Pivot")
 	void SetPivotBehaviour(const EGizmoPivotSource InSource = EGizmoPivotSource::PS_Keep,
