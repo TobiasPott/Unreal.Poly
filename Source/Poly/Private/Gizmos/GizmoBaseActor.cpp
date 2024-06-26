@@ -340,8 +340,8 @@ FVector AGizmoBaseActor::GetActorsPivotLocationByPivotSource()
 	case EGizmoPivotSource::PS_All:
 		return UPoly_ActorFunctions::GetLocation(this->SelectCore->GetPolySelection(), this->Pivot.Space, this->PivotLocationAggregation);
 	}
-	// return 'identity' vector
-	return FVector::ZeroVector;
+	//// return 'identity' vector
+	//return FVector::ZeroVector;
 }
 
 FVector AGizmoBaseActor::GetElementsPivotLocationByPivotSource()
@@ -357,8 +357,9 @@ FVector AGizmoBaseActor::GetElementsPivotLocationByPivotSource()
 	case EGizmoPivotSource::PS_All:
 		return UPoly_ActorFunctions::GetLocation(this->ElementsCore->GetPolySelection(), this->Pivot.Space, this->PivotLocationAggregation);
 	}
-	// return 'identity' vector
-	return FVector::ZeroVector;
+
+	//// return 'identity' vector
+	//return FVector::ZeroVector;
 }
 
 FRotator AGizmoBaseActor::GetPivotOrientation()
@@ -383,6 +384,7 @@ FRotator AGizmoBaseActor::GetPivotOrientation()
 	}
 
 	}
+
 	// return 'identity' rotator
 	return FRotator::ZeroRotator;
 }
@@ -401,8 +403,8 @@ FRotator AGizmoBaseActor::GetActorsPivotOrientationByPivotSource()
 		return UPoly_ActorFunctions::GetRotation(this->SelectCore->GetPolySelection(), this->Pivot.Space, this->PivotOrientationAggregation);
 	}
 
-	// return 'identity' rotator
-	return FRotator::ZeroRotator;
+	//// return 'identity' rotator
+	//return FRotator::ZeroRotator;
 }
 
 FRotator AGizmoBaseActor::GetElementsPivotOrientationByPivotSource()
@@ -419,8 +421,8 @@ FRotator AGizmoBaseActor::GetElementsPivotOrientationByPivotSource()
 		return UPoly_ActorFunctions::GetRotation(this->ElementsCore->GetPolySelection(), this->Pivot.Space, this->PivotOrientationAggregation);
 	}
 
-	// return 'identity' rotator
-	return FRotator::ZeroRotator;
+	//// return 'identity' rotator
+	//return FRotator::ZeroRotator;
 }
 
 void AGizmoBaseActor::SetPivotBehaviour(const EGizmoPivotSource InSource,
