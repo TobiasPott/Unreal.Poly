@@ -297,8 +297,6 @@ void AGizmoBaseActor::UpdatePivot(bool bRefreshLocation, bool bRefreshOrientatio
 	{
 		FRotator Rotation = GetPivotOrientation();
 		this->Pivot.Orientation = Rotation;
-
-		UE_LOG(LogTemp, Warning, TEXT("UpdatePivot (Orient): %s \naggr: %s;"), *Rotation.ToString(), *UEnum::GetValueAsString(PivotOrientationAggregation))
 		this->SetActorRotation(Rotation);
 	}
 }
