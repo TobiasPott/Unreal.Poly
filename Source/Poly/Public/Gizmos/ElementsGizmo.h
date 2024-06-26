@@ -118,6 +118,8 @@ public:
 	bool IsNotEmpty() { return !this->PolySelection.IsEmpty(); };
 	TArray<UPolyMeshSelection*> GetPolySelection() { return this->PolySelection; };
 
+	UPolyMeshSelection* GetFirstSelected() { return this->PolySelection.Num() > 0 ? this->PolySelection[0] : nullptr; };
+	UPolyMeshSelection* GetLastSelected() { return this->PolySelection.Num() > 0 ? this->PolySelection[this->PolySelection.Num() - 1] : nullptr; };
 
 protected:
 
