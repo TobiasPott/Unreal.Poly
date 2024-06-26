@@ -187,7 +187,7 @@ FRotator UPoly_ActorFunctions::GetRotation(const TArray<UPolySelection*> Selecti
 	}
 	if (Count == 0)
 		return FRotator::ZeroRotator;
-	return Location * (1 / Count);
+	return Location * (1.0f / Count);
 }
 
 FRotator UPoly_ActorFunctions::GetRotation(const TArray<UPolyMeshSelection*> Selections, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation)
