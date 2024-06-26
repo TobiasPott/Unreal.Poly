@@ -151,6 +151,7 @@ FRotator UPoly_ActorFunctions::GetRotation(UPolySelection* Selection, const ETra
 
 FRotator UPoly_ActorFunctions::GetRotation(UPolyMeshSelection* Selection, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation)
 {
+	UE_LOG(LogTemp, Warning, TEXT("GetRotation(UPolyMeshSelection...) is not implemented"));
 	return FRotator();
 }
 
@@ -169,7 +170,7 @@ FRotator UPoly_ActorFunctions::GetRotation(const TArray<AActor*> Actors, const E
 	}
 	if (Count == 0)
 		return FRotator::ZeroRotator;
-	return Location * (1 / Count);
+	return Location * (1.0f / Count);
 }
 
 FRotator UPoly_ActorFunctions::GetRotation(const TArray<UPolySelection*> Selections, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation)
@@ -205,7 +206,7 @@ FRotator UPoly_ActorFunctions::GetRotation(const TArray<UPolyMeshSelection*> Sel
 	}
 	if (Count == 0)
 		return FRotator::ZeroRotator;
-	return Location * (1 / Count);
+	return Location * (1.0f / Count);
 }
 
 
