@@ -317,9 +317,19 @@ FVector AGizmoBaseActor::GetPivotLocation()
 		// ToDo: @tpott: add distinction for 'All', 'first', 'last' sources
 		if (this->PivotSelectionSource == EGizmoPivotSelectionSource::PSS_Actor && this->SelectCore->IsNotEmpty())
 		{
-			FVector Loc = UPoly_ActorFunctions::GetLocation(this->SelectCore->GetPolySelection(), Space, this->PivotLocationAggregation);
-			//UE_LOG(LogTemp, Warning, TEXT("Pivot (Actors): %s \nsource: %s; \nlocation-aggr: %s;"), *Loc.ToString(), *UEnum::GetValueAsString(PivotSource), *UEnum::GetValueAsString(PivotLocationAggregation));
-			return Loc;
+			switch (this->PivotSource)
+			{
+			case EGizmoPivotSource::PS_First:
+				return UPoly_ActorFunctions::GetLocation(this->SelectCore->GetFirstSelected(), Space, this->PivotLocationAggregation);
+			case EGizmoPivotSource::PS_Last:
+				return UPoly_ActorFunctions::GetLocation(this->SelectCore->GetLastSelected(), Space, this->PivotLocationAggregation);
+			case EGizmoPivotSource::PS_Gizmo:
+			default:
+			case EGizmoPivotSource::PS_All:
+				return UPoly_ActorFunctions::GetLocation(this->SelectCore->GetPolySelection(), Space, this->PivotLocationAggregation);
+
+			}
+
 		}
 		else if (this->PivotSelectionSource == EGizmoPivotSelectionSource::PSS_Elements && this->ElementsCore->IsNotEmpty())
 		{
@@ -347,13 +357,22 @@ FRotator AGizmoBaseActor::GetPivotOrientation()
 		return FRotator::ZeroRotator;
 
 	case EGizmoPivotAggregation::PA_CenterMedian:
-	{		
+	{
 		// ToDo: @tpott: add distinction for 'All', 'first', 'last' sources
 		if (this->PivotSelectionSource == EGizmoPivotSelectionSource::PSS_Actor && this->SelectCore->IsNotEmpty())
 		{
-			FRotator Rot = UPoly_ActorFunctions::GetRotation(this->SelectCore->GetPolySelection(), Space, this->PivotOrientationAggregation);
-			//UE_LOG(LogTemp, Warning, TEXT("Pivot (Actors): %s \nsource: %s; \nrotationn-aggr: %s;"), *Rot.ToString(), *UEnum::GetValueAsString(PivotSource), *UEnum::GetValueAsString(PivotOrientationAggregation));
-			return Rot;
+			switch (this->PivotSource)
+			{
+			case EGizmoPivotSource::PS_First:
+				return UPoly_ActorFunctions::GetRotation(this->SelectCore->GetFirstSelected(), Space, this->PivotOrientationAggregation);
+			case EGizmoPivotSource::PS_Last:
+				return UPoly_ActorFunctions::GetRotation(this->SelectCore->GetLastSelected(), Space, this->PivotOrientationAggregation);
+			case EGizmoPivotSource::PS_Gizmo:
+			default:
+			case EGizmoPivotSource::PS_All:
+				return UPoly_ActorFunctions::GetRotation(this->SelectCore->GetPolySelection(), Space, this->PivotOrientationAggregation);
+			}
+
 		}
 		else if (this->PivotSelectionSource == EGizmoPivotSelectionSource::PSS_Elements && this->ElementsCore->IsNotEmpty())
 		{
