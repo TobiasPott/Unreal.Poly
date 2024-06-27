@@ -8,12 +8,7 @@
 
 
 
-void UPoly_MeshEditFunctions::AddMeshElementsTransform(UDynamicMesh* TargetMesh, FGeometryScriptMeshSelection Selection, FVector InOffset, FQuat InRotation, FVector InScale, ETransformSpace Space)
-{
-	AddMeshElementsTransform(TargetMesh, Selection, FTransform(InRotation, InOffset, InScale));
-}
-
-void UPoly_MeshEditFunctions::AddMeshElementsTransform(UDynamicMesh* TargetMesh, FGeometryScriptMeshSelection Selection, FTransform InTransform, ETransformSpace Space)
+void UPoly_MeshEditFunctions::AddMeshElementsTransform(UDynamicMesh* TargetMesh, FGeometryScriptMeshSelection Selection, bool bUseOrigin, FVector InOrigin, FTransform InTransform, ETransformSpace Space)
 {
 	if (IsValid(TargetMesh) && Selection.GetNumSelected() > 0)
 		if (Space == ETransformSpace::TS_Local)
@@ -24,7 +19,11 @@ void UPoly_MeshEditFunctions::AddMeshElementsTransform(UDynamicMesh* TargetMesh,
 		}
 		else
 		{
+			if (bUseOrigin)
+				UGeometryScriptLibrary_MeshTransformFunctions::TranslateMeshSelection(TargetMesh, Selection, -InOrigin);
 			UGeometryScriptLibrary_MeshTransformFunctions::TransformMeshSelection(TargetMesh, Selection, InTransform);
+			if (bUseOrigin)
+				UGeometryScriptLibrary_MeshTransformFunctions::TranslateMeshSelection(TargetMesh, Selection, InOrigin);
 		}
 }
 
