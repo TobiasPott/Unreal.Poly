@@ -316,7 +316,11 @@ bool UTransformElementsSelectionAction::Execute_Implementation(bool bEmitRecord)
 			UDynamicMesh* TargetMesh = Selection->GetSelectedMesh();
 			FGeometryScriptMeshSelection MeshSelection = Selection->GetMeshElementsSelection();
 
+			if (bUseOrigin)
+				UGeometryScriptLibrary_MeshTransformFunctions::TranslateMeshSelection(TargetMesh, MeshSelection, -this->Origin);
 			UGeometryScriptLibrary_MeshTransformFunctions::TransformMeshSelection(TargetMesh, MeshSelection, this->DeltaTransform);
+			if (bUseOrigin)
+				UGeometryScriptLibrary_MeshTransformFunctions::TranslateMeshSelection(TargetMesh, MeshSelection, this->Origin);
 			//AActor* Selected = ActiveSelection[i]->GetSelectedActor();
 			//Selected->AddActorWorldOffset(this->DeltaTransform.GetLocation());
 			//Selected->AddActorWorldRotation(this->DeltaTransform.GetRotation());
@@ -329,6 +333,12 @@ bool UTransformElementsSelectionAction::Execute_Implementation(bool bEmitRecord)
 
 	this->Discard();
 	return false;
+}
+
+void UTransformElementsSelectionAction::SetOrigin(FVector InOrigin, bool bInUseOrigin)
+{
+	this->bUseOrigin = bInUseOrigin;
+	this->Origin = InOrigin;
 }
 
 inline void UTransformElementsSelectionAction::SetLocation(FVector InLocation, bool bClearTransform)

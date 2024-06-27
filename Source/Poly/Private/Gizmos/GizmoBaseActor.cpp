@@ -236,7 +236,7 @@ void AGizmoBaseActor::TransformSelection(FTransform DeltaTransform, bool bInLoca
 		}
 	}
 	else
-	{
+	{		
 		DeltaTransform.SetScale3D(DeltaTransform.GetScale3D() + FVector::OneVector);
 		const ETransformSpace Space = bInLocalSpace ? ETransformSpace::TS_Local : ETransformSpace::TS_World;
 		TArray<UPolyMeshSelection*> ActiveSelection = this->ElementsCore->GetPolySelection();
@@ -246,7 +246,8 @@ void AGizmoBaseActor::TransformSelection(FTransform DeltaTransform, bool bInLoca
 			UDynamicMesh* TargetMesh = Selection->GetSelectedMesh();
 			FGeometryScriptMeshSelection MeshSelection = Selection->GetMeshElementsSelection();
 
-			UPoly_MeshEditFunctions::AddMeshElementsTransform(TargetMesh, MeshSelection, DeltaTransform, Space);
+			// ToDo: @tpott: only flag 'bUseOrigin' for rotation and scale
+			UPoly_MeshEditFunctions::AddMeshElementsTransform(TargetMesh, MeshSelection, true, this->Pivot.Location, DeltaTransform, Space);
 		}
 	}
 }
