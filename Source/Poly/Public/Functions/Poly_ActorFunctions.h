@@ -70,7 +70,7 @@ public:
 
 
 
-	static void AddActorTransform(AActor* Actor, FVector InOffset, FQuat InRotation, FVector InScale, ETransformSpace Space = ETransformSpace::TS_World);
+	//static void AddActorTransform(AActor* Actor, FVector InOffset, FQuat InRotation, FVector InScale, ETransformSpace Space = ETransformSpace::TS_World);
 	static void AddActorTransform(AActor* Actor, FTransform InTransform, ETransformSpace Space = ETransformSpace::TS_World);
 	static void AddTransforms(const TArray<AActor*> Actors, FTransform InTransform, ETransformSpace Space = ETransformSpace::TS_World);
 

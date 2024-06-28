@@ -220,26 +220,27 @@ bool UPoly_ActorFunctions::IsAttached(AActor* Actor)
 	return false;
 }
 
-
-void UPoly_ActorFunctions::AddActorTransform(AActor* Actor, FVector InOffset, FQuat InRotation, FVector InScale, ETransformSpace Space)
-{
-	if (IsValid(Actor))
-		if (Space == ETransformSpace::TS_Local)
-		{
-			Actor->AddActorLocalOffset(InOffset);
-			Actor->AddActorLocalRotation(InRotation);
-			Actor->SetActorRelativeScale3D(Actor->GetActorRelativeScale3D() + InScale);
-		}
-		else
-		{
-			Actor->AddActorWorldOffset(InOffset);
-			Actor->AddActorWorldRotation(InRotation);
-			Actor->SetActorScale3D(Actor->GetActorScale3D() + InScale);
-		}
-}
+//
+//void UPoly_ActorFunctions::AddActorTransform(AActor* Actor, FVector InOffset, FQuat InRotation, FVector InScale, ETransformSpace Space)
+//{
+//	if (IsValid(Actor))
+//		if (Space == ETransformSpace::TS_Local)
+//		{
+//			Actor->AddActorLocalOffset(InOffset);
+//			Actor->AddActorLocalRotation(InRotation);
+//			Actor->SetActorRelativeScale3D(Actor->GetActorRelativeScale3D() + InScale);
+//		}
+//		else
+//		{
+//			Actor->AddActorWorldOffset(InOffset);
+//			Actor->AddActorWorldRotation(InRotation);
+//			Actor->SetActorScale3D(Actor->GetActorScale3D() + InScale);
+//		}
+//}
 
 void UPoly_ActorFunctions::AddActorTransform(AActor* Actor, FTransform InTransform, ETransformSpace Space)
 {
+	// ToDo: @tpott: (AddActorTransform) Add transform around origin/pivot to this function (or add overload)
 	if (IsValid(Actor))
 		if (Space == ETransformSpace::TS_Local)
 		{
