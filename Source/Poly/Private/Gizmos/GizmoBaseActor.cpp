@@ -246,8 +246,9 @@ void AGizmoBaseActor::TransformSelection(FTransform DeltaTransform, bool bInLoca
 			UDynamicMesh* TargetMesh = Selection->GetSelectedMesh();
 			FGeometryScriptMeshSelection MeshSelection = Selection->GetMeshElementsSelection();
 
-			// ToDo: @tpott: only flag 'bUseOrigin' for rotation and scale
-			UPoly_MeshEditFunctions::AddMeshElementsTransform(TargetMesh, MeshSelection, true, this->Pivot.Location, DeltaTransform, Space);
+			// only use origin for rotate and scale transformations
+			bool bIsRotateOrScale = this->Type == EGizmoExtType::GET_Rotation || this->Type == EGizmoExtType::GET_Scale;
+			UPoly_MeshEditFunctions::AddMeshElementsTransform(TargetMesh, MeshSelection, bIsRotateOrScale, this->Pivot.Location, DeltaTransform, Space);
 		}
 	}
 }
