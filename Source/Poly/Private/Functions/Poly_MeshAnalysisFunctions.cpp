@@ -19,6 +19,8 @@ bool UPoly_MeshAnalysisFunctions::GetCenterOfSelectionBounds(UDynamicMesh* Targe
 	{
 		FBox Bounds;
 		bool bIsEmpty = false;
+		// ToDo: @tpott: (GetCenterOfSelectionBounds) Implement function variant for precise center instead of bounds
+		//				Convert selection to vertices and iterate over and gather their location
 		UGeometryScriptLibrary_MeshSelectionQueryFunctions::GetMeshSelectionBoundingBox(TargetMesh, Selection, Bounds, bIsEmpty);
 		if (!bIsEmpty)
 		{
@@ -38,30 +40,27 @@ bool UPoly_MeshAnalysisFunctions::GetSelectionMormal(UDynamicMesh* TargetMesh, c
 	if (Type == EGeometryScriptMeshSelectionType::Polygroups)
 		Type = EGeometryScriptMeshSelectionType::Triangles;
 	UGeometryScriptLibrary_MeshSelectionFunctions::ConvertMeshSelectionToIndexArray(TargetMesh, Selection, Indices, Type);
-	FVector Normal;
-	FVector Tangent;
+	FVector Normal = FVector::ZeroVector;
+	FVector Tangent = FVector::ZeroVector;
 	int32 Count = 0;
 	for (int i = 0; i < Indices.Num(); i++)
 	{
 		bool bIsValidTriangle = false;
-		FVector Barycentric = FVector::ZeroVector;;
-		FVector InterpNormal;
-		FVector InterpTangent;
-		FVector InterpBiTangent;
-		UGeometryScriptLibrary_MeshQueryFunctions::GetInterpolatedTriangleNormalTangents(TargetMesh, Indices[i], Barycentric, bIsValidTriangle, InterpNormal, InterpTangent, InterpBiTangent);
+		FVector InterpNormal = {};
+		InterpNormal = UGeometryScriptLibrary_MeshQueryFunctions::GetTriangleFaceNormal(TargetMesh, Indices[i], bIsValidTriangle);
 		if (bIsValidTriangle)
 		{
 			Normal += InterpNormal;
-			Tangent += InterpTangent;
+			//UE_LOG(LogTemp, Warning, TEXT("%d : %s (%s)"), i, *Normal.ToString(), *N1.ToString())
 			Count++;
 		}
 	}
-	
-	Normal /= ((float)Count);
-	Tangent /= ((float)Count);
 
-	OutNormal = Normal;
-	OutTangent = Tangent;
-	// ToDo: :CONTINUE (derive normal/orientation from mesh elements selection)
+	Normal /= ((float)Count);
+	//Tangent /= ((float)Count);
+
+	OutNormal = Normal.GetUnsafeNormal();
+	// ToDo: @tpott: (GetSelectionMormal) Reimplement tangent output
+	OutTangent = FVector::UpVector;
 	return Count > 0;
 }

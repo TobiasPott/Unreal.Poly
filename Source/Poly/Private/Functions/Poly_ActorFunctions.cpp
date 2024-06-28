@@ -1,9 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Functions/Poly_ActorFunctions.h"
+#include "Functions/Poly_MeshAnalysisFunctions.h"
 #include "Components/BaseDynamicMeshComponent.h"
 #include "GeometryScript/GeometryScriptSelectionTypes.h"
 #include "GeometryScript/MeshSelectionQueryFunctions.h"
+#include "Kismet/KismetMathLibrary.h"
+
 
 bool UPoly_ActorFunctions::GetDynamicMesh(AActor* Actor, UDynamicMesh*& Mesh)
 {
@@ -151,8 +154,14 @@ FRotator UPoly_ActorFunctions::GetRotation(UPolySelection* Selection, const ETra
 
 FRotator UPoly_ActorFunctions::GetRotation(UPolyMeshSelection* Selection, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation)
 {
-	UE_LOG(LogTemp, Warning, TEXT("GetRotation(UPolyMeshSelection...) is not implemented"));
-	return FRotator();
+	FRotator Result = FRotator::ZeroRotator;
+	if (IsValid(Selection))
+	{
+		FVector Normal, Tangent;
+		if (UPoly_MeshAnalysisFunctions::GetSelectionMormal(Selection->GetSelectedMesh(), Selection->GetMeshElementsSelection(), Normal, Tangent))
+		Result = FRotationMatrix::MakeFromX(Normal).Rotator();
+	}
+	return Result;
 }
 
 FRotator UPoly_ActorFunctions::GetRotation(const TArray<AActor*> Actors, const ETransformSpace& Space, const EGizmoPivotAggregation& Aggregation)
