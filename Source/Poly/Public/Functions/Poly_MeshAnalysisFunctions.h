@@ -27,7 +27,7 @@ public:
 
 
 	UFUNCTION(BlueprintCallable, Category = "Geometry Script|Analysis")
-	static bool GetSelectionMormal(UDynamicMesh* TargetMesh, const FGeometryScriptMeshSelection& Selection, FVector& OutNormal);
+	static bool GetSelectionMormal(UDynamicMesh* TargetMesh, const FGeometryScriptMeshSelection& Selection, FVector& OutNormal, FVector& OutTangent);
 
 
 };
