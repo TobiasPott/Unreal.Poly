@@ -19,6 +19,7 @@ FTransform AScaleGizmo::GetDeltaTransform(const FVector& LookingVector, const FV
 
 	if (AreRaysValid())
 	{
+		const float FixedScale = 10.0f; // was 100.0
 		const float Cos45Deg = 0.707;
 
 		// the opposite direction of the Normal that is most perpendicular to the Looking Vector
@@ -73,18 +74,6 @@ FTransform AScaleGizmo::GetDeltaTransform(const FVector& LookingVector, const FV
 			targetDirection = forwardVector + rightVector + upVector;
 			planeNormal = LookingVector;
 			break;
-		//case EGizmoDomain::TD_XY_Plane:
-		//	planeNormal = upVector;
-		//	break;
-		//case EGizmoDomain::TD_YZ_Plane:
-		//	planeNormal = forwardVector;
-		//	break;
-		//case EGizmoDomain::TD_XZ_Plane:
-		//	planeNormal = rightVector;
-		//	break;
-		//case EGizmoDomain::TD_XYZ:			
-		//	planeNormal = LookingVector;
-		//	break;
 		}
 
 		FPlane plane;
@@ -118,11 +107,11 @@ FTransform AScaleGizmo::GetDeltaTransform(const FVector& LookingVector, const FV
 		if (this->ActiveSpace == ETransformSpace::TS_Local)
 		{
 			deltaLocation = this->GetActorTransform().InverseTransformVectorNoScale(deltaLocation);
-			deltaLocation = (deltaLocation * PreviousViewScale * ScalingFactor) / 100.0f;
+			deltaLocation = (deltaLocation * PreviousViewScale * ScalingFactor) / FixedScale;
 		}
 		if (this->ActiveSpace == ETransformSpace::TS_World)
 		{
-			deltaLocation = (deltaLocation * PreviousViewScale * ScalingFactor) / 100.0f;
+			deltaLocation = (deltaLocation * PreviousViewScale * ScalingFactor) / FixedScale;
 		}
 		deltaTransform.SetScale3D(deltaLocation);
 
