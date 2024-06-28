@@ -40,7 +40,7 @@ bool UDeleteElementsAction::Execute_Implementation(bool bEmitRecord)
 					int NumDeleted;
 					UGeometryScriptLibrary_MeshBasicEditFunctions::DeleteSelectedTrianglesFromMesh(TargetMesh, Selection, NumDeleted);
 				}
-				// ToDo: @tpott: add deletion of vertices from mesh, based on selection converted to index list,see: UGeometryScriptLibrary_MeshBasicEditFunctions::DeleteVerticesFromMesh()
+				// ToDo: @tpott: (UDeleteElementsAction) add deletion of vertices from mesh, based on selection converted to index list,see: UGeometryScriptLibrary_MeshBasicEditFunctions::DeleteVerticesFromMesh()
 
 			}
 		}

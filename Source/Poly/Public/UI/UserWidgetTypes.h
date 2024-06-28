@@ -43,9 +43,9 @@ enum class EPropertyNativeDataType : uint8 {
 	Rotator, // is handled as -180 to 180 ranged Vector3 with rotator labeling
 	String,
 	Text, // localizable, thus unclear when to use this
-	// ToDo: CONSIDER: @tpott: Consider adding multiline value type (or should this be configured on the widget/UI side)?
+	// ToDo: @tpott: (EPropertyNativeDataType) Consider adding multiline value type (or should this be configured on the widget/UI side)?
 	Transform,
-	// ToDo: @tpott: Object is a special case which should be divided into significant subtypes (e.g. Actor, Component, DynamicMesh, etc.)
+	// ToDo: @tpott: (EPropertyNativeDataType) Object is a special case which should be divided into significant subtypes (e.g. Actor, Component, DynamicMesh, etc.)
 	//				 subtypes might be indicated in a different ways (e.g. widget specialisation)
 	Object
 };

@@ -15,7 +15,7 @@ class POLY_API AGizmoCoreActor : public ATransformCore
 {
 	GENERATED_BODY()
 
-	// ToDo: @tpott: Expose SnappedDeltaTransform as Changed events 
+	// ToDo: @tpott: (AGizmoCoreActor) Expose SnappedDeltaTransform as Changed events 
 	//				This should be solved by only firing the events when the snapped GetDeltaTransform has a value
 
 public:

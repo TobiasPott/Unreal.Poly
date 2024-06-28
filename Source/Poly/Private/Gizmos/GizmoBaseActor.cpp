@@ -316,7 +316,6 @@ FVector AGizmoBaseActor::GetPivotLocation()
 
 	case EGizmoPivotAggregation::PA_CenterMedian:
 	{
-		// ToDo: @tpott: add distinction for 'All', 'first', 'last' sources
 		if (this->PivotSelectionSource == EGizmoPivotSelectionSource::PSS_Actor && this->SelectCore->IsNotEmpty())
 			return GetActorsPivotLocationByPivotSource();
 		else if (this->PivotSelectionSource == EGizmoPivotSelectionSource::PSS_Elements && this->ElementsCore->IsNotEmpty())
@@ -338,6 +337,7 @@ FVector AGizmoBaseActor::GetActorsPivotLocationByPivotSource()
 	case EGizmoPivotSource::PS_Last:
 		return UPoly_ActorFunctions::GetLocation(this->SelectCore->GetLastSelected(), this->Pivot.Space, this->PivotLocationAggregation);
 	case EGizmoPivotSource::PS_Gizmo:
+		// ToDo: @tpott: (GetActorsPivotLocationByPivotSource) Add return of Gizmo's transform
 	default:
 	case EGizmoPivotSource::PS_All:
 		return UPoly_ActorFunctions::GetLocation(this->SelectCore->GetPolySelection(), this->Pivot.Space, this->PivotLocationAggregation);
@@ -355,6 +355,7 @@ FVector AGizmoBaseActor::GetElementsPivotLocationByPivotSource()
 	case EGizmoPivotSource::PS_Last:
 		return UPoly_ActorFunctions::GetLocation(this->ElementsCore->GetLastSelected(), this->Pivot.Space, this->PivotLocationAggregation);
 	case EGizmoPivotSource::PS_Gizmo:
+		// ToDo: @tpott: (GetElementsPivotLocationByPivotSource) Add return of Gizmo's transform
 	default:
 	case EGizmoPivotSource::PS_All:
 		return UPoly_ActorFunctions::GetLocation(this->ElementsCore->GetPolySelection(), this->Pivot.Space, this->PivotLocationAggregation);
@@ -377,7 +378,6 @@ FRotator AGizmoBaseActor::GetPivotOrientation()
 
 	case EGizmoPivotAggregation::PA_CenterMedian:
 	{
-		// ToDo: @tpott: add distinction for 'All', 'first', 'last' sources
 		if (this->PivotSelectionSource == EGizmoPivotSelectionSource::PSS_Actor && this->SelectCore->IsNotEmpty())
 			return GetActorsPivotOrientationByPivotSource();
 		else if (this->PivotSelectionSource == EGizmoPivotSelectionSource::PSS_Elements && this->ElementsCore->IsNotEmpty())
@@ -400,6 +400,7 @@ FRotator AGizmoBaseActor::GetActorsPivotOrientationByPivotSource()
 	case EGizmoPivotSource::PS_Last:
 		return UPoly_ActorFunctions::GetRotation(this->SelectCore->GetLastSelected(), this->Pivot.Space, this->PivotOrientationAggregation);
 	case EGizmoPivotSource::PS_Gizmo:
+		// ToDo: @tpott: (GetActorsPivotOrientationByPivotSource) Add return of Gizmo's transform
 	default:
 	case EGizmoPivotSource::PS_All:
 		return UPoly_ActorFunctions::GetRotation(this->SelectCore->GetPolySelection(), this->Pivot.Space, this->PivotOrientationAggregation);
@@ -418,6 +419,7 @@ FRotator AGizmoBaseActor::GetElementsPivotOrientationByPivotSource()
 	case EGizmoPivotSource::PS_Last:
 		return UPoly_ActorFunctions::GetRotation(this->ElementsCore->GetLastSelected(), this->Pivot.Space, this->PivotOrientationAggregation);
 	case EGizmoPivotSource::PS_Gizmo:
+		// ToDo: @tpott: (GetElementsPivotOrientationByPivotSource) Add return of Gizmo's transform
 	default:
 	case EGizmoPivotSource::PS_All:
 		return UPoly_ActorFunctions::GetRotation(this->ElementsCore->GetPolySelection(), this->Pivot.Space, this->PivotOrientationAggregation);
@@ -440,7 +442,6 @@ void AGizmoBaseActor::SetPivotBehaviour(const EGizmoPivotSource InSource,
 		this->PivotLocationAggregation = InLocationAggregation;
 	if (InOrientationAggregation != EGizmoPivotAggregation::PA_Keep)
 		this->PivotOrientationAggregation = InOrientationAggregation;
-	//this->UpdatePivot(true, true);
 }
 void AGizmoBaseActor::SetPivotSource(const EGizmoPivotSource InSource)
 {

@@ -29,12 +29,10 @@ bool USetSelectionAction::Execute_Implementation(bool bEmitRecord)
 	ASelectorBase* Selector;
 	if (UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>()->GetSelector(this, this->SelectorName, Selector))
 	{
-		// ToDo: add Ids to Selectoor
 		TArray<UPolySelection*> Selection;
 		for (int32 Id : Ids)
-		{
 			UPolySelection::AddByIdT(Selection, Id);
-		}
+
 		UE_LOG(LogPolyTemp, Warning, TEXT("USetSelectionAction::Execute_Implementation: %d/%d (%s)"), Ids.Num(), Selection.Num(), *this->SelectorName.ToString());
 		Selector->ReplaceAllT(Selection);
 		this->Submit();
@@ -45,19 +43,17 @@ bool USetSelectionAction::Execute_Implementation(bool bEmitRecord)
 }
 
 bool USetElementsSelectionAction::Execute_Implementation(bool bEmitRecord)
-{	// Add poly selection to selector 'Actors'
+{
+	// Add poly selection to selector 'Actors'
 	ASelectorBase* Selector;
 	if (UGameplayStatics::GetGameInstance(this)->GetSubsystem<USelectorSubsystem>()->GetSelector(this, this->SelectorName, Selector))
 	{
-		// ToDo: add Ids to Selectoor
 		TArray<UPolyMeshSelection*> Selection;
 		for (int32 Id : Ids)
 		{
 			int32 Index = UPolySelection::AddByIdT(Selection, Id);
 			if (Index != INDEX_NONE)
-			{
 				Selection[Index]->Selection = this->Selections[Index];
-			}
 		}
 		UE_LOG(LogPolyTemp, Warning, TEXT("USetElementsSelectionAction::Execute_Implementation: %d/%d (%s)"), Ids.Num(), Selection.Num(), *this->SelectorName.ToString());
 		Selector->ReplaceAllT(Selection);

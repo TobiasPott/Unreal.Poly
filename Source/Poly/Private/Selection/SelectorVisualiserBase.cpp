@@ -8,7 +8,7 @@
 #include "EnumTypes.h"
 
 
-// ToDo: @tpott: LONG-TERM: Add visualiser type for Mesh Elements selection, which has the DynMesh for polygons and staticInstanced for vertices
+// ToDo: LONG-TERM: @tpott: Add visualiser type for Mesh Elements selection, which has the DynMesh for polygons and staticInstanced for vertices
 // Sets default values
 ASelectorVisualiserBase::ASelectorVisualiserBase()
 {

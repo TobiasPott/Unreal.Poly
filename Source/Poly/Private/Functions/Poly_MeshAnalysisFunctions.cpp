@@ -30,6 +30,6 @@ bool UPoly_MeshAnalysisFunctions::GetCenterOfSelectionBounds(UDynamicMesh* Targe
 bool UPoly_MeshAnalysisFunctions::GetSelectionMormal(UDynamicMesh* TargetMesh, const FGeometryScriptMeshSelection& Selection, FVector& OutNormal)
 {
 
-	// ToDo: CONTINUE
+	// ToDo: :CONTINUE (derive normal/orientation from mesh elements selection)
 	return false;
 }

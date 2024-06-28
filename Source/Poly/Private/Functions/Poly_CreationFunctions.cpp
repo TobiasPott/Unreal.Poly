@@ -23,7 +23,7 @@ void UPoly_CreationFunctions::CreateBoxActor(const UObject* WorldContext, APolyM
 	UDynamicMeshComponent* DMC = OutPolyActor->GetDynamicMeshComponent();
 	UDynamicMesh* TargetMesh = DMC->GetDynamicMesh();
 
-	const FGeometryScriptPrimitiveOptions Options = { EGeometryScriptPrimitivePolygroupMode::SingleGroup, false, EGeometryScriptPrimitiveUVMode::Uniform };
+	const FGeometryScriptPrimitiveOptions Options = { EGeometryScriptPrimitivePolygroupMode::PerQuad, false, EGeometryScriptPrimitiveUVMode::Uniform };
 	UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendBox(TargetMesh, Options, FTransform::Identity, InDimensions.X, InDimensions.Y, InDimensions.Z, 0, 0, 0, EGeometryScriptPrimitiveOriginMode::Center);
 
 	if (!InOffset.Equals(FVector::ZeroVector))
@@ -38,7 +38,7 @@ void UPoly_CreationFunctions::CreateSphereActor(const UObject* WorldContext, APo
 	UDynamicMeshComponent* DMC = OutPolyActor->GetDynamicMeshComponent();
 	UDynamicMesh* TargetMesh = DMC->GetDynamicMesh();
 
-	const FGeometryScriptPrimitiveOptions Options = { EGeometryScriptPrimitivePolygroupMode::SingleGroup, false, EGeometryScriptPrimitiveUVMode::Uniform };
+	const FGeometryScriptPrimitiveOptions Options = { EGeometryScriptPrimitivePolygroupMode::PerQuad, false, EGeometryScriptPrimitiveUVMode::Uniform };
 	UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendSphereBox(TargetMesh, Options, FTransform::Identity, Radius, StepsX, StepsY, StepsZ, EGeometryScriptPrimitiveOriginMode::Center);
 	if (!InOffset.Equals(FVector::ZeroVector))
 	{
@@ -52,7 +52,7 @@ void UPoly_CreationFunctions::CreateCylinderActor(const UObject* WorldContext, A
 	UDynamicMeshComponent* DMC = OutPolyActor->GetDynamicMeshComponent();
 	UDynamicMesh* TargetMesh = DMC->GetDynamicMesh();
 
-	const FGeometryScriptPrimitiveOptions Options = { EGeometryScriptPrimitivePolygroupMode::SingleGroup, false, EGeometryScriptPrimitiveUVMode::Uniform };
+	const FGeometryScriptPrimitiveOptions Options = { EGeometryScriptPrimitivePolygroupMode::PerQuad, false, EGeometryScriptPrimitiveUVMode::Uniform };
 	UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendCylinder(TargetMesh, Options, FTransform::Identity, Radius, Height, RadialSteps, HeightSteps, true, EGeometryScriptPrimitiveOriginMode::Center);
 	if (!InOffset.Equals(FVector::ZeroVector))
 	{
@@ -66,7 +66,7 @@ void UPoly_CreationFunctions::CreateConeActor(const UObject* WorldContext, APoly
 	UDynamicMeshComponent* DMC = OutPolyActor->GetDynamicMeshComponent();
 	UDynamicMesh* TargetMesh = DMC->GetDynamicMesh();
 
-	const FGeometryScriptPrimitiveOptions Options = { EGeometryScriptPrimitivePolygroupMode::SingleGroup, false, EGeometryScriptPrimitiveUVMode::Uniform };
+	const FGeometryScriptPrimitiveOptions Options = { EGeometryScriptPrimitivePolygroupMode::PerQuad, false, EGeometryScriptPrimitiveUVMode::Uniform };
 	UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendCone(TargetMesh, Options, FTransform::Identity, BaseRadius, TopRadius, Height, RadialSteps, HeightSteps, true, EGeometryScriptPrimitiveOriginMode::Center);
 	if (!InOffset.Equals(FVector::ZeroVector))
 	{

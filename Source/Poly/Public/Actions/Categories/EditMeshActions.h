@@ -82,13 +82,13 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default", meta = (ExposeOnSpawn = "true"))
 	FName SelectorName = USelectorNames::Elements;
 
-	// ToDo: @tpott: add further members which should be exposed from the FGeometryScriptMeshInsetOutsetFacesOptions struct (e.g. distance etc.)
+	// ToDo: @tpott: (UInsetOutsetFacesAction) add further members which should be exposed from the FGeometryScriptMeshInsetOutsetFacesOptions struct (e.g. distance etc.)
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Default, meta = (ExposeOnSpawn = "true"))
 	float Distance = 10.0f;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Default, meta = (ExposeOnSpawn = "true"))
 	bool bReproject = false;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Default, meta = (ExposeOnSpawn = "true"))
-	bool bBoundaryOnly = false; // ToDo: @tpott: Don't know what this member actually affects in the InsetOutsetFaces function
+	bool bBoundaryOnly = false; // ToDo: @tpott: (UInsetOutsetFacesAction) Don't know what this member actually affects in the InsetOutsetFaces function
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Default, meta = (ExposeOnSpawn = "true"))
 	float Softness = 0.0f;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Default, meta = (ExposeOnSpawn = "true"))
