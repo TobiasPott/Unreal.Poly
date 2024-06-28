@@ -81,7 +81,7 @@ void AGizmoBaseActor::CreateElementsCore_Implementation(AElementsGizmo*& OutElem
 	this->ElementsCore->AttachToActor(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
 	OutElementsCore = this->ElementsCore;
 	// setup core with class (should be called again to change mode or class)
-	this->ElementsCore->Setup(ESelectionRequestMode::Marquee, 10000.0, EGeometryScriptMeshSelectionType::Triangles, false);
+	this->ElementsCore->Setup(ESelectionRequestMode::Marquee, 16384.0f, EGeometryScriptMeshSelectionType::Polygroups, false);
 
 	OutElementsCore->Finished.AddDynamic(this, &AGizmoBaseActor::Elements_Finished);
 
@@ -245,7 +245,9 @@ void AGizmoBaseActor::TransformSelection(FTransform DeltaTransform, bool bInLoca
 			UPolyMeshSelection* Selection = Cast<UPolyMeshSelection>(ActiveSelection[i]);
 			UDynamicMesh* TargetMesh = Selection->GetSelectedMesh();
 			FGeometryScriptMeshSelection MeshSelection = Selection->GetMeshElementsSelection();
-
+			
+			// ToDo: @tpott: :BUG: Pivot is not transformed to local space if passed in as world (which is done by default)
+			//						Maybe changed in 'UPoly_MeshEditFunctions::AddMeshElementsTransform'
 			// only use origin for rotate and scale transformations
 			bool bIsRotateOrScale = this->Type == EGizmoExtType::GET_Rotation || this->Type == EGizmoExtType::GET_Scale;
 			UPoly_MeshEditFunctions::AddMeshElementsTransform(TargetMesh, MeshSelection, bIsRotateOrScale, this->Pivot.Location, DeltaTransform, Space);

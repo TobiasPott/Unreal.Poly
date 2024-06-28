@@ -49,12 +49,12 @@ protected:
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Selection")
 	bool bDisableOnFinish = false;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
-	FVector2D FirstPoint;
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
-	FVector2D SecondPoint;
+	UPROPERTY(BlueprintReadOnly, Category = "Selection")
+	FVector2D FirstPoint = FVector2D::ZeroVector;
+	UPROPERTY(BlueprintReadOnly, Category = "Selection")
+	FVector2D SecondPoint = FVector2D::ZeroVector;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Selection")
+	UPROPERTY(BlueprintReadOnly, Category = "Selection")
 	USelectionRequestBase* Request = nullptr;
 
 
@@ -64,7 +64,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditInstanceOnly, Category = "Filter")
 	EPolySelectionMode SelectionMode = EPolySelectionMode::Replace;
 	UPROPERTY(BlueprintReadOnly, EditInstanceOnly, Category = "Filter")
-	EGeometryScriptMeshSelectionType SelectionType = EGeometryScriptMeshSelectionType::Triangles;
+	EGeometryScriptMeshSelectionType SelectionType = EGeometryScriptMeshSelectionType::Polygroups;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Filter")
 	float Distance = 10000.0;
@@ -90,7 +90,7 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Selection")
-	void Setup(ESelectionRequestMode InMarqueeMode, const float InDistance = 10000.0, const EGeometryScriptMeshSelectionType InSelectionType = EGeometryScriptMeshSelectionType::Triangles, const bool bInDisableOnFinish = false);
+	void Setup(ESelectionRequestMode InMarqueeMode, const float InDistance = 10000.0, const EGeometryScriptMeshSelectionType InSelectionType = EGeometryScriptMeshSelectionType::Polygroups, const bool bInDisableOnFinish = false);
 
 	virtual void SetEnableConsumeInput(const bool bInEnable) override;
 
@@ -103,7 +103,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SetSelectionMode(EPolySelectionMode InSelectionMode = EPolySelectionMode::Replace);
 	UFUNCTION(BlueprintCallable, Category = "Selection")
-	void SetSelectionType(EGeometryScriptMeshSelectionType InSelectionType = EGeometryScriptMeshSelectionType::Triangles);
+	void SetSelectionType(EGeometryScriptMeshSelectionType InSelectionType = EGeometryScriptMeshSelectionType::Polygroups);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category = "Intern")
